@@ -1,0 +1,111 @@
+{
+  "checked_date": "2026-09-13",
+  "timezone": "Asia/Hong_Kong",
+  "method": "One curl GET per endpoint, followed redirects, 25-second timeout, response parsing. No browser or phone execution, load test, uptime assessment, or 3D-key test.",
+  "checks": [
+    {
+      "name": "weather",
+      "url": "https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en",
+      "method": "GET",
+      "origin_header": null,
+      "response_headers": [
+        "HTTP/2 200 ",
+        "content-type: application/json; charset=utf-8",
+        "access-control-allow-origin: *"
+      ],
+      "bytes": 3138,
+      "note": "Parsed current weather JSON; updateTime 2026-09-13T13:02:00+08:00."
+    },
+    {
+      "name": "parking",
+      "url": "https://api.data.gov.hk/v1/carpark-info-vacancy?data=vacancy&vehicleTypes=privateCar",
+      "method": "GET",
+      "origin_header": "http://localhost:5173",
+      "response_headers": [
+        "HTTP/1.1 200 OK",
+        "Content-Type: application/json;charset=UTF-8",
+        "Access-Control-Allow-Origin: *"
+      ],
+      "bytes": 95978,
+      "note": "570 results. First result has lastupdate 2026-09-07 14:50:02; other records dated 2026-09-13. Some other vehicle-type fields also appear despite privateCar query. Check individual record freshness and filter client-side as needed."
+    },
+    {
+      "name": "hkma",
+      "url": "https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/er-ir/er-eeri-daily",
+      "method": "GET",
+      "origin_header": "http://localhost:5173",
+      "response_headers": [
+        "HTTP/1.1 200 ",
+        "Content-Type: application/json",
+        "Access-Control-Allow-Origin: http://localhost:5173"
+      ],
+      "bytes": 69399,
+      "note": "header.success=true, result.datasize=100. First record end_of_day=2026-08-31. Did not verify ordering, latest available day, or pagination completeness."
+    },
+    {
+      "name": "ha",
+      "url": "https://www.ha.org.hk/opendata/aed/aedwtdata2-en.json",
+      "method": "GET",
+      "origin_header": "http://localhost:5173",
+      "response_headers": [
+        "HTTP/1.1 200 OK",
+        "Content-Type: application/json",
+        "Access-Control-Allow-Origin: *"
+      ],
+      "bytes": 3815,
+      "note": "Parsed waitTime array and updateTime=13/9/2026 1:00PM. Revised triage fields including t3p50/t3p95 and t45p50/t45p95."
+    },
+    {
+      "name": "mtr",
+      "url": "https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php?line=TKL&sta=TKO",
+      "method": "GET",
+      "origin_header": "http://localhost:5173",
+      "response_headers": [
+        "HTTP/2 200 ",
+        "content-type: application/json; charset=utf-8",
+        "access-control-allow-origin: *"
+      ],
+      "bytes": 1029,
+      "note": "TKL-TKO schedule parsed, curr_time=2026-09-13 13:10:29."
+    },
+    {
+      "name": "kmb",
+      "url": "https://data.etabus.gov.hk/v1/transport/kmb/route/",
+      "method": "GET",
+      "origin_header": "http://localhost:5173",
+      "response_headers": [
+        "HTTP/2 200 ",
+        "content-type: application/json; charset=utf-8",
+        "access-control-allow-origin: *"
+      ],
+      "bytes": 349370,
+      "note": "RouteList parsed; generated_timestamp=2026-09-13T13:10:41+08:00. This probe checks the route list, not ETA accuracy."
+    },
+    {
+      "name": "rain",
+      "url": "https://data.weather.gov.hk/weatherAPI/hko_data/F3/Gridded_rainfall_nowcast_tc.csv",
+      "method": "GET",
+      "origin_header": "http://localhost:5173",
+      "response_headers": [
+        "HTTP/2 200 ",
+        "content-type: application/octet-stream",
+        "content-type: text/csv"
+      ],
+      "bytes": 2695120,
+      "note": "UTF-8 BOM CSV parsed, 58564 rows, 2695120 bytes. First issue time 202609131248. No Access-Control-Allow-Origin header observed."
+    },
+    {
+      "name": "csdi",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1648571595120_89752/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson&resultRecordCount=2",
+      "method": "GET",
+      "origin_header": "http://localhost:5173",
+      "response_headers": [
+        "HTTP/2 200 ",
+        "content-type: application/geo+json;charset=UTF-8",
+        "access-control-allow-origin: http://localhost:5173"
+      ],
+      "bytes": 554,
+      "note": "Valid GeoJSON FeatureCollection with two point features and exceededTransferLimit=true. Pagination is required for full retrieval."
+    }
+  ]
+}

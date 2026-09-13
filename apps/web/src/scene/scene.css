@@ -1,0 +1,103 @@
+.map-scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #b9d6db;
+}
+
+.map-scene__canvas,
+.map-scene__canvas > .cesium-widget,
+.map-scene__canvas canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.map-scene__canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.map-scene__canvas canvas {
+  display: block;
+}
+
+.map-scene__credits {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  max-width: calc(100% - 24px);
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: rgb(23 61 58 / 94%);
+  font:
+    11px/1.5 system-ui,
+    sans-serif;
+  color: white;
+  z-index: 1;
+}
+
+.map-scene__credits .cesium-widget-credits {
+  /* Cesium positions this child absolutely by default; keep it inside our credit surface. */
+  position: static;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 6px;
+  color: white;
+  font: inherit;
+  text-shadow: none;
+}
+
+.map-scene__credits a,
+.map-scene__credits .cesium-credit-textContainer a {
+  color: white;
+  text-decoration: underline;
+}
+
+.map-scene__credits .cesium-credit-logoContainer img {
+  height: 17px;
+  vertical-align: middle;
+}
+
+.map-scene__fallback {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(360px, calc(100% - 32px));
+  padding: 24px;
+  border-radius: 20px;
+  background: rgb(255 255 255 / 95%);
+  color: #173d3a;
+  box-shadow: 0 16px 60px rgb(23 61 58 / 10%);
+}
+
+.map-scene__fallback p {
+  margin-bottom: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+  .map-scene__credits {
+    top: 12px;
+    bottom: auto;
+    right: 10px;
+    max-width: calc(100% - 174px);
+    font-size: 10px;
+  }
+}
+
+.scene-diagnostics {
+  position: absolute;
+  z-index: 8;
+  left: 40%;
+  top: 145px;
+  max-height: 260px;
+  width: 300px;
+  overflow: auto;
+  padding: 8px;
+  background: #fff;
+  color: #173d3a;
+  font: 11px monospace;
+}

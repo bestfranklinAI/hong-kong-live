@@ -1,0 +1,22 @@
+{
+  "name": "@hk/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "preview": "tsx src/server.ts"
+  },
+  "dependencies": {
+    "@hk/contracts": "workspace:*",
+    "@hk/providers": "workspace:*",
+    "@hono/node-server": "^1.19.0",
+    "hono": "^4.9.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0"
+  }
+}

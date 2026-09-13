@@ -1,0 +1,20 @@
+[Unit]
+Description=Hong Kong Live API
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/HK/apps/api
+Environment=NODE_ENV=production
+Environment=HK_DATA_MODE=live
+Environment=PORT=8787
+ExecStart=/bin/bash /home/ubuntu/HK/deploy/start-api.sh
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+node_modules/
+.pnpm-store/
+dist/
+.env
+.env.*
+!.env.example
+.dev.vars
+.wrangler/
+coverage/
+output/
+.playwright-cli/
+test-results/
+.DS_Store
+*.tsbuildinfo

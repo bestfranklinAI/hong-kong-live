@@ -1,0 +1,9 @@
+node_modules
+.pnpm-store
+dist
+pnpm-lock.yaml
+research
+IMPLEMENTATION-PLAN.md
+fixtures
+output
+.playwright-cli

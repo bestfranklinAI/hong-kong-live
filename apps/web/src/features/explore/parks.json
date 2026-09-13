@@ -1,0 +1,772 @@
+{
+  "sourceUrl": "https://portal.csdi.gov.hk/server/rest/services/common/lcsd_rcd_1629267205215_19292/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json",
+  "preparedAt": "2026-09-13T11:31:00.856504+00:00",
+  "places": [
+    {
+      "id": "lcsd-tung-chung-north-park",
+      "name": "Tung Chung North Park",
+      "nameZh": "東涌北公園",
+      "district": "Islands",
+      "category": "park",
+      "lng": 113.95088362,
+      "lat": 22.29159103,
+      "description": "A public open space in Islands. Find it at No. 29 Man Tung Road, Tung Chung.",
+      "tags": [
+        "離島",
+        "No. 29 Man Tung Road, Tung Chung",
+        "東涌文東路29號",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 16,
+      "sourceUpdatedAt": "2026-06-25T01:40:56+00:00"
+    },
+    {
+      "id": "lcsd-tsing-yi-park",
+      "name": "Tsing Yi Park",
+      "nameZh": "青衣公園",
+      "district": "Kwai Tsing",
+      "category": "park",
+      "lng": 114.10587214,
+      "lat": 22.35616427,
+      "description": "A public open space in Kwai Tsing. Find it at Tsing Luk Street, Tsing Yi.",
+      "tags": ["葵青", "Tsing Luk Street, Tsing Yi", "青衣青綠街", "LCSD", "康文署", "公園"],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 3,
+      "sourceUpdatedAt": "2026-08-14T07:38:26+00:00"
+    },
+    {
+      "id": "lcsd-north-district-park",
+      "name": "North District Park",
+      "nameZh": "北區公園",
+      "district": "North",
+      "category": "park",
+      "lng": 114.13411131,
+      "lat": 22.49892247,
+      "description": "A public open space in North. Find it at Jockey Club Road, Sheung Shui.",
+      "tags": ["北區", "Jockey Club Road, Sheung Shui", "上水馬會道", "LCSD", "康文署", "公園"],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 5,
+      "sourceUpdatedAt": "2026-08-13T04:31:00+00:00"
+    },
+    {
+      "id": "lcsd-kowloon-park",
+      "name": "Kowloon Park",
+      "nameZh": "九龍公園",
+      "district": "Yau Tsim Mong",
+      "category": "park",
+      "lng": 114.17021018,
+      "lat": 22.30011781,
+      "description": "A public open space in Yau Tsim Mong. Find it at 22 Austin Road, Tsim Sha Tsui.",
+      "tags": [
+        "油尖旺",
+        "22 Austin Road, Tsim Sha Tsui",
+        "尖沙咀柯士甸道22號",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 8,
+      "sourceUpdatedAt": "2026-07-22T02:45:12+00:00"
+    },
+    {
+      "id": "lcsd-ma-on-shan-promenade",
+      "name": "Ma On Shan Promenade",
+      "nameZh": "馬鞍山海濱長廊",
+      "district": "Sha Tin",
+      "category": "waterfront",
+      "lng": 114.22040918,
+      "lat": 22.40883274,
+      "description": "A public open space in Sha Tin. Find it at Ning Tai Road, Ma On Shan.",
+      "tags": ["沙田", "Ning Tai Road, Ma On Shan", "馬鞍山寧泰路", "LCSD", "康文署", "公園"],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 9,
+      "sourceUpdatedAt": "2026-07-17T09:38:58+00:00"
+    },
+    {
+      "id": "lcsd-yuen-long-park",
+      "name": "Yuen Long Park",
+      "nameZh": "元朗公園",
+      "district": "Yuen Long",
+      "category": "park",
+      "lng": 114.01892631,
+      "lat": 22.44249924,
+      "description": "A public open space in Yuen Long. Find it at Town Park Road North, Yuen Long.",
+      "tags": [
+        "元朗",
+        "Town Park Road North, Yuen Long",
+        "元朗元朗公園北路",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 11,
+      "sourceUpdatedAt": "2026-07-08T08:13:42+00:00"
+    },
+    {
+      "id": "lcsd-po-hong-park",
+      "name": "Po Hong Park",
+      "nameZh": "寶康公園",
+      "district": "Sai Kung",
+      "category": "park",
+      "lng": 114.25765676,
+      "lat": 22.3187749,
+      "description": "A public open space in Sai Kung. Find it at Wan Lung Road, Tseung Kwan O.",
+      "tags": ["西貢", "Wan Lung Road, Tseung Kwan O", "將軍澳運隆路", "LCSD", "康文署", "公園"],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 12,
+      "sourceUpdatedAt": "2026-07-07T01:50:57+00:00"
+    },
+    {
+      "id": "lcsd-shek-kip-mei-park",
+      "name": "Shek Kip Mei Park",
+      "nameZh": "石硤尾公園",
+      "district": "Sham Shui Po",
+      "category": "park",
+      "lng": 114.16949146,
+      "lat": 22.33551382,
+      "description": "A public open space in Sham Shui Po. Find it at 270 Nam Cheong Street, Sham Shui Po.",
+      "tags": [
+        "深水埗",
+        "270 Nam Cheong Street, Sham Shui Po",
+        "深水埗南昌街270號",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 14,
+      "sourceUpdatedAt": "2026-07-03T04:27:11+00:00"
+    },
+    {
+      "id": "lcsd-chai-wan-park",
+      "name": "Chai Wan Park",
+      "nameZh": "柴灣公園",
+      "district": "Eastern",
+      "category": "park",
+      "lng": 114.23848686,
+      "lat": 22.26627749,
+      "description": "A public open space in Eastern. Find it at Chai Wan Park, Tsui Wan Street, Chai Wan.",
+      "tags": [
+        "東區",
+        "Chai Wan Park, Tsui Wan Street, Chai Wan",
+        "柴灣翠灣街柴灣公園",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 15,
+      "sourceUpdatedAt": "2026-07-03T01:58:58+00:00"
+    },
+    {
+      "id": "lcsd-ngau-chi-wan-park",
+      "name": "Ngau Chi Wan Park",
+      "nameZh": "牛池灣公園",
+      "district": "Wong Tai Sin",
+      "category": "park",
+      "lng": 114.21380222,
+      "lat": 22.33615123,
+      "description": "A public open space in Wong Tai Sin. Find it at 71 Fung Shing Street, Ngau Chi Wan, Wong Tai Sin.",
+      "tags": [
+        "黃大仙",
+        "71 Fung Shing Street, Ngau Chi Wan, Wong Tai Sin",
+        "黃大仙牛池灣豐盛街71號",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 17,
+      "sourceUpdatedAt": "2026-06-17T04:20:27+00:00"
+    },
+    {
+      "id": "lcsd-lai-chi-kok-park",
+      "name": "Lai Chi Kok Park",
+      "nameZh": "荔枝角公園",
+      "district": "Sham Shui Po",
+      "category": "park",
+      "lng": 114.13698489,
+      "lat": 22.3394756,
+      "description": "A public open space in Sham Shui Po. Find it at 1 Lai Wan Road, Lai Chi Kok.",
+      "tags": [
+        "深水埗",
+        "1 Lai Wan Road, Lai Chi Kok",
+        "荔枝角荔灣道1號",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 18,
+      "sourceUpdatedAt": "2026-06-17T02:34:15+00:00"
+    },
+    {
+      "id": "lcsd-tuen-mun-park",
+      "name": "Tuen Mun Park",
+      "nameZh": "屯門公園",
+      "district": "Tuen Mun",
+      "category": "park",
+      "lng": 113.97344392,
+      "lat": 22.39193385,
+      "description": "A public open space in Tuen Mun. Find it at Tuen Mun Heung Sze Wui Road, Tuen Mun.",
+      "tags": [
+        "屯門",
+        "Tuen Mun Heung Sze Wui Road, Tuen Mun",
+        "屯門屯門鄉事會路",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 20,
+      "sourceUpdatedAt": "2026-04-17T03:06:57+00:00"
+    },
+    {
+      "id": "lcsd-tin-shui-wai-park",
+      "name": "Tin Shui Wai Park",
+      "nameZh": "天水圍公園",
+      "district": "Yuen Long",
+      "category": "park",
+      "lng": 114.00345421,
+      "lat": 22.45565875,
+      "description": "A public open space in Yuen Long. Find it at 6 Tin Shui Road, Tin Shui Wai, Yuen Long.",
+      "tags": [
+        "元朗",
+        "6 Tin Shui Road, Tin Shui Wai, Yuen Long",
+        "天水圍天瑞路6號",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 22,
+      "sourceUpdatedAt": "2026-04-02T08:02:13+00:00"
+    },
+    {
+      "id": "lcsd-kai-tak-cruise-terminal-park",
+      "name": "Kai Tak Cruise Terminal Park",
+      "nameZh": "啓德郵輪碼頭公園",
+      "district": "Kowloon City",
+      "category": "park",
+      "lng": 114.21334858,
+      "lat": 22.30613106,
+      "description": "A public open space in Kowloon City. Find it at flat roof of the Kai Tak Cruise Terminal Building at 33 Shing Fung Road, Kai Tak, Kowloon.",
+      "tags": [
+        "九龍城",
+        "flat roof of the Kai Tak Cruise Terminal Building at 33 Shing Fung Road, Kai Tak, Kowloon",
+        "九龍啓德承豐道33號啓德郵輪碼頭頂層平台",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 24,
+      "sourceUpdatedAt": "2026-03-02T07:29:23+00:00"
+    },
+    {
+      "id": "lcsd-nam-cheong-park",
+      "name": "Nam Cheong Park",
+      "nameZh": "南昌公園",
+      "district": "Sham Shui Po",
+      "category": "park",
+      "lng": 114.1574113,
+      "lat": 22.32409123,
+      "description": "A public open space in Sham Shui Po. Find it at 20 Sham Mong Road, Kowloon.",
+      "tags": ["深水埗", "20 Sham Mong Road, Kowloon", "九龍深旺道20號", "LCSD", "康文署", "公園"],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 25,
+      "sourceUpdatedAt": "2026-02-26T06:34:28+00:00"
+    },
+    {
+      "id": "lcsd-shing-mun-valley-park",
+      "name": "Shing Mun Valley Park",
+      "nameZh": "城門谷公園",
+      "district": "Tsuen Wan",
+      "category": "park",
+      "lng": 114.12507259,
+      "lat": 22.37474917,
+      "description": "A public open space in Tsuen Wan. Find it at Shing Mun Road, Tsuen Wan.",
+      "tags": ["荃灣", "Shing Mun Road, Tsuen Wan", "荃灣城門道", "LCSD", "康文署", "公園"],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 26,
+      "sourceUpdatedAt": "2026-02-23T08:01:27+00:00"
+    },
+    {
+      "id": "lcsd-quarry-bay-park",
+      "name": "Quarry Bay Park",
+      "nameZh": "鰂魚涌公園",
+      "district": "Eastern",
+      "category": "park",
+      "lng": 114.21512359,
+      "lat": 22.28869069,
+      "description": "A public open space in Eastern. Find it at Near Hoi Tai Street, Quarry Bay.",
+      "tags": [
+        "東區",
+        "Near Hoi Tai Street, Quarry Bay",
+        "鰂魚涌近海堤街",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 33,
+      "sourceUpdatedAt": "2025-11-28T08:49:24+00:00"
+    },
+    {
+      "id": "lcsd-hong-kong-velodrome-park",
+      "name": "Hong Kong Velodrome Park",
+      "nameZh": "香港單車館公園",
+      "district": "Sai Kung",
+      "category": "park",
+      "lng": 114.26099282,
+      "lat": 22.31414232,
+      "description": "A public open space in Sai Kung. Find it at 105-107 Po Hong Road, Tseung Kwan O.",
+      "tags": [
+        "西貢",
+        "105-107 Po Hong Road, Tseung Kwan O",
+        "將軍澳寶康路105-107號",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 34,
+      "sourceUpdatedAt": "2025-10-06T03:41:27+00:00"
+    },
+    {
+      "id": "lcsd-tai-po-waterfront-park",
+      "name": "Tai Po Waterfront Park",
+      "nameZh": "大埔海濱公園",
+      "district": "Tai Po",
+      "category": "waterfront",
+      "lng": 114.17900493,
+      "lat": 22.45182725,
+      "description": "A public open space in Tai Po. Find it at Dai Fat Street, Tai Po.",
+      "tags": ["大埔", "Dai Fat Street, Tai Po", "大埔大發街", "LCSD", "康文署", "公園"],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 35,
+      "sourceUpdatedAt": "2025-10-06T03:41:06+00:00"
+    },
+    {
+      "id": "lcsd-tamar-park",
+      "name": "Tamar Park",
+      "nameZh": "添馬公園",
+      "district": "Central & Western",
+      "category": "park",
+      "lng": 114.16557869,
+      "lat": 22.28135824,
+      "description": "A public open space in Central & Western. Find it at Harcourt Road, Admiralty.",
+      "tags": ["中西區", "Harcourt Road, Admiralty", "金鐘夏慤道", "LCSD", "康文署", "公園"],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 36,
+      "sourceUpdatedAt": "2025-10-06T03:40:49+00:00"
+    },
+    {
+      "id": "lcsd-sha-tin-park",
+      "name": "Sha Tin Park",
+      "nameZh": "沙田公園",
+      "district": "Sha Tin",
+      "category": "park",
+      "lng": 114.18987333,
+      "lat": 22.37949163,
+      "description": "A public open space in Sha Tin. Find it at 2 Yuen Wo Road, Shatin.",
+      "tags": ["沙田", "2 Yuen Wo Road, Shatin", "沙田源禾路2號", "LCSD", "康文署", "公園"],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 37,
+      "sourceUpdatedAt": "2025-10-06T03:38:53+00:00"
+    },
+    {
+      "id": "lcsd-tsuen-wan-park",
+      "name": "Tsuen Wan Park",
+      "nameZh": "荃灣公園",
+      "district": "Tsuen Wan",
+      "category": "park",
+      "lng": 114.11282231,
+      "lat": 22.36711399,
+      "description": "A public open space in Tsuen Wan. Find it at 59 Wing Shun Street, Tsuen Wan.",
+      "tags": [
+        "荃灣",
+        "59 Wing Shun Street, Tsuen Wan",
+        "荃灣永順街59號",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 38,
+      "sourceUpdatedAt": "2025-05-19T06:19:20+00:00"
+    },
+    {
+      "id": "lcsd-tseung-kwan-o-waterfront-park",
+      "name": "Tseung Kwan O Waterfront Park",
+      "nameZh": "將軍澳海濱公園",
+      "district": "Sai Kung",
+      "category": "waterfront",
+      "lng": 114.2591025,
+      "lat": 22.30187134,
+      "description": "A public open space in Sai Kung. Find it at Tong Yin Street, Tseung Kwan O, Sai Kung.",
+      "tags": [
+        "西貢",
+        "Tong Yin Street, Tseung Kwan O, Sai Kung",
+        "西貢將軍澳唐賢街",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 40,
+      "sourceUpdatedAt": "2024-11-06T06:26:16+00:00"
+    },
+    {
+      "id": "lcsd-waterfall-bay-park",
+      "name": "Waterfall Bay Park",
+      "nameZh": "瀑布灣公園",
+      "district": "Southern",
+      "category": "park",
+      "lng": 114.13508775,
+      "lat": 22.2502441,
+      "description": "A public open space in Southern. Find it at Waterfall Bay Road, Wah Fu Estate.",
+      "tags": [
+        "南區",
+        "Waterfall Bay Road, Wah Fu Estate",
+        "華富邨瀑布灣道",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 51,
+      "sourceUpdatedAt": "2022-04-19T03:31:41+00:00"
+    },
+    {
+      "id": "lcsd-ap-lei-chau-waterfront-promenade",
+      "name": "Ap Lei Chau Waterfront Promenade",
+      "nameZh": "鴨脷洲海濱長廊",
+      "district": "Southern",
+      "category": "waterfront",
+      "lng": 114.15543843,
+      "lat": 22.2448246,
+      "description": "A public open space in Southern. Find it at Ap Lei Chau Main Street, Ap Lei Chau, Hong Kong.",
+      "tags": [
+        "南區",
+        "Ap Lei Chau Main Street, Ap Lei Chau, Hong Kong",
+        "香港鴨脷洲鴨脷洲大街",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 52,
+      "sourceUpdatedAt": "2022-04-19T03:29:14+00:00"
+    },
+    {
+      "id": "lcsd-bowen-road-park",
+      "name": "Bowen Road Park",
+      "nameZh": "寶雲道公園",
+      "district": "Wan Chai",
+      "category": "park",
+      "lng": 114.17156615,
+      "lat": 22.27002819,
+      "description": "A public open space in Wan Chai. Find it at Bowen Road, Wan Chai.",
+      "tags": ["灣仔", "Bowen Road, Wan Chai", "灣仔寶雲道", "LCSD", "康文署", "公園"],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 71,
+      "sourceUpdatedAt": "2022-01-31T04:16:32+00:00"
+    },
+    {
+      "id": "lcsd-sai-kung-waterfront-park",
+      "name": "Sai Kung Waterfront Park",
+      "nameZh": "西貢海濱公園",
+      "district": "Sai Kung",
+      "category": "waterfront",
+      "lng": 114.27464489,
+      "lat": 22.38255826,
+      "description": "A public open space in Sai Kung. Find it at Wai Man Road, Sai Kung.",
+      "tags": ["西貢", "Wai Man Road, Sai Kung", "西貢惠民路", "LCSD", "康文署", "公園"],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 88,
+      "sourceUpdatedAt": "2022-01-21T07:38:35+00:00"
+    },
+    {
+      "id": "lcsd-east-coast-park-phase-1",
+      "name": "East Coast Park (Phase 1)",
+      "nameZh": "東岸公園 (第一期)",
+      "district": "Wan Chai",
+      "category": "park",
+      "lng": 114.18918445,
+      "lat": 22.28792912,
+      "description": "A public open space in Wan Chai. Find it at East Coast Park (Phase 1).",
+      "tags": ["灣仔", "East Coast Park (Phase 1)", "東岸公園 (第一期)", "LCSD", "康文署", "公園"],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 90,
+      "sourceUpdatedAt": "2021-10-05T03:17:21+00:00"
+    },
+    {
+      "id": "lcsd-jordan-valley-park",
+      "name": "Jordan Valley Park",
+      "nameZh": "佐敦谷公園",
+      "district": "Kwun Tong",
+      "category": "park",
+      "lng": 114.22180663,
+      "lat": 22.32984225,
+      "description": "A public open space in Kwun Tong. Find it at No.71, New Clear Water Bay Road.",
+      "tags": [
+        "觀塘",
+        "No.71, New Clear Water Bay Road",
+        "觀塘新清水灣道71號",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 106,
+      "sourceUpdatedAt": "2015-05-13T03:14:59+00:00"
+    },
+    {
+      "id": "lcsd-cornwall-street-park",
+      "name": "Cornwall Street Park",
+      "nameZh": "歌和老街公園",
+      "district": "Sham Shui Po",
+      "category": "park",
+      "lng": 114.17399032,
+      "lat": 22.33887904,
+      "description": "A public open space in Sham Shui Po. Find it at 17 Cornwall Street, Kowloon Tong, Kowloon.",
+      "tags": [
+        "深水埗",
+        "17 Cornwall Street, Kowloon Tong, Kowloon",
+        "九龍塘歌和老街17號",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 110,
+      "sourceUpdatedAt": "2012-08-24T02:47:28+00:00"
+    },
+    {
+      "id": "lcsd-lion-rock-park",
+      "name": "Lion Rock Park",
+      "nameZh": "獅子山公園",
+      "district": "Wong Tai Sin",
+      "category": "park",
+      "lng": 114.18384743,
+      "lat": 22.34484541,
+      "description": "A public open space in Wong Tai Sin. Find it at Chuk Yuen Road, Wong Tai Sin, Kowloon.",
+      "tags": [
+        "黃大仙",
+        "Chuk Yuen Road, Wong Tai Sin, Kowloon",
+        "九龍黃大仙竹園道",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 113,
+      "sourceUpdatedAt": "2010-12-02T04:12:57+00:00"
+    },
+    {
+      "id": "lcsd-ma-on-shan-park",
+      "name": "Ma On Shan Park",
+      "nameZh": "馬鞍山公園",
+      "district": "Sha Tin",
+      "category": "park",
+      "lng": 114.23118521,
+      "lat": 22.4272941,
+      "description": "A public open space in Sha Tin. Find it at 12 On Chun Street, Ma On Shan.",
+      "tags": [
+        "沙田",
+        "12 On Chun Street, Ma On Shan",
+        "馬鞍山鞍駿街12號",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 114,
+      "sourceUpdatedAt": "2010-10-13T06:52:50+00:00"
+    },
+    {
+      "id": "lcsd-hong-kong-zoological-botanical-gardens",
+      "name": "Hong Kong Zoological & Botanical Gardens",
+      "nameZh": "香港動植物公園",
+      "district": "Central & Western",
+      "category": "park",
+      "lng": 114.15592538,
+      "lat": 22.27768633,
+      "description": "A public open space in Central & Western. Find it at Albany Road, Central & Western.",
+      "tags": [
+        "中西區",
+        "Albany Road, Central & Western",
+        "中西區雅賓利道",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 116,
+      "sourceUpdatedAt": "2010-03-09T07:19:58+00:00"
+    },
+    {
+      "id": "lcsd-kowloon-walled-city-park",
+      "name": "Kowloon Walled City Park",
+      "nameZh": "九龍寨城公園",
+      "district": "Kowloon City",
+      "category": "park",
+      "lng": 114.18982714,
+      "lat": 22.33165589,
+      "description": "A public open space in Kowloon City. Find it at Tung Tsing Road,Kowloon City.",
+      "tags": ["九龍城", "Tung Tsing Road,Kowloon City", "九龍城東正道", "LCSD", "康文署", "公園"],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 118,
+      "sourceUpdatedAt": "2009-09-18T07:53:46+00:00"
+    },
+    {
+      "id": "lcsd-nan-lian-garden",
+      "name": "Nan Lian Garden",
+      "nameZh": "南蓮園池",
+      "district": "Wong Tai Sin",
+      "category": "park",
+      "lng": 114.20452571,
+      "lat": 22.33912956,
+      "description": "A public open space in Wong Tai Sin. Find it at Fung Tak Road, Diamond Hill, Wong Tai Sin.",
+      "tags": [
+        "黃大仙",
+        "Fung Tak Road, Diamond Hill, Wong Tai Sin",
+        "黃大仙鑽石山鳳德道60號",
+        "LCSD",
+        "康文署",
+        "公園"
+      ],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 119,
+      "sourceUpdatedAt": "2009-08-27T09:50:19+00:00"
+    },
+    {
+      "id": "lcsd-yuen-po-street-bird-garden",
+      "name": "Yuen Po Street Bird Garden",
+      "nameZh": "園圃街雀鳥花園",
+      "district": "Yau Tsim Mong",
+      "category": "park",
+      "lng": 114.17380325,
+      "lat": 22.32577476,
+      "description": "A public open space in Yau Tsim Mong. Find it at Yuen Po Street, Mongkok.",
+      "tags": ["油尖旺", "Yuen Po Street, Mongkok", "旺角園圃街", "LCSD", "康文署", "公園"],
+      "source": {
+        "name": "Leisure and Cultural Services Department",
+        "url": "https://data.gov.hk/en-data/dataset/hk-lcsd-csdi-parks-zoos-gardens"
+      },
+      "sourceObjectId": 121,
+      "sourceUpdatedAt": "2009-08-27T09:07:52+00:00"
+    }
+  ]
+}

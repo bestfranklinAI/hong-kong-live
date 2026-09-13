@@ -1,0 +1,13 @@
+# Windy weather view
+
+Weather opens with an official [Windy embed](https://embed.windy.com/config/map), centred at 22.293 N, 114.203 E. The app's Explore and Transport modes keep the existing map. HKO observations and rainfall remain available through the HKO observations button.
+
+The layer picker uses [Windy's documented overlay parameters](https://community.windy.com/topic/77/windy-com-url-parameters): wind, gusts, pressure, temperature, relative humidity, rain, new snow, snow depth, clouds, low clouds, waves, swell, wind waves and swell period. Weather radar and satellite are also offered with their corresponding products. Atmospheric forecast layers request ECMWF; marine layers request `ecmwfWaves`. Coverage and forecast availability are controlled by Windy. Snow layers are included for users who pan beyond Hong Kong.
+
+The iframe retains Windy branding, legend, timeline and interaction. The surrounding controls use the atlas design; cross-origin iframe internals cannot be restyled by this app. Changing a layer or spot-forecast setting reloads the iframe and resets its position/time to the configured Hong Kong view. Both map and detail coordinates point to Hong Kong. Units are Celsius, mm and km/h. The optional spot forecast starts collapsed to preserve map space on phones.
+
+Only one renderer is mounted at a time: the Cesium scene is unmounted while Windy is visible, and HKO rainfall polling is disabled. The small HKO header observation remains independent. Windy model forecasts are not labelled as local station observations. Windy loads directly from its host; there is no API key, server proxy or local tile cache for this integration. If the embed is blocked or unavailable, the always-visible external link and HKO button remain usable. An iframe load event does not establish weather data freshness.
+
+Radar and satellite follow the official embed URLs shown in [Windy radar discussions](https://community.windy.com/topic/32188/default-location-for-embedded-widget-location-circle) and [satellite configuration](https://community.windy.com/topic/33747/command-line). Image coverage and available timeline lengths are provided by Windy; they are not guaranteed to match every feature of its full website.
+
+Verified in the browser on 13 September 2026: wind, waves, pressure, radar and satellite rendered their own layer labels and legends over Hong Kong. The HKO switch removed the iframe and reopened the observation/rainfall panel. The responsive layout was checked at a 390 × 844 browser viewport. This is not a physical Android performance measurement. All 94 existing tests, type checking, linting, formatting and production build passed. The existing Cesium bundle-size warning remains.

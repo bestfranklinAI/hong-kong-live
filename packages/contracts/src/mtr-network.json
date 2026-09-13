@@ -1,0 +1,556 @@
+{
+  "stations": {
+    "KET": {
+      "name": "Kennedy Town",
+      "nameZh": "堅尼地城"
+    },
+    "HKU": {
+      "name": "HKU",
+      "nameZh": "香港大學"
+    },
+    "SYP": {
+      "name": "Sai Ying Pun",
+      "nameZh": "西營盤"
+    },
+    "SHW": {
+      "name": "Sheung Wan",
+      "nameZh": "上環"
+    },
+    "CEN": {
+      "name": "Central",
+      "nameZh": "中環"
+    },
+    "ADM": {
+      "name": "Admiralty",
+      "nameZh": "金鐘"
+    },
+    "WAC": {
+      "name": "Wan Chai",
+      "nameZh": "灣仔"
+    },
+    "CAB": {
+      "name": "Causeway Bay",
+      "nameZh": "銅鑼灣"
+    },
+    "TIH": {
+      "name": "Tin Hau",
+      "nameZh": "天后"
+    },
+    "FOH": {
+      "name": "Fortress Hill",
+      "nameZh": "炮台山"
+    },
+    "NOP": {
+      "name": "North Point",
+      "nameZh": "北角"
+    },
+    "QUB": {
+      "name": "Quarry Bay",
+      "nameZh": "鰂魚涌"
+    },
+    "TAK": {
+      "name": "Tai Koo",
+      "nameZh": "太古"
+    },
+    "SWH": {
+      "name": "Sai Wan Ho",
+      "nameZh": "西灣河"
+    },
+    "SKW": {
+      "name": "Shau Kei Wan",
+      "nameZh": "筲箕灣"
+    },
+    "HFC": {
+      "name": "Heng Fa Chuen",
+      "nameZh": "杏花邨"
+    },
+    "CHW": {
+      "name": "Chai Wan",
+      "nameZh": "柴灣"
+    },
+    "TST": {
+      "name": "Tsim Sha Tsui",
+      "nameZh": "尖沙咀"
+    },
+    "JOR": {
+      "name": "Jordan",
+      "nameZh": "佐敦"
+    },
+    "YMT": {
+      "name": "Yau Ma Tei",
+      "nameZh": "油麻地"
+    },
+    "MOK": {
+      "name": "Mong Kok",
+      "nameZh": "旺角"
+    },
+    "PRE": {
+      "name": "Prince Edward",
+      "nameZh": "太子"
+    },
+    "SSP": {
+      "name": "Sham Shui Po",
+      "nameZh": "深水埗"
+    },
+    "CSW": {
+      "name": "Cheung Sha Wan",
+      "nameZh": "長沙灣"
+    },
+    "LCK": {
+      "name": "Lai Chi Kok",
+      "nameZh": "茘枝角"
+    },
+    "MEF": {
+      "name": "Mei Foo",
+      "nameZh": "美孚"
+    },
+    "LAK": {
+      "name": "Lai King",
+      "nameZh": "茘景"
+    },
+    "KWF": {
+      "name": "Kwai Fong",
+      "nameZh": "葵芳"
+    },
+    "KWH": {
+      "name": "Kwai Hing",
+      "nameZh": "葵興"
+    },
+    "TWH": {
+      "name": "Tai Wo Hau",
+      "nameZh": "大窩口"
+    },
+    "TSW": {
+      "name": "Tsuen Wan",
+      "nameZh": "荃灣"
+    },
+    "WHA": {
+      "name": "Whampoa",
+      "nameZh": "黃埔"
+    },
+    "HOM": {
+      "name": "Ho Man Tin",
+      "nameZh": "何文田"
+    },
+    "SKM": {
+      "name": "Shek Kip Mei",
+      "nameZh": "石硤尾"
+    },
+    "KOT": {
+      "name": "Kowloon Tong",
+      "nameZh": "九龍塘"
+    },
+    "LOF": {
+      "name": "Lok Fu",
+      "nameZh": "樂富"
+    },
+    "WTS": {
+      "name": "Wong Tai Sin",
+      "nameZh": "黃大仙"
+    },
+    "DIH": {
+      "name": "Diamond Hill",
+      "nameZh": "鑽石山"
+    },
+    "CHH": {
+      "name": "Choi Hung",
+      "nameZh": "彩虹"
+    },
+    "KOB": {
+      "name": "Kowloon Bay",
+      "nameZh": "九龍灣"
+    },
+    "NTK": {
+      "name": "Ngau Tau Kok",
+      "nameZh": "牛頭角"
+    },
+    "KWT": {
+      "name": "Kwun Tong",
+      "nameZh": "觀塘"
+    },
+    "LAT": {
+      "name": "Lam Tin",
+      "nameZh": "藍田"
+    },
+    "YAT": {
+      "name": "Yau Tong",
+      "nameZh": "油塘"
+    },
+    "TIK": {
+      "name": "Tiu Keng Leng",
+      "nameZh": "調景嶺"
+    },
+    "TKO": {
+      "name": "Tseung Kwan O",
+      "nameZh": "將軍澳"
+    },
+    "LHP": {
+      "name": "LOHAS Park",
+      "nameZh": "康城"
+    },
+    "HAH": {
+      "name": "Hang Hau",
+      "nameZh": "坑口"
+    },
+    "POA": {
+      "name": "Po Lam",
+      "nameZh": "寶琳"
+    },
+    "EXC": {
+      "name": "Exhibition Centre",
+      "nameZh": "會展"
+    },
+    "HUH": {
+      "name": "Hung Hom",
+      "nameZh": "紅磡"
+    },
+    "MKK": {
+      "name": "Mong Kok East",
+      "nameZh": "旺角東"
+    },
+    "TAW": {
+      "name": "Tai Wai",
+      "nameZh": "大圍"
+    },
+    "SHT": {
+      "name": "Sha Tin",
+      "nameZh": "沙田"
+    },
+    "FOT": {
+      "name": "Fo Tan",
+      "nameZh": "火炭"
+    },
+    "RAC": {
+      "name": "Racecourse",
+      "nameZh": "馬場"
+    },
+    "UNI": {
+      "name": "University",
+      "nameZh": "大學"
+    },
+    "TAP": {
+      "name": "Tai Po Market",
+      "nameZh": "大埔墟"
+    },
+    "TWO": {
+      "name": "Tai Wo",
+      "nameZh": "太和"
+    },
+    "FAN": {
+      "name": "Fanling",
+      "nameZh": "粉嶺"
+    },
+    "SHS": {
+      "name": "Sheung Shui",
+      "nameZh": "上水"
+    },
+    "LOW": {
+      "name": "Lo Wu",
+      "nameZh": "羅湖"
+    },
+    "LMC": {
+      "name": "Lok Ma Chau",
+      "nameZh": "落馬洲"
+    },
+    "WKS": {
+      "name": "Wu Kai Sha",
+      "nameZh": "烏溪沙"
+    },
+    "MOS": {
+      "name": "Ma On Shan",
+      "nameZh": "馬鞍山"
+    },
+    "HEO": {
+      "name": "Heng On",
+      "nameZh": "恆安"
+    },
+    "TSH": {
+      "name": "Tai Shui Hang",
+      "nameZh": "大水坑"
+    },
+    "SHM": {
+      "name": "Shek Mun",
+      "nameZh": "石門"
+    },
+    "CIO": {
+      "name": "City One",
+      "nameZh": "第一城"
+    },
+    "STW": {
+      "name": "Sha Tin Wai",
+      "nameZh": "沙田圍"
+    },
+    "CKT": {
+      "name": "Che Kung Temple",
+      "nameZh": "車公廟"
+    },
+    "HIK": {
+      "name": "Hin Keng",
+      "nameZh": "顯徑"
+    },
+    "KAT": {
+      "name": "Kai Tak",
+      "nameZh": "啟德"
+    },
+    "SUW": {
+      "name": "Sung Wong Toi",
+      "nameZh": "宋皇臺"
+    },
+    "TKW": {
+      "name": "To Kwa Wan",
+      "nameZh": "土瓜灣"
+    },
+    "ETS": {
+      "name": "East Tsim Sha Tsui",
+      "nameZh": "尖東"
+    },
+    "AUS": {
+      "name": "Austin",
+      "nameZh": "柯士甸"
+    },
+    "NAC": {
+      "name": "Nam Cheong",
+      "nameZh": "南昌"
+    },
+    "TWW": {
+      "name": "Tsuen Wan West",
+      "nameZh": "荃灣西"
+    },
+    "KSR": {
+      "name": "Kam Sheung Road",
+      "nameZh": "錦上路"
+    },
+    "YUL": {
+      "name": "Yuen Long",
+      "nameZh": "元朗"
+    },
+    "LOP": {
+      "name": "Long Ping",
+      "nameZh": "朗屏"
+    },
+    "TIS": {
+      "name": "Tin Shui Wai",
+      "nameZh": "天水圍"
+    },
+    "SIH": {
+      "name": "Siu Hong",
+      "nameZh": "兆康"
+    },
+    "TUM": {
+      "name": "Tuen Mun",
+      "nameZh": "屯門"
+    },
+    "OCP": {
+      "name": "Ocean Park",
+      "nameZh": "海洋公園"
+    },
+    "WCH": {
+      "name": "Wong Chuk Hang",
+      "nameZh": "黃竹坑"
+    },
+    "LET": {
+      "name": "Lei Tung",
+      "nameZh": "利東"
+    },
+    "SOH": {
+      "name": "South Horizons",
+      "nameZh": "海怡半島"
+    },
+    "HOK": {
+      "name": "Hong Kong",
+      "nameZh": "香港"
+    },
+    "KOW": {
+      "name": "Kowloon",
+      "nameZh": "九龍"
+    },
+    "OLY": {
+      "name": "Olympic",
+      "nameZh": "奧運"
+    },
+    "TSY": {
+      "name": "Tsing Yi",
+      "nameZh": "青衣"
+    },
+    "SUN": {
+      "name": "Sunny Bay",
+      "nameZh": "欣澳"
+    },
+    "TUC": {
+      "name": "Tung Chung",
+      "nameZh": "東涌"
+    },
+    "AIR": {
+      "name": "Airport",
+      "nameZh": "機場"
+    },
+    "AWE": {
+      "name": "AsiaWorld-Expo",
+      "nameZh": "博覽館"
+    },
+    "DIS": {
+      "name": "Disneyland Resort",
+      "nameZh": "迪士尼"
+    }
+  },
+  "lines": [
+    {
+      "code": "ISL",
+      "name": "Island Line",
+      "color": "#147bc1",
+      "stations": [
+        "KET",
+        "HKU",
+        "SYP",
+        "SHW",
+        "CEN",
+        "ADM",
+        "WAC",
+        "CAB",
+        "TIH",
+        "FOH",
+        "NOP",
+        "QUB",
+        "TAK",
+        "SWH",
+        "SKW",
+        "HFC",
+        "CHW"
+      ]
+    },
+    {
+      "code": "TWL",
+      "name": "Tsuen Wan Line",
+      "color": "#d33135",
+      "stations": [
+        "CEN",
+        "ADM",
+        "TST",
+        "JOR",
+        "YMT",
+        "MOK",
+        "PRE",
+        "SSP",
+        "CSW",
+        "LCK",
+        "MEF",
+        "LAK",
+        "KWF",
+        "KWH",
+        "TWH",
+        "TSW"
+      ]
+    },
+    {
+      "code": "KTL",
+      "name": "Kwun Tong Line",
+      "color": "#39844a",
+      "stations": [
+        "WHA",
+        "HOM",
+        "YMT",
+        "MOK",
+        "PRE",
+        "SKM",
+        "KOT",
+        "LOF",
+        "WTS",
+        "DIH",
+        "CHH",
+        "KOB",
+        "NTK",
+        "KWT",
+        "LAT",
+        "YAT",
+        "TIK"
+      ]
+    },
+    {
+      "code": "TKL",
+      "name": "Tseung Kwan O Line",
+      "color": "#855293",
+      "stations": ["NOP", "QUB", "YAT", "TIK", "TKO", "LHP", "HAH", "POA"]
+    },
+    {
+      "code": "EAL",
+      "name": "East Rail Line",
+      "color": "#4194bd",
+      "stations": [
+        "ADM",
+        "EXC",
+        "HUH",
+        "MKK",
+        "KOT",
+        "TAW",
+        "SHT",
+        "FOT",
+        "RAC",
+        "UNI",
+        "TAP",
+        "TWO",
+        "FAN",
+        "SHS",
+        "LOW",
+        "LMC"
+      ]
+    },
+    {
+      "code": "TML",
+      "name": "Tuen Ma Line",
+      "color": "#925c31",
+      "stations": [
+        "WKS",
+        "MOS",
+        "HEO",
+        "TSH",
+        "SHM",
+        "CIO",
+        "STW",
+        "CKT",
+        "TAW",
+        "HIK",
+        "DIH",
+        "KAT",
+        "SUW",
+        "TKW",
+        "HOM",
+        "HUH",
+        "ETS",
+        "AUS",
+        "NAC",
+        "MEF",
+        "TWW",
+        "KSR",
+        "YUL",
+        "LOP",
+        "TIS",
+        "SIH",
+        "TUM"
+      ]
+    },
+    {
+      "code": "SIL",
+      "name": "South Island Line",
+      "color": "#909c28",
+      "stations": ["ADM", "OCP", "WCH", "LET", "SOH"]
+    },
+    {
+      "code": "TCL",
+      "name": "Tung Chung Line",
+      "color": "#cc8626",
+      "stations": ["HOK", "KOW", "OLY", "NAC", "LAK", "TSY", "SUN", "TUC"]
+    },
+    {
+      "code": "AEL",
+      "name": "Airport Express",
+      "color": "#25867e",
+      "stations": ["HOK", "KOW", "TSY", "AIR", "AWE"]
+    },
+    {
+      "code": "DRL",
+      "name": "Disneyland Resort Line",
+      "color": "#b25d8c",
+      "stations": ["SUN", "DIS"]
+    }
+  ]
+}

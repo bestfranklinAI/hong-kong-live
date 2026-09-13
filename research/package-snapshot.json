@@ -1,0 +1,67 @@
+{
+  "checked_date": "2026-09-13",
+  "note": "Read-only npm registry latest metadata; no dependency installation, peer-resolution or integration tests performed. Versions are research candidates, not an approved lockfile.",
+  "packages": [
+    {
+      "package": "react",
+      "version": "19.3.0",
+      "engines": {
+        "node": ">=0.10.0"
+      },
+      "registry_url": "https://registry.npmjs.org/react/latest"
+    },
+    {
+      "package": "vite",
+      "version": "8.3.0",
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      },
+      "registry_url": "https://registry.npmjs.org/vite/latest"
+    },
+    {
+      "package": "cesium",
+      "version": "1.145.0",
+      "engines": {
+        "node": ">=22.0.0"
+      },
+      "registry_url": "https://registry.npmjs.org/cesium/latest"
+    },
+    {
+      "package": "maplibre-gl",
+      "version": "6.9.0",
+      "engines": {
+        "npm": ">=8.1.0",
+        "node": ">=16.14.0"
+      },
+      "registry_url": "https://registry.npmjs.org/maplibre-gl/latest"
+    },
+    {
+      "package": "@deck.gl/core",
+      "version": "9.4.0",
+      "engines": {},
+      "registry_url": "https://registry.npmjs.org/%40deck.gl%2Fcore/latest"
+    },
+    {
+      "package": "three",
+      "version": "0.186.0",
+      "engines": {},
+      "registry_url": "https://registry.npmjs.org/three/latest"
+    },
+    {
+      "package": "hono",
+      "version": "4.13.7",
+      "engines": {
+        "node": ">=16.9.0"
+      },
+      "registry_url": "https://registry.npmjs.org/hono/latest"
+    },
+    {
+      "package": "svelte",
+      "version": "5.57.0",
+      "engines": {
+        "node": ">=18"
+      },
+      "registry_url": "https://registry.npmjs.org/svelte/latest"
+    }
+  ]
+}

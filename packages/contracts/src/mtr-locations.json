@@ -1,0 +1,792 @@
+{
+  "sourceUrl": "https://www.map.gov.hk/gs/api/v1.0.0/locationSearch",
+  "retrievedAt": "2026-09-13T09:58:15.959835+00:00",
+  "sourceCrs": "EPSG:2326",
+  "outputCrs": "EPSG:4326",
+  "stations": {
+    "KET": {
+      "lng": 114.128397,
+      "lat": 22.281211,
+      "sourceName": "MTR Kennedy Town Station",
+      "sourceNameZh": "港鐵堅尼地城站",
+      "easting": 831272.0,
+      "northing": 815816.0
+    },
+    "HKU": {
+      "lng": 114.135557,
+      "lat": 22.284049,
+      "sourceName": "MTR HKU Station",
+      "sourceNameZh": "港鐵香港大學站",
+      "easting": 832010.0,
+      "northing": 816130.0
+    },
+    "SYP": {
+      "lng": 114.142698,
+      "lat": 22.285514,
+      "sourceName": "MTR Sai Ying Pun Station",
+      "sourceNameZh": "港鐵西營盤站",
+      "easting": 832746.0,
+      "northing": 816292.0
+    },
+    "SHW": {
+      "lng": 114.152013,
+      "lat": 22.286599,
+      "sourceName": "MTR Sheung Wan Station",
+      "sourceNameZh": "港鐵上環站",
+      "easting": 833706.0,
+      "northing": 816412.0
+    },
+    "CEN": {
+      "lng": 114.157681,
+      "lat": 22.282148,
+      "sourceName": "MTR Central Station",
+      "sourceNameZh": "港鐵中環站",
+      "easting": 834290.0,
+      "northing": 815919.0
+    },
+    "ADM": {
+      "lng": 114.164348,
+      "lat": 22.279421,
+      "sourceName": "MTR Admiralty Station",
+      "sourceNameZh": "港鐵金鐘站",
+      "easting": 834977.0,
+      "northing": 815617.0
+    },
+    "WAC": {
+      "lng": 114.172634,
+      "lat": 22.277552,
+      "sourceName": "MTR Wan Chai Station",
+      "sourceNameZh": "港鐵灣仔站",
+      "easting": 835831.0,
+      "northing": 815410.0
+    },
+    "CAB": {
+      "lng": 114.184239,
+      "lat": 22.280189,
+      "sourceName": "MTR Causeway Bay Station",
+      "sourceNameZh": "港鐵銅鑼灣站",
+      "easting": 837027.0,
+      "northing": 815702.0
+    },
+    "TIH": {
+      "lng": 114.191847,
+      "lat": 22.282238,
+      "sourceName": "MTR Tin Hau Station",
+      "sourceNameZh": "港鐵天后站",
+      "easting": 837811.0,
+      "northing": 815929.0
+    },
+    "FOH": {
+      "lng": 114.193594,
+      "lat": 22.287909,
+      "sourceName": "MTR Fortress Hill Station",
+      "sourceNameZh": "港鐵炮台山站",
+      "easting": 837991.0,
+      "northing": 816557.0
+    },
+    "NOP": {
+      "lng": 114.200387,
+      "lat": 22.291178,
+      "sourceName": "MTR North Point Station",
+      "sourceNameZh": "港鐵北角站",
+      "easting": 838691.0,
+      "northing": 816919.0
+    },
+    "QUB": {
+      "lng": 114.208703,
+      "lat": 22.288566,
+      "sourceName": "MTR Quarry Bay Station",
+      "sourceNameZh": "港鐵鰂魚涌站",
+      "easting": 839548.0,
+      "northing": 816630.0
+    },
+    "TAK": {
+      "lng": 114.216484,
+      "lat": 22.284654,
+      "sourceName": "MTR Tai Koo Station",
+      "sourceNameZh": "港鐵太古站",
+      "easting": 840350.0,
+      "northing": 816197.0
+    },
+    "SWH": {
+      "lng": 114.22182,
+      "lat": 22.282179,
+      "sourceName": "MTR Sai Wan Ho Station",
+      "sourceNameZh": "港鐵西灣河站",
+      "easting": 840900.0,
+      "northing": 815923.0
+    },
+    "SKW": {
+      "lng": 114.228951,
+      "lat": 22.279233,
+      "sourceName": "MTR Shau Kei Wan Station",
+      "sourceNameZh": "港鐵筲箕灣站",
+      "easting": 841635.0,
+      "northing": 815597.0
+    },
+    "HFC": {
+      "lng": 114.239711,
+      "lat": 22.276637,
+      "sourceName": "MTR Heng Fa Chuen Station",
+      "sourceNameZh": "港鐵杏花邨站",
+      "easting": 842744.0,
+      "northing": 815310.0
+    },
+    "CHW": {
+      "lng": 114.237105,
+      "lat": 22.264582,
+      "sourceName": "MTR Chai Wan Station",
+      "sourceNameZh": "港鐵柴灣站",
+      "easting": 842476.0,
+      "northing": 813975.0
+    },
+    "TST": {
+      "lng": 114.172177,
+      "lat": 22.297699,
+      "sourceName": "MTR Tsim Sha Tsui Station",
+      "sourceNameZh": "港鐵尖沙咀站",
+      "easting": 835784.0,
+      "northing": 817641.0
+    },
+    "JOR": {
+      "lng": 114.171653,
+      "lat": 22.304807,
+      "sourceName": "MTR Jordan Station",
+      "sourceNameZh": "港鐵佐敦站",
+      "easting": 835730.0,
+      "northing": 818428.0
+    },
+    "YMT": {
+      "lng": 114.170663,
+      "lat": 22.312835,
+      "sourceName": "MTR Yau Ma Tei Station",
+      "sourceNameZh": "港鐵油麻地站",
+      "easting": 835628.0,
+      "northing": 819317.0
+    },
+    "MOK": {
+      "lng": 114.169352,
+      "lat": 22.319301,
+      "sourceName": "MTR Mong Kok Station",
+      "sourceNameZh": "港鐵旺角站",
+      "easting": 835493.0,
+      "northing": 820033.0
+    },
+    "PRE": {
+      "lng": 114.168284,
+      "lat": 22.324412,
+      "sourceName": "MTR Prince Edward Station",
+      "sourceNameZh": "港鐵太子站",
+      "easting": 835383.0,
+      "northing": 820599.0
+    },
+    "SSP": {
+      "lng": 114.16212,
+      "lat": 22.330886,
+      "sourceName": "MTR Sham Shui Po Station",
+      "sourceNameZh": "港鐵深水埗站",
+      "easting": 834748.0,
+      "northing": 821316.0
+    },
+    "CSW": {
+      "lng": 114.156053,
+      "lat": 22.335545,
+      "sourceName": "MTR Cheung Sha Wan Station",
+      "sourceNameZh": "港鐵長沙灣站",
+      "easting": 834123.0,
+      "northing": 821832.0
+    },
+    "LCK": {
+      "lng": 114.147957,
+      "lat": 22.337251,
+      "sourceName": "MTR Lai Chi Kok Station",
+      "sourceNameZh": "港鐵荔枝角站",
+      "easting": 833289.0,
+      "northing": 822021.0
+    },
+    "MEF": {
+      "lng": 114.136385,
+      "lat": 22.337935,
+      "sourceName": "MTR Mei Foo Station",
+      "sourceNameZh": "港鐵美孚站",
+      "easting": 832097.0,
+      "northing": 822097.0
+    },
+    "LAK": {
+      "lng": 114.126189,
+      "lat": 22.348344,
+      "sourceName": "MTR Lai King Station",
+      "sourceNameZh": "港鐵荔景站",
+      "easting": 831047.0,
+      "northing": 823250.0
+    },
+    "KWF": {
+      "lng": 114.127788,
+      "lat": 22.356797,
+      "sourceName": "MTR Kwai Fong Station",
+      "sourceNameZh": "港鐵葵芳站",
+      "easting": 831212.0,
+      "northing": 824186.0
+    },
+    "KWH": {
+      "lng": 114.131223,
+      "lat": 22.363075,
+      "sourceName": "MTR Kwai Hing Station",
+      "sourceNameZh": "港鐵葵興站",
+      "easting": 831566.0,
+      "northing": 824881.0
+    },
+    "TWH": {
+      "lng": 114.125006,
+      "lat": 22.370758,
+      "sourceName": "MTR Tai Wo Hau Station",
+      "sourceNameZh": "港鐵大窩口站",
+      "easting": 830926.0,
+      "northing": 825732.0
+    },
+    "TSW": {
+      "lng": 114.118082,
+      "lat": 22.373519,
+      "sourceName": "MTR Tsuen Wan Station",
+      "sourceNameZh": "港鐵荃灣站",
+      "easting": 830213.0,
+      "northing": 826038.0
+    },
+    "WHA": {
+      "lng": 114.18983,
+      "lat": 22.304806,
+      "sourceName": "MTR Whampoa Station",
+      "sourceNameZh": "港鐵黃埔站",
+      "easting": 837603.0,
+      "northing": 818428.0
+    },
+    "HOM": {
+      "lng": 114.182591,
+      "lat": 22.309385,
+      "sourceName": "MTR Ho Man Tin Station",
+      "sourceNameZh": "港鐵何文田站",
+      "easting": 836857.0,
+      "northing": 818935.0
+    },
+    "SKM": {
+      "lng": 114.168818,
+      "lat": 22.33179,
+      "sourceName": "MTR Shek Kip Mei Station",
+      "sourceNameZh": "港鐵石硤尾站",
+      "easting": 835438.0,
+      "northing": 821416.0
+    },
+    "KOT": {
+      "lng": 114.175777,
+      "lat": 22.337118,
+      "sourceName": "MTR Kowloon Tong Station",
+      "sourceNameZh": "港鐵九龍塘站",
+      "easting": 836155.0,
+      "northing": 822006.0
+    },
+    "LOF": {
+      "lng": 114.187028,
+      "lat": 22.338012,
+      "sourceName": "MTR Lok Fu Station",
+      "sourceNameZh": "港鐵樂富站",
+      "easting": 837314.0,
+      "northing": 822105.0
+    },
+    "WTS": {
+      "lng": 114.193872,
+      "lat": 22.341678,
+      "sourceName": "MTR Wong Tai Sin Station",
+      "sourceNameZh": "港鐵黃大仙站",
+      "easting": 838019.0,
+      "northing": 822511.0
+    },
+    "DIH": {
+      "lng": 114.201648,
+      "lat": 22.340033,
+      "sourceName": "MTR Diamond Hill Station",
+      "sourceNameZh": "港鐵鑽石山站",
+      "easting": 838820.0,
+      "northing": 822329.0
+    },
+    "CHH": {
+      "lng": 114.209044,
+      "lat": 22.334966,
+      "sourceName": "MTR Choi Hung Station",
+      "sourceNameZh": "港鐵彩虹站",
+      "easting": 839582.0,
+      "northing": 821768.0
+    },
+    "KOB": {
+      "lng": 114.214001,
+      "lat": 22.32346,
+      "sourceName": "MTR Kowloon Bay Station",
+      "sourceNameZh": "港鐵九龍灣站",
+      "easting": 840093.0,
+      "northing": 820494.0
+    },
+    "NTK": {
+      "lng": 114.218978,
+      "lat": 22.315502,
+      "sourceName": "MTR Ngau Tau Kok Station",
+      "sourceNameZh": "港鐵牛頭角站",
+      "easting": 840606.0,
+      "northing": 819613.0
+    },
+    "KWT": {
+      "lng": 114.226498,
+      "lat": 22.312087,
+      "sourceName": "MTR Kwun Tong Station",
+      "sourceNameZh": "港鐵觀塘站",
+      "easting": 841381.0,
+      "northing": 819235.0
+    },
+    "LAT": {
+      "lng": 114.232737,
+      "lat": 22.306829,
+      "sourceName": "MTR Lam Tin Station",
+      "sourceNameZh": "港鐵藍田站",
+      "easting": 842024.0,
+      "northing": 818653.0
+    },
+    "YAT": {
+      "lng": 114.237003,
+      "lat": 22.298004,
+      "sourceName": "MTR Yau Tong Station",
+      "sourceNameZh": "港鐵油塘站",
+      "easting": 842464.0,
+      "northing": 817676.0
+    },
+    "TIK": {
+      "lng": 114.252641,
+      "lat": 22.304256,
+      "sourceName": "MTR Tiu Keng Leng Station",
+      "sourceNameZh": "港鐵調景嶺站",
+      "easting": 844075.0,
+      "northing": 818369.0
+    },
+    "TKO": {
+      "lng": 114.260009,
+      "lat": 22.30744,
+      "sourceName": "MTR Tseung Kwan O Station",
+      "sourceNameZh": "港鐵將軍澳站",
+      "easting": 844834.0,
+      "northing": 818722.0
+    },
+    "LHP": {
+      "lng": 114.268726,
+      "lat": 22.295587,
+      "sourceName": "MTR LOHAS Park Station",
+      "sourceNameZh": "港鐵康城站",
+      "easting": 845733.0,
+      "northing": 817410.0
+    },
+    "HAH": {
+      "lng": 114.264313,
+      "lat": 22.315737,
+      "sourceName": "MTR Hang Hau Station",
+      "sourceNameZh": "港鐵坑口站",
+      "easting": 845277.0,
+      "northing": 819641.0
+    },
+    "POA": {
+      "lng": 114.257872,
+      "lat": 22.322559,
+      "sourceName": "MTR Po Lam Station",
+      "sourceNameZh": "港鐵寶琳站",
+      "easting": 844613.0,
+      "northing": 820396.0
+    },
+    "EXC": {
+      "lng": 114.175312,
+      "lat": 22.281652,
+      "sourceName": "MTR Exhibition Centre Station",
+      "sourceNameZh": "港鐵會展站",
+      "easting": 836107.0,
+      "northing": 815864.0
+    },
+    "HUH": {
+      "lng": 114.182183,
+      "lat": 22.302991,
+      "sourceName": "MTR Hung Hom Station",
+      "sourceNameZh": "港鐵紅磡站",
+      "easting": 836815.0,
+      "northing": 818227.0
+    },
+    "MKK": {
+      "lng": 114.172594,
+      "lat": 22.322019,
+      "sourceName": "MTR Mong Kok East Station",
+      "sourceNameZh": "港鐵旺角東站",
+      "easting": 835827.0,
+      "northing": 820334.0
+    },
+    "TAW": {
+      "lng": 114.17869,
+      "lat": 22.372762,
+      "sourceName": "MTR Tai Wai Station",
+      "sourceNameZh": "港鐵大圍站",
+      "easting": 836455.0,
+      "northing": 825953.0
+    },
+    "SHT": {
+      "lng": 114.186915,
+      "lat": 22.382126,
+      "sourceName": "MTR Sha Tin Station",
+      "sourceNameZh": "港鐵沙田站",
+      "easting": 837302.0,
+      "northing": 826990.0
+    },
+    "FOT": {
+      "lng": 114.198501,
+      "lat": 22.395824,
+      "sourceName": "MTR Fo Tan Station",
+      "sourceNameZh": "港鐵火炭站",
+      "easting": 838495.0,
+      "northing": 828507.0
+    },
+    "RAC": {
+      "lng": 114.202775,
+      "lat": 22.400194,
+      "sourceName": "MTR Racecourse Station",
+      "sourceNameZh": "港鐵馬場站",
+      "easting": 838935.0,
+      "northing": 828991.0
+    },
+    "UNI": {
+      "lng": 114.210043,
+      "lat": 22.413657,
+      "sourceName": "MTR University Station",
+      "sourceNameZh": "港鐵大學站",
+      "easting": 839683.0,
+      "northing": 830482.0
+    },
+    "TAP": {
+      "lng": 114.170395,
+      "lat": 22.444581,
+      "sourceName": "MTR Tai Po Market Station",
+      "sourceNameZh": "港鐵大埔墟站",
+      "easting": 835601.0,
+      "northing": 833906.0
+    },
+    "TWO": {
+      "lng": 114.161184,
+      "lat": 22.451073,
+      "sourceName": "MTR Tai Wo Station",
+      "sourceNameZh": "港鐵太和站",
+      "easting": 834653.0,
+      "northing": 834625.0
+    },
+    "FAN": {
+      "lng": 114.138673,
+      "lat": 22.492104,
+      "sourceName": "MTR Fanling Station",
+      "sourceNameZh": "港鐵粉嶺站",
+      "easting": 832337.0,
+      "northing": 839169.0
+    },
+    "SHS": {
+      "lng": 114.127533,
+      "lat": 22.501619,
+      "sourceName": "MTR Sheung Shui Station",
+      "sourceNameZh": "港鐵上水站",
+      "easting": 831191.0,
+      "northing": 840223.0
+    },
+    "LOW": {
+      "lng": 114.113235,
+      "lat": 22.527639,
+      "sourceName": "MTR Lo Wu Station",
+      "sourceNameZh": "港鐵羅湖站",
+      "easting": 829721.0,
+      "northing": 843105.0
+    },
+    "LMC": {
+      "lng": 114.065693,
+      "lat": 22.514465,
+      "sourceName": "MTR Lok Ma Chau Station",
+      "sourceNameZh": "港鐵落馬洲站",
+      "easting": 824829.0,
+      "northing": 841649.0
+    },
+    "WKS": {
+      "lng": 114.24385,
+      "lat": 22.429152,
+      "sourceName": "MTR Wu Kai Sha Station",
+      "sourceNameZh": "港鐵烏溪沙站",
+      "easting": 843163.0,
+      "northing": 832199.0
+    },
+    "MOS": {
+      "lng": 114.231978,
+      "lat": 22.424912,
+      "sourceName": "MTR Ma On Shan Station",
+      "sourceNameZh": "港鐵馬鞍山站",
+      "easting": 841941.0,
+      "northing": 831729.0
+    },
+    "HEO": {
+      "lng": 114.225875,
+      "lat": 22.417862,
+      "sourceName": "MTR Heng On Station",
+      "sourceNameZh": "港鐵恆安站",
+      "easting": 841313.0,
+      "northing": 830948.0
+    },
+    "TSH": {
+      "lng": 114.222599,
+      "lat": 22.408191,
+      "sourceName": "MTR Tai Shui Hang Station",
+      "sourceNameZh": "港鐵大水坑站",
+      "easting": 840976.0,
+      "northing": 829877.0
+    },
+    "SHM": {
+      "lng": 114.208522,
+      "lat": 22.387876,
+      "sourceName": "MTR Shek Mun Station",
+      "sourceNameZh": "港鐵石門站",
+      "easting": 839527.0,
+      "northing": 827627.0
+    },
+    "CIO": {
+      "lng": 114.203626,
+      "lat": 22.382964,
+      "sourceName": "MTR City One Station",
+      "sourceNameZh": "港鐵第一城站",
+      "easting": 839023.0,
+      "northing": 827083.0
+    },
+    "STW": {
+      "lng": 114.194809,
+      "lat": 22.376915,
+      "sourceName": "MTR Sha Tin Wai Station",
+      "sourceNameZh": "港鐵沙田圍站",
+      "easting": 838115.0,
+      "northing": 826413.0
+    },
+    "CKT": {
+      "lng": 114.185885,
+      "lat": 22.374766,
+      "sourceName": "MTR Che Kung Temple Station",
+      "sourceNameZh": "港鐵車公廟站",
+      "easting": 837196.0,
+      "northing": 826175.0
+    },
+    "HIK": {
+      "lng": 114.170738,
+      "lat": 22.363722,
+      "sourceName": "MTR Hin Keng Station",
+      "sourceNameZh": "港鐵顯徑站",
+      "easting": 835636.0,
+      "northing": 824952.0
+    },
+    "KAT": {
+      "lng": 114.199345,
+      "lat": 22.330416,
+      "sourceName": "MTR Kai Tak Station",
+      "sourceNameZh": "港鐵啟德站",
+      "easting": 838583.0,
+      "northing": 821264.0
+    },
+    "SUW": {
+      "lng": 114.190609,
+      "lat": 22.325622,
+      "sourceName": "MTR Sung Wong Toi Station",
+      "sourceNameZh": "港鐵宋皇臺站",
+      "easting": 837683.0,
+      "northing": 820733.0
+    },
+    "TKW": {
+      "lng": 114.187619,
+      "lat": 22.31791,
+      "sourceName": "MTR To Kwa Wan Station",
+      "sourceNameZh": "港鐵土瓜灣站",
+      "easting": 837375.0,
+      "northing": 819879.0
+    },
+    "ETS": {
+      "lng": 114.174652,
+      "lat": 22.295306,
+      "sourceName": "MTR East Tsim Sha Tsui Station",
+      "sourceNameZh": "港鐵尖東站",
+      "easting": 836039.0,
+      "northing": 817376.0
+    },
+    "AUS": {
+      "lng": 114.166315,
+      "lat": 22.304915,
+      "sourceName": "MTR Austin Station",
+      "sourceNameZh": "港鐵柯士甸站",
+      "easting": 835180.0,
+      "northing": 818440.0
+    },
+    "NAC": {
+      "lng": 114.153501,
+      "lat": 22.326885,
+      "sourceName": "MTR Nam Cheong Station",
+      "sourceNameZh": "港鐵南昌站",
+      "easting": 833860.0,
+      "northing": 820873.0
+    },
+    "TWW": {
+      "lng": 114.109656,
+      "lat": 22.368386,
+      "sourceName": "MTR Tsuen Wan West Station",
+      "sourceNameZh": "港鐵荃灣西站",
+      "easting": 829345.0,
+      "northing": 825470.0
+    },
+    "KSR": {
+      "lng": 114.063182,
+      "lat": 22.435131,
+      "sourceName": "MTR Kam Sheung Road Station",
+      "sourceNameZh": "港鐵錦上路站",
+      "easting": 824564.0,
+      "northing": 832864.0
+    },
+    "YUL": {
+      "lng": 114.035165,
+      "lat": 22.446072,
+      "sourceName": "MTR Yuen Long Station",
+      "sourceNameZh": "港鐵元朗站",
+      "easting": 821681.0,
+      "northing": 834078.0
+    },
+    "LOP": {
+      "lng": 114.025449,
+      "lat": 22.447626,
+      "sourceName": "MTR Long Ping Station",
+      "sourceNameZh": "港鐵朗屏站",
+      "easting": 820681.0,
+      "northing": 834251.0
+    },
+    "TIS": {
+      "lng": 114.004474,
+      "lat": 22.447885,
+      "sourceName": "MTR Tin Shui Wai Station",
+      "sourceNameZh": "港鐵天水圍站",
+      "easting": 818522.0,
+      "northing": 834282.0
+    },
+    "SIH": {
+      "lng": 113.978801,
+      "lat": 22.411526,
+      "sourceName": "MTR Siu Hong Station",
+      "sourceNameZh": "港鐵兆康站",
+      "easting": 815874.0,
+      "northing": 830259.0
+    },
+    "TUM": {
+      "lng": 113.973192,
+      "lat": 22.39511,
+      "sourceName": "MTR Tuen Mun Station",
+      "sourceNameZh": "港鐵屯門站",
+      "easting": 815294.0,
+      "northing": 828442.0
+    },
+    "OCP": {
+      "lng": 114.174323,
+      "lat": 22.248699,
+      "sourceName": "MTR Ocean Park Station",
+      "sourceNameZh": "港鐵海洋公園站",
+      "easting": 836005.0,
+      "northing": 812215.0
+    },
+    "WCH": {
+      "lng": 114.167988,
+      "lat": 22.247977,
+      "sourceName": "MTR Wong Chuk Hang Station",
+      "sourceNameZh": "港鐵黃竹坑站",
+      "easting": 835352.0,
+      "northing": 812135.0
+    },
+    "LET": {
+      "lng": 114.155999,
+      "lat": 22.241844,
+      "sourceName": "MTR Lei Tung Station",
+      "sourceNameZh": "港鐵利東站",
+      "easting": 834116.0,
+      "northing": 811456.0
+    },
+    "SOH": {
+      "lng": 114.148839,
+      "lat": 22.242845,
+      "sourceName": "MTR South Horizons Station",
+      "sourceNameZh": "港鐵海怡半島站",
+      "easting": 833378.0,
+      "northing": 811567.0
+    },
+    "HOK": {
+      "lng": 114.158224,
+      "lat": 22.284667,
+      "sourceName": "MTR Hong Kong Station",
+      "sourceNameZh": "港鐵香港站",
+      "easting": 834346.0,
+      "northing": 816198.0
+    },
+    "KOW": {
+      "lng": 114.161444,
+      "lat": 22.304255,
+      "sourceName": "MTR Kowloon Station",
+      "sourceNameZh": "港鐵九龍站",
+      "easting": 834678.0,
+      "northing": 818367.0
+    },
+    "OLY": {
+      "lng": 114.160248,
+      "lat": 22.317792,
+      "sourceName": "MTR Olympic Station",
+      "sourceNameZh": "港鐵奧運站",
+      "easting": 834555.0,
+      "northing": 819866.0
+    },
+    "TSY": {
+      "lng": 114.107283,
+      "lat": 22.358397,
+      "sourceName": "MTR Tsing Yi Station",
+      "sourceNameZh": "港鐵青衣站",
+      "easting": 829100.0,
+      "northing": 824364.0
+    },
+    "SUN": {
+      "lng": 114.029039,
+      "lat": 22.332111,
+      "sourceName": "MTR Sunny Bay Station",
+      "sourceNameZh": "港鐵欣澳站",
+      "easting": 821038.0,
+      "northing": 821459.0
+    },
+    "TUC": {
+      "lng": 113.941274,
+      "lat": 22.289175,
+      "sourceName": "MTR Tung Chung Station",
+      "sourceNameZh": "港鐵東涌站",
+      "easting": 811989.0,
+      "northing": 816716.0
+    },
+    "AIR": {
+      "lng": 113.936483,
+      "lat": 22.315917,
+      "sourceName": "MTR Airport Station",
+      "sourceNameZh": "港鐵機場站",
+      "easting": 811500.0,
+      "northing": 819678.0
+    },
+    "AWE": {
+      "lng": 113.941229,
+      "lat": 22.321748,
+      "sourceName": "MTR AsiaWorld-Expo Station",
+      "sourceNameZh": "港鐵博覽館站",
+      "easting": 811990.0,
+      "northing": 820323.0
+    },
+    "DIS": {
+      "lng": 114.044848,
+      "lat": 22.31549,
+      "sourceName": "MTR Disneyland Resort Station",
+      "sourceNameZh": "港鐵迪士尼站",
+      "easting": 822665.0,
+      "northing": 819617.0
+    }
+  }
+}
