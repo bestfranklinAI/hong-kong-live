@@ -1,6 +1,8 @@
 # Hong Kong Live
 
-A map-led Hong Kong explorer built with React, Cesium and a small Hono API. This repository starts the approved implementation plan with a working exploration slice; it is not the complete public beta.
+![UI.png](UI.png)
+
+Hong Kong Live is an open source platform focused on rich three dimensional spatial visualization, pedestrian network exploration, and real time urban data integration. The project combines Hong Kong open spatial datasets with interactive mapping tools to help users explore walkability, multi level pedestrian connectivity, and surrounding urban topography. 
 
 ## Start locally
 
@@ -113,8 +115,3 @@ The first request may wait for the source CSV (45-second timeout). Later users s
 Traffic camera source behavior and verification are recorded in [camera notes](docs/verification/cameras.md).
 
 MTR line/station coverage, source provenance and remaining map-position limits are documented in [MTR notes](docs/data/mtr.md).
-
-## Oracle VM hosting
-
-The preview also accepts http://franklin.seagull-tet.ts.net:4173.
-For persistent hosting, follow the [Ubuntu VM + Tailscale walkthrough](docs/deployment/oracle-tailscale.md), using the included Nginx and systemd templates.
