@@ -74,6 +74,6 @@ for name in names:
         'sourceUpdatedAt': datetime.fromtimestamp(row['LASTUPDATE'] / 1000, timezone.utc).isoformat(),
     })
 output = {'sourceUrl': source_url, 'preparedAt': datetime.now(timezone.utc).isoformat(), 'places': places}
-target = Path(__file__).resolve().parents[1] / 'apps/web/src/features/explore/parks.json'
+target = Path(__file__).resolve().parents[1] / 'packages/contracts/src/parks.json'
 target.write_text(json.dumps(output, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(places)} places across {len(set(p["district"] for p in places))} districts')

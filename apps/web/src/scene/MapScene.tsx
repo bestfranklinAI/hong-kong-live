@@ -10,6 +10,8 @@ export default function MapScene(props: MapSceneProps) {
   const credits = useRef<HTMLDivElement>(null);
   const controller = useRef<SceneController | null>(null);
   const callbacks = useRef({
+    onFacilitySelect: props.onFacilitySelect,
+    onSearchPinSelect: props.onSearchPinSelect,
     onRotationChange: props.onRotationChange,
     onTrainSelect: props.onTrainSelect,
     onSelect: props.onSelect,
@@ -24,6 +26,8 @@ export default function MapScene(props: MapSceneProps) {
 
   useEffect(() => {
     callbacks.current = {
+      onFacilitySelect: props.onFacilitySelect,
+      onSearchPinSelect: props.onSearchPinSelect,
       onRotationChange: props.onRotationChange,
       onTrainSelect: props.onTrainSelect,
       onSelect: props.onSelect,
@@ -34,6 +38,8 @@ export default function MapScene(props: MapSceneProps) {
       onBusAreaSelect: props.onBusAreaSelect,
     };
   }, [
+    props.onFacilitySelect,
+    props.onSearchPinSelect,
     props.onRotationChange,
     props.onTrainSelect,
     props.onSelect,
@@ -48,7 +54,9 @@ export default function MapScene(props: MapSceneProps) {
     if (!host.current || !credits.current) return;
     try {
       controller.current = new SceneController(host.current, {
+        onFacilitySelect: (row) => callbacks.current.onFacilitySelect?.(row),
         creditContainer: credits.current,
+        onSearchPinSelect: () => callbacks.current.onSearchPinSelect?.(),
         onRotationChange: (rotated) => callbacks.current.onRotationChange?.(rotated),
         performanceOutput: performanceOutput.current ?? undefined,
         onCameraSelect: (camera) => callbacks.current.onCameraSelect?.(camera),
@@ -119,6 +127,13 @@ export default function MapScene(props: MapSceneProps) {
   useEffect(() => {
     controller.current?.selectPlace(props.selectedPlace);
   }, [props.selectedPlace]);
+  useEffect(() => {
+    controller.current?.setSearchPin(props.searchPin ?? null);
+  }, [props.searchPin]);
+  useEffect(() => {
+    controller.current?.setFacilities(props.facilities);
+  }, [props.facilities]);
+
   useEffect(() => {
     if (props.command?.type === 'locate' && props.command.location)
       controller.current?.locate(props.command.location);

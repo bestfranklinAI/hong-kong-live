@@ -2,7 +2,7 @@
 
 ![UI.png](UI.png)
 
-Hong Kong Live is an open source platform focused on rich three dimensional spatial visualization, pedestrian network exploration, and real time urban data integration. The project combines Hong Kong open spatial datasets with interactive mapping tools to help users explore walkability, multi level pedestrian connectivity, and surrounding urban topography. 
+Hong Kong Live is an open source platform focused on rich three dimensional spatial visualization, pedestrian network exploration, and real time urban data integration. The project combines Hong Kong open spatial datasets with interactive mapping tools to help users explore walkability, multi level pedestrian connectivity, and surrounding urban topography.
 
 ## Start locally
 
@@ -41,6 +41,8 @@ With both devices connected to your Tailscale network, the preview also accepts 
 
 - Interactive Cesium map with public LandsD topographic/aerial layers, English/Traditional Chinese labels and an OpenStreetMap option. No required paid service.
 - 47 selected places across all 18 districts with English/Traditional Chinese search, categories and official source links.
+- Unified search adds bilingual FEHD restaurant licences, LandsD addresses, MTR stations and pasted coordinate pins. Restaurants refresh daily in the running Node API; saved pins stay in your browser. See [search setup and coverage](docs/data/search.md).
+- Explore adds official sports centres, libraries and water refill points with category layers, grouped markers, bilingual search and source details. See [facility coverage and refresh](docs/data/facilities.md).
 - Place selection, camera controls, graphics quality, local bookmarks and shareable URLs.
 - Responsive desktop discovery panel and expandable mobile panel.
 - Windy is the default Weather view, with 16 weather layers and a switch to HKO observations. See [Windy integration](docs/data/windy.md).

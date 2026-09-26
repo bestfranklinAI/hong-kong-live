@@ -1,7 +1,9 @@
+import { SelectedSearchPlace } from '../features/search/SelectedSearchPlace';
+import { coordinateResult, type SearchResult } from '@hk/contracts';
 import { CityViewControl } from '../scene/CityViewControl';
 import { DiscoverySheet } from '../features/mobile/DiscoverySheet';
 import { MapSettings } from '../features/mobile/MapSettings';
-import { MobileSearch, MobileSearchResults } from '../features/mobile/MobileSearch';
+import { MobileSearch } from '../features/mobile/MobileSearch';
 import { haptic, type SheetSnap } from '../features/mobile/sheet-motion';
 import { WindyWeather } from '../features/windy/WindyWeather';
 import type { BusSearchArea } from '../features/buses/NearbyStops';
@@ -10,7 +12,7 @@ import { BusesPanel } from '../features/buses/BusesPanel';
 import { useCameras } from '../features/cameras/use-cameras';
 import { CamerasPanel } from '../features/cameras/CamerasPanel';
 import { useRainfall } from '../features/live/use-rainfall';
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState, useMemo } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import {
   ArrowUpRight,
@@ -35,6 +37,7 @@ import { usePreferences } from './preferences';
 import { AboutDialog } from './AboutDialog';
 import { MapControls } from './MapControls';
 import { useMobileLayout } from '../shared/use-mobile';
+import { useFacilities } from '../features/explore/facilities';
 
 const MapScene = lazy(() => import('../scene/MapScene'));
 const modes = [
@@ -46,6 +49,41 @@ const modes = [
 export function AtlasApp() {
   const search = useSearch({ from: '/' });
   const navigate = useNavigate({ from: '/' });
+  const facilities = useFacilities(search.mode === 'explore');
+  const visibleFacilities = useMemo(
+    () =>
+      search.mode === 'explore' && search.facility
+        ? facilities.data?.records.filter((row) => row.facility?.category === search.facility)
+        : undefined,
+    [facilities.data, search.facility, search.mode],
+  );
+  const [searchSelection, setSearchSelection] = useState<SearchResult | null>(null);
+  function selectFacilityCategory(facility?: import('@hk/contracts').FacilityCategory) {
+    setSavedOnly(false);
+    setSearchSelection(null);
+    setSheetSnap('half');
+    void navigate({
+      search: (previous) => ({
+        ...previous,
+        mode: 'explore',
+        facility,
+        q: undefined,
+        category: undefined,
+        place: undefined,
+        pinLat: undefined,
+        pinLng: undefined,
+      }),
+    });
+  }
+  const searchPin = useMemo(() => {
+    if (search.pinLat === undefined || search.pinLng === undefined) return null;
+    if (
+      searchSelection?.location?.lat === search.pinLat &&
+      searchSelection.location.lng === search.pinLng
+    )
+      return searchSelection;
+    return coordinateResult({ lat: search.pinLat, lng: search.pinLng });
+  }, [search.pinLat, search.pinLng, searchSelection]);
   const selectedPlace = search.place ? (getPlace(search.place) ?? null) : null;
   const [sceneStatus, setSceneStatus] = useState<SceneStatus>({
     ready: false,
@@ -97,6 +135,8 @@ export function AtlasApp() {
         search: (previous) => ({
           ...previous,
           place: place.id,
+          pinLat: undefined,
+          pinLng: undefined,
           line: place.station?.line,
           station: place.station?.code,
         }),
@@ -122,6 +162,51 @@ export function AtlasApp() {
   function setMode(mode: ViewMode) {
     haptic();
     void navigate({ search: (previous) => ({ ...previous, mode }) });
+  }
+  function selectSearchResult(row: SearchResult) {
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    if (row.placeId) {
+      const place = getPlace(row.placeId);
+      if (place) {
+        selectPlace(place);
+        return;
+      }
+    }
+    if (row.station) {
+      setTransportLayer('mtr');
+      void navigate({
+        search: (previous) => ({
+          ...previous,
+          mode: 'transport',
+          ...row.station,
+          place: undefined,
+          pinLat: undefined,
+          pinLng: undefined,
+          q: undefined,
+        }),
+      });
+      setSheetSnap('half');
+      return;
+    }
+    if (!row.location) return;
+    setSearchSelection(row);
+    void navigate({
+      search: (previous) => ({
+        ...previous,
+        mode: 'explore',
+        place: undefined,
+        pinLat: row.location!.lat,
+        pinLng: row.location!.lng,
+        q: undefined,
+      }),
+    });
+    setSheetSnap('peek');
+  }
+  function closeSearchPin() {
+    setSearchSelection(null);
+    void navigate({
+      search: (previous) => ({ ...previous, pinLat: undefined, pinLng: undefined }),
+    });
   }
   function issueCommand(type: SceneCommand['type']) {
     setCommand((previous) => ({ type, sequence: (previous?.sequence ?? 0) + 1 }));
@@ -240,6 +325,10 @@ export function AtlasApp() {
                 }
               >
                 <MapScene
+                  facilities={visibleFacilities}
+                  onFacilitySelect={selectSearchResult}
+                  searchPin={search.mode === 'explore' ? searchPin : null}
+                  onSearchPinSelect={() => setSheetSnap('half')}
                   trainMotion={
                     motionEnabled
                       ? {
@@ -279,7 +368,7 @@ export function AtlasApp() {
                   }}
                   onStationSelect={selectStation}
                   onCameraSelect={selectCamera}
-                  places={places}
+                  places={search.mode === 'explore' && search.facility ? [] : places}
                   selectedPlace={selectedPlace}
                   mode={search.mode}
                   cityView={cityView}
@@ -318,6 +407,8 @@ export function AtlasApp() {
                       }),
                     });
                   }}
+                  facility={search.facility}
+                  onFacility={selectFacilityCategory}
                   onCategory={(category: Category | 'all') => {
                     setSheetSnap('half');
                     void navigate({
@@ -326,6 +417,7 @@ export function AtlasApp() {
                         mode: 'explore',
                         place: undefined,
                         category: category === 'all' ? undefined : category,
+                        facility: undefined,
                       }),
                     });
                   }}
@@ -351,16 +443,18 @@ export function AtlasApp() {
                     onTransit={() => setMode('transport')}
                   />
                 )}
-                {mobile && search.mode === 'explore' && (
-                  <MobileSearchResults
-                    query={search.q ?? ''}
-                    onStation={(selection) => {
-                      setMode('transport');
-                      selectStation(selection);
-                    }}
-                    onWeather={() => {
-                      setWeatherView('hko');
-                      setMode('weather');
+                {searchPin && search.mode === 'explore' && (
+                  <SelectedSearchPlace
+                    key={searchPin.id}
+                    result={searchPin}
+                    onClose={closeSearchPin}
+                    onNearby={() => {
+                      void navigate({
+                        search: (previous) => ({
+                          ...previous,
+                          q: `nearby: ${searchPin.location!.lat}, ${searchPin.location!.lng}`,
+                        }),
+                      });
                       setSheetSnap('full');
                     }}
                   />
@@ -389,6 +483,10 @@ export function AtlasApp() {
                 )}
                 {windyActive ? null : search.mode === 'explore' ? (
                   <ExplorePanel
+                    facility={search.facility}
+                    facilities={facilities}
+                    onFacility={selectFacilityCategory}
+                    onSearchSelect={selectSearchResult}
                     selectedId={search.place}
                     onSelect={selectPlace}
                     savedOnly={savedOnly}
@@ -406,6 +504,7 @@ export function AtlasApp() {
                         search: (previous) => ({
                           ...previous,
                           category: category === 'all' ? undefined : category,
+                          facility: undefined,
                         }),
                       });
                     }}
@@ -441,6 +540,11 @@ export function AtlasApp() {
                 <ArrowUpRight size={14} />
               </div>
             </DiscoverySheet>
+            {searchPin && search.mode === 'explore' && (
+              <button className="search-pin-preview" onClick={() => setSheetSnap('half')}>
+                {searchPin.name} · Details ↑
+              </button>
+            )}
             <div className="map-location">
               <span className="location-dot" />
               <span>HONG KONG SAR</span>

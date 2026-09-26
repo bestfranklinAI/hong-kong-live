@@ -18,3 +18,6 @@ export { normalizeRegionalWeather, fetchWeatherReport } from './weather';
 export * from './kmb';
 
 export * from './citybus';
+export * from './search';
+export * from './map-links';
+export * from './facilities';

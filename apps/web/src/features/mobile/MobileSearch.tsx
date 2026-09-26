@@ -1,8 +1,11 @@
 import { Search, X } from 'lucide-react';
 import { mtrLines, mtrStations, type Category, type StationSelection } from '@hk/contracts';
 import { haptic } from './sheet-motion';
+import { facilityLabels, type FacilityCategory } from '@hk/contracts';
 
 export function MobileSearch({
+  facility,
+  onFacility,
   query,
   category,
   onQuery,
@@ -10,6 +13,8 @@ export function MobileSearch({
   onWeather,
   onFocus,
 }: {
+  facility?: FacilityCategory;
+  onFacility: (value?: FacilityCategory) => void;
   query: string;
   category: string;
   onQuery: (query: string) => void;
@@ -23,7 +28,7 @@ export function MobileSearch({
         <Search size={18} aria-hidden="true" />
         <input
           aria-label="Search places, transport, sensors"
-          placeholder="Search places, transport, sensors…"
+          placeholder="Place, coordinates or Google Maps link…"
           value={query}
           onFocus={onFocus}
           onChange={(e) => onQuery(e.target.value)}
@@ -45,13 +50,25 @@ export function MobileSearch({
         ).map(([id, label]) => (
           <button
             key={id}
-            aria-pressed={category === id}
+            aria-pressed={!facility && category === id}
             onClick={() => {
               haptic();
               onCategory(id);
             }}
           >
             {label}
+          </button>
+        ))}
+        {(['sports', 'library', 'refill'] as const).map((value) => (
+          <button
+            key={value}
+            aria-pressed={facility === value}
+            onClick={() => {
+              haptic();
+              onFacility(facility === value ? undefined : value);
+            }}
+          >
+            {facilityLabels[value]}
           </button>
         ))}
         <button

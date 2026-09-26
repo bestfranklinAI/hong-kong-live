@@ -12,3 +12,5 @@ output/
 test-results/
 .DS_Store
 *.tsbuildinfo
+
+.data/

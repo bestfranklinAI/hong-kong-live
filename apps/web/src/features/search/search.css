@@ -1,0 +1,98 @@
+.unified-search {
+  margin: 12px 0 20px;
+}
+.search-result {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 4px;
+  min-height: 56px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.search-result > svg {
+  flex: none;
+  margin-top: 4px;
+  color: #147d73;
+}
+.search-result > span {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+.search-result strong {
+  font-size: 15px;
+}
+.search-result span span,
+.search-result small,
+.search-provenance {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.search-notice {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.search-detail {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  margin: 12px 0;
+  background: #f4f7f2;
+  overflow-wrap: anywhere;
+}
+.search-detail p {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.search-detail small {
+  color: var(--muted);
+}
+.pin-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pin-actions button {
+  min-height: 44px;
+  border-radius: 22px;
+  background: #e4ede3;
+  padding: 8px 14px;
+}
+.saved-pin {
+  display: flex;
+  align-items: center;
+}
+.saved-pin > .text-button {
+  flex: none;
+  min-height: 44px;
+}
+.search-pin-preview {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 36px;
+  z-index: 6;
+  max-width: calc(100% - 100px);
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 4px 20px #173d3a25;
+}
+@media (max-width: 700px) {
+  .facility-filters {
+    display: none;
+  }
+  .search-pin-preview {
+    position: fixed;
+    bottom: calc(var(--sheet-visible) + 52px);
+    left: 16px;
+    transform: none;
+    max-width: calc(100% - 88px);
+  }
+}

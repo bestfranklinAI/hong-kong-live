@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@hk/contracts": "workspace:*",
+    "fast-xml-parser": "^5.11.1",
+    "proj4": "^2.22.0",
     "zod": "^4.0.0"
   }
 }

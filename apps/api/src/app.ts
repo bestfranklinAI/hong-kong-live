@@ -1,3 +1,6 @@
+import { searchRoutes } from './search/routes';
+import type { SearchRepository } from './search/repository';
+import { LandsdSearch } from './search/landsd';
 import { citybusRoutes } from './citybus';
 import { busRoutes } from './buses';
 import { sharedWeatherReport } from './weather-report';
@@ -25,6 +28,9 @@ import recordedArrivals from '../../../fixtures/providers/mtr-isl-adm-2026-09-13
 import { ARRIVALS_POLICY, FeedCache, WEATHER_POLICY } from './feed-cache';
 
 export interface AppOptions {
+  facilities?: import('@hk/providers').FacilityCatalogue;
+  searchRepository?: SearchRepository;
+  landsd?: LandsdSearch;
   fetcher?: Fetcher;
   now?: () => number;
   mode?: DataMode;
@@ -36,6 +42,17 @@ export function createApp(options: AppOptions = {}) {
   const mode = options.mode ?? 'live';
   const fetcher = options.fetcher ?? fetch;
   const now = options.now ?? Date.now;
+  app.route(
+    '/api/v1/search',
+    searchRoutes(
+      options.searchRepository,
+      options.landsd ?? new LandsdSearch(fetcher, now),
+      mode,
+      now,
+      fetcher,
+      options.facilities,
+    ),
+  );
   const report = sharedWeatherReport(
     mode === 'fixture' ? async () => recordedWeather : () => fetchWeatherReport(fetcher),
     now,

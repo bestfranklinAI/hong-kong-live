@@ -1,3 +1,6 @@
+import { SearchPin } from './SearchPin';
+import { FacilityMarkers } from './FacilityMarkers';
+import type { SearchResult } from '@hk/contracts';
 import { UserLocation, type LocationFix } from './UserLocation';
 import { TrainMotion } from './TrainMotion';
 import { BusStops } from './BusStops';
@@ -89,6 +92,8 @@ interface Marker {
 }
 
 interface SceneOptions {
+  onFacilitySelect?: (row: SearchResult) => void;
+  onSearchPinSelect?: () => void;
   onRotationChange?: (rotated: boolean) => void;
   onTrainSelect?: (arrival: import('../features/trains/motion').TrainApproach) => void;
   onBusAreaSelect?: (area: { lng: number; lat: number } | null) => void;
@@ -106,6 +111,8 @@ interface SceneOptions {
 
 /** Owns every mutable engine object; React sends infrequent semantic commands only. */
 export class SceneController {
+  private readonly facilities: FacilityMarkers;
+  private readonly searchPin: SearchPin;
   private readonly userLocation: UserLocation;
   private readonly trafficCameras: TrafficCameras;
   private readonly mtr: MtrStations;
@@ -113,6 +120,7 @@ export class SceneController {
   private readonly busStops: BusStops;
   private busTarget: BusStop | null = null;
   private stationCode?: string;
+  private searchTarget: { lng: number; lat: number } | null = null;
   private stationTarget: { lng: number; lat: number } | null = null;
   private cameraId: string | undefined;
   private trafficTarget: TrafficCamera | null = null;
@@ -164,6 +172,8 @@ export class SceneController {
       contextOptions: { webgl: { alpha: false, antialias: false } },
     });
 
+    this.searchPin = new SearchPin(this.widget);
+    this.facilities = new FacilityMarkers(this.widget);
     this.userLocation = new UserLocation(this.widget);
     this.trafficCameras = new TrafficCameras(this.widget);
     this.mtr = new MtrStations(this.widget);
@@ -207,6 +217,15 @@ export class SceneController {
     this.events.setInputAction((event: { position: Cartesian2 }) => {
       const picked: unknown = scene.pick(event.position, 12, 12);
       if (typeof picked !== 'object' || picked === null || !('id' in picked)) return;
+      if (picked.id === 'search-pin') {
+        this.options.onSearchPinSelect?.();
+        return;
+      }
+      if (String(picked.id).startsWith('facility-marker:')) {
+        const row = this.facilities.pick(String(picked.id));
+        if (row) this.options.onFacilitySelect?.(row);
+        return;
+      }
       if (String(picked.id).startsWith('traffic-camera:')) {
         const camera = this.trafficCameras.pick(String(picked.id));
         if (camera) this.options.onCameraSelect?.(camera);
@@ -422,7 +441,9 @@ export class SceneController {
     this.viewportInsets = { top, bottom };
     this.viewportSize = { width, height };
     this.widget.resize();
-    if (this.trafficTarget) this.focus(this.trafficTarget.lng, this.trafficTarget.lat, 3500, false);
+    if (this.searchTarget) this.focus(this.searchTarget.lng, this.searchTarget.lat, 1400, false);
+    else if (this.trafficTarget)
+      this.focus(this.trafficTarget.lng, this.trafficTarget.lat, 3500, false);
     else if (this.busTarget) this.focus(this.busTarget.lng, this.busTarget.lat, 2000, false);
     else if (this.stationTarget)
       this.focus(this.stationTarget.lng, this.stationTarget.lat, 3500, false);
@@ -434,6 +455,15 @@ export class SceneController {
         false,
       );
     this.widget.scene.requestRender();
+  }
+
+  setSearchPin(result: SearchResult | null) {
+    this.searchTarget = result?.location ?? null;
+    this.searchPin.set(result);
+    if (result?.location) this.focus(result.location.lng, result.location.lat, 1400);
+  }
+  setFacilities(rows?: SearchResult[]) {
+    this.facilities.set(rows);
   }
 
   locate(location: LocationFix): void {
@@ -513,6 +543,8 @@ export class SceneController {
     if (this.disposed) return;
     this.disposed = true;
     for (const remove of this.cleanups) remove();
+    this.searchPin.dispose();
+    this.facilities.dispose();
     this.userLocation.dispose();
     this.trafficCameras.dispose();
     this.trainMotion.dispose();

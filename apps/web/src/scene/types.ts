@@ -15,6 +15,10 @@ export type SceneCommand = {
 };
 
 export interface MapSceneProps {
+  facilities?: import('@hk/contracts').SearchResult[];
+  onFacilitySelect?: (result: import('@hk/contracts').SearchResult) => void;
+  searchPin?: import('@hk/contracts').SearchResult | null;
+  onSearchPinSelect?: () => void;
   cityView: boolean;
   onRotationChange?: (rotated: boolean) => void;
   trainMotion?: import('../features/trains/motion').TrainMotionInput | null;
