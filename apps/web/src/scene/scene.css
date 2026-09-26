@@ -101,3 +101,23 @@
   color: #173d3a;
   font: 11px monospace;
 }
+
+.city-loading {
+  position: absolute;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  padding: 7px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #173d3a;
+  font-size: 12px;
+  backdrop-filter: blur(12px);
+}
+
+@media (max-width: 767px) {
+  .city-loading {
+    top: calc(env(safe-area-inset-top) + 144px);
+  }
+}

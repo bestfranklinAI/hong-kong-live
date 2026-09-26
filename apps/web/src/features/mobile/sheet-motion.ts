@@ -2,7 +2,7 @@ export type SheetSnap = 'peek' | 'half' | 'full';
 export const snapOrder: SheetSnap[] = ['peek', 'half', 'full'];
 export function sheetHeights(viewport: number, safeBottom = 0) {
   return {
-    peek: Math.min(128 + safeBottom, viewport * 0.4),
+    peek: Math.min(96 + safeBottom, viewport * 0.4),
     half: viewport * 0.45,
     full: viewport * 0.88,
   };

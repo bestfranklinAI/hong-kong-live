@@ -4,6 +4,8 @@ import type { Basemap, MapLanguage } from '../scene/basemaps';
 import type { Quality } from '@hk/contracts';
 
 interface Preferences {
+  cityView: boolean;
+  setCityView: (enabled: boolean) => void;
   savedIds: string[];
   quality: Quality;
   basemap: Basemap;
@@ -17,6 +19,8 @@ interface Preferences {
 export const usePreferences = create<Preferences>()(
   persist(
     (set) => ({
+      cityView: Boolean(import.meta.env.VITE_HK_3D_TILESET_URL),
+      setCityView: (cityView) => set({ cityView }),
       savedIds: [],
       quality: 'balanced',
       basemap: 'landsd-map',
@@ -34,7 +38,8 @@ export const usePreferences = create<Preferences>()(
     {
       name: 'hk-live-preferences',
       version: 1,
-      partialize: ({ savedIds, quality, basemap, mapLanguage }) => ({
+      partialize: ({ savedIds, quality, basemap, mapLanguage, cityView }) => ({
+        cityView,
         savedIds,
         quality,
         basemap,
@@ -44,6 +49,7 @@ export const usePreferences = create<Preferences>()(
         const saved = persisted as Partial<Preferences> | null;
         return {
           ...current,
+          cityView: typeof saved?.cityView === 'boolean' ? saved.cityView : current.cityView,
           basemap:
             saved?.basemap === 'landsd-aerial' || saved?.basemap === 'openstreetmap'
               ? saved.basemap

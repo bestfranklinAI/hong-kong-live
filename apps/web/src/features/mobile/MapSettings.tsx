@@ -1,3 +1,4 @@
+import { CityViewControl } from '../../scene/CityViewControl';
 import { Dialog } from '@base-ui/react/dialog';
 import { X } from 'lucide-react';
 import { usePreferences } from '../../app/preferences';
@@ -72,18 +73,7 @@ export function MapSettings({
           >
             Toggle flat / tilted view
           </button>
-          <button
-            className="text-button"
-            disabled={!import.meta.env.VITE_HK_3D_TILESET_URL}
-            onClick={() => {
-              command('toggle-pitch');
-              onOpenChange(false);
-            }}
-          >
-            {import.meta.env.VITE_HK_3D_TILESET_URL
-              ? 'View configured 3D buildings'
-              : '3D buildings · awaiting data connection'}
-          </button>
+          <CityViewControl />
           <details>
             <summary>Map & data credits</summary>
             <p>

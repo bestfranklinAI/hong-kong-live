@@ -1,3 +1,4 @@
+import { UserLocation, type LocationFix } from './UserLocation';
 import { TrainMotion } from './TrainMotion';
 import { BusStops } from './BusStops';
 import type { BusStop } from '@hk/contracts';
@@ -66,7 +67,7 @@ const QUALITY = {
   balanced: {
     resolution: 1.25,
     screenSpaceError: 20,
-    cacheBytes: 128 * 1024 ** 2,
+    cacheBytes: 192 * 1024 ** 2,
     globeError: 2.5,
     globeCacheTiles: 256,
     msaa: 2,
@@ -74,7 +75,7 @@ const QUALITY = {
   detailed: {
     resolution: 1.75,
     screenSpaceError: 12,
-    cacheBytes: 256 * 1024 ** 2,
+    cacheBytes: 320 * 1024 ** 2,
     globeError: 1.5,
     globeCacheTiles: 384,
     msaa: 4,
@@ -105,6 +106,7 @@ interface SceneOptions {
 
 /** Owns every mutable engine object; React sends infrequent semantic commands only. */
 export class SceneController {
+  private readonly userLocation: UserLocation;
   private readonly trafficCameras: TrafficCameras;
   private readonly mtr: MtrStations;
   private readonly trainMotion: TrainMotion;
@@ -128,6 +130,8 @@ export class SceneController {
   private quality: Quality = 'balanced';
   private selected: Place | null = null;
   private pitched = true;
+  private cityView = false;
+  private cityRequested = false;
   private disposed = false;
   private renderedFrames = 0;
   private pendingGlobeTiles = 0;
@@ -160,6 +164,7 @@ export class SceneController {
       contextOptions: { webgl: { alpha: false, antialias: false } },
     });
 
+    this.userLocation = new UserLocation(this.widget);
     this.trafficCameras = new TrafficCameras(this.widget);
     this.mtr = new MtrStations(this.widget);
     this.trainMotion = new TrainMotion(this.widget);
@@ -271,7 +276,6 @@ export class SceneController {
     );
     this.inspector = { snapshot: () => this.snapshot(), command: (type) => this.command(type) };
     if (import.meta.env.DEV) window.__HK_SCENE__ = this.inspector;
-    if (options.tilesetUrl) void this.loadCity(options.tilesetUrl);
   }
 
   setBasemap(basemap: SceneBasemap, language: MapLanguage): void {
@@ -367,7 +371,9 @@ export class SceneController {
     this.points.show = mode === 'explore';
     this.labels.show = mode === 'explore';
     // Globe imagery is hidden by opaque city meshes; weather gets a clear top-down surface.
-    if (this.tileset) this.tileset.show = mode !== 'weather';
+    if (this.tileset) this.tileset.show = this.cityView && mode !== 'weather';
+    this.widget.scene.screenSpaceCameraController.enableTilt = this.cityView && mode !== 'weather';
+    this.reportStatus();
     const centre = this.selected ?? HARBOUR;
     this.focus(
       centre.lng,
@@ -430,9 +436,11 @@ export class SceneController {
     this.widget.scene.requestRender();
   }
 
-  locate(location: { lng: number; lat: number }): void {
-    if (!this.disposed && Number.isFinite(location.lng) && Number.isFinite(location.lat))
+  locate(location: LocationFix): void {
+    if (!this.disposed && Number.isFinite(location.lng) && Number.isFinite(location.lat)) {
+      this.userLocation.set(location);
       this.focus(location.lng, location.lat, 1800);
+    }
   }
 
   command(type: SceneCommand['type']): void {
@@ -492,6 +500,7 @@ export class SceneController {
         this.reorient(camera.pitch);
         break;
       case 'toggle-pitch': {
+        if (!this.cityView) return;
         this.pitched = !this.pitched;
         this.reorient(CesiumMath.toRadians(this.mode === 'weather' || !this.pitched ? -90 : -55));
         break;
@@ -504,6 +513,7 @@ export class SceneController {
     if (this.disposed) return;
     this.disposed = true;
     for (const remove of this.cleanups) remove();
+    this.userLocation.dispose();
     this.trafficCameras.dispose();
     this.trainMotion.dispose();
     this.mtr.dispose();
@@ -611,6 +621,22 @@ export class SceneController {
     }
   }
 
+  setCityView(enabled: boolean): void {
+    this.cityView = enabled && Boolean(this.options.tilesetUrl);
+    this.pitched = this.cityView;
+    this.widget.scene.screenSpaceCameraController.enableTilt =
+      this.cityView && this.mode !== 'weather';
+    // Keep the same tileset and its bounded cache when returning to the flat map.
+    if (this.tileset) this.tileset.show = this.cityView && this.mode !== 'weather';
+    if (this.cityView && !this.cityRequested && this.options.tilesetUrl) {
+      this.cityRequested = true;
+      void this.loadCity(this.options.tilesetUrl);
+    }
+    this.reorient(CesiumMath.toRadians(this.cityView && this.mode !== 'weather' ? -55 : -90));
+    this.reportStatus();
+    this.widget.scene.requestRender();
+  }
+
   private async loadCity(url: string): Promise<void> {
     this.cityState = 'loading';
     this.reportStatus();
@@ -626,7 +652,12 @@ export class SceneController {
         dynamicScreenSpaceError: true,
         foveatedScreenSpaceError: true,
         preloadWhenHidden: false,
-        preloadFlightDestinations: false,
+        preloadFlightDestinations: true,
+        // Load coarse coverage first and retain parents until their replacements are ready.
+        skipLevelOfDetail: false,
+        progressiveResolutionHeightFraction: 0.3,
+        cullRequestsWhileMovingMultiplier: 20,
+        foveatedTimeDelay: 0.1,
       });
       // A StrictMode remount can finish after its first widget has been disposed.
       if (this.disposed) {
@@ -636,10 +667,15 @@ export class SceneController {
       this.tileset = this.widget.scene.primitives.add(tileset);
       // Quality may have changed while the manifest was loading.
       this.setQuality(this.quality);
-      tileset.show = this.mode !== 'weather';
+      tileset.show = this.cityView && this.mode !== 'weather';
       this.cleanups.push(
         tileset.loadProgress.addEventListener((pending: number, processing: number) => {
           this.pendingCityTiles = pending + processing;
+          const next = tileset.tilesLoaded ? 'ready' : 'loading';
+          if (this.cityState !== 'error' && this.cityState !== next) {
+            this.cityState = next;
+            this.reportStatus();
+          }
         }),
       );
       this.cleanups.push(
@@ -648,32 +684,47 @@ export class SceneController {
           this.reportStatus();
         }),
       );
-      this.cityState = 'ready';
+      this.cleanups.push(
+        tileset.allTilesLoaded.addEventListener(() => {
+          if (this.cityState !== 'ready') {
+            this.cityState = 'ready';
+            this.reportStatus();
+          }
+        }),
+      );
       this.reportStatus();
       this.widget.scene.requestRender();
     } catch {
       if (this.disposed) return;
       this.cityState = 'error';
+      this.cityRequested = false; // A later 2D → 3D toggle can retry a failed manifest.
       this.reportStatus();
     }
   }
 
   private reportStatus(): void {
     if (this.disposed) return;
+    const cityVisible = this.cityView && this.mode !== 'weather';
     const message = this.basemapLayers.hasErrors
       ? 'Some map tiles could not load. Place search is still available.'
-      : this.cityState === 'loading'
-        ? 'Loading the connected 3D city…'
-        : this.cityState === 'ready'
-          ? `3D city connected · ${basemapNames[this.basemap]}`
-          : this.cityState === 'error'
-            ? this.tileset
-              ? 'Some 3D tiles unavailable · showing available coverage'
-              : '3D city unavailable · showing the flat basemap'
-            : this.basemap === 'none'
-              ? 'Test scene · external map imagery disabled'
-              : `${basemapNames[this.basemap]} · flat basemap · 3D city not connected`;
-    this.options.onStatus({ ready: true, message });
+      : !cityVisible
+        ? `${basemapNames[this.basemap]} · 2D map`
+        : this.cityState === 'loading'
+          ? 'Loading the connected 3D city…'
+          : this.cityState === 'ready'
+            ? `3D city connected · ${basemapNames[this.basemap]}`
+            : this.cityState === 'error'
+              ? this.tileset
+                ? 'Some 3D tiles unavailable · showing available coverage'
+                : '3D city unavailable · showing the flat basemap'
+              : this.basemap === 'none'
+                ? 'Test scene · external map imagery disabled'
+                : `${basemapNames[this.basemap]} · flat basemap · 3D city not connected`;
+    this.options.onStatus({
+      ready: true,
+      message,
+      cityLoading: cityVisible && this.cityState === 'loading',
+    });
   }
 
   private snapshot(): SceneDiagnostics {

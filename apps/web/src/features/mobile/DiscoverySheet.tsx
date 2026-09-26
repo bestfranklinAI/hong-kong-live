@@ -20,7 +20,7 @@ interface Props {
 /** A nonmodal sheet: the uncovered map stays interactive and keyboard navigation stays available. */
 export function DiscoverySheet({ mobile, snap, onSnap, header, children, mode }: Props) {
   const host = useRef<HTMLElement>(null);
-  const current = useRef(128);
+  const current = useRef(96);
   const frame = useRef(0);
   const drag = useRef<{
     y: number;
@@ -108,6 +108,7 @@ export function DiscoverySheet({ mobile, snap, onSnap, header, children, mode }:
   function down(event: PointerEvent<HTMLElement>) {
     if (
       !mobile ||
+      event.pointerType === 'touch' ||
       event.button !== 0 ||
       (event.target as HTMLElement).closest('input,select,a,[data-no-drag]')
     )
@@ -125,7 +126,7 @@ export function DiscoverySheet({ mobile, snap, onSnap, header, children, mode }:
       event.pointerId,
     );
   }
-  function move(event: PointerEvent<HTMLElement>) {
+  function move(event: { clientY: number }) {
     const start = drag.current;
     if (!start || !host.current) return;
     const now = performance.now();
@@ -148,7 +149,7 @@ export function DiscoverySheet({ mobile, snap, onSnap, header, children, mode }:
       .closest<HTMLElement>('.atlas-app')
       ?.style.setProperty('--sheet-visible', `${height}px`);
   }
-  function up(event: PointerEvent<HTMLElement>) {
+  function up(event: { type: string }) {
     const start = drag.current;
     if (!start || !host.current) return;
     drag.current = null;
@@ -163,6 +164,99 @@ export function DiscoverySheet({ mobile, snap, onSnap, header, children, mode }:
     onSnap(next);
     animate.current(next);
   }
+
+  // Native non-passive touch handling allows scroll-to-drag handoff at the list's
+  // top edge. Pointer handlers remain a mouse/pen and keyboard fallback.
+  useLayoutEffect(() => {
+    const element = host.current;
+    if (!mobile || !element) return;
+    let candidate: { x: number; y: number; scroll: HTMLElement | null; header: boolean } | null =
+      null;
+    let dragging = false;
+    const start = (event: TouchEvent) => {
+      if (event.touches.length !== 1) return;
+      const target = event.target as HTMLElement;
+      // Even form controls can start a vertical sheet swipe. Ordinary taps
+      // remain native until movement crosses the direction-lock threshold.
+      const touch = event.touches[0];
+      candidate = {
+        x: touch.clientX,
+        y: touch.clientY,
+        scroll: target.closest('.panel-scroll'),
+        header: Boolean(target.closest('.sheet-header')),
+      };
+      suppressedClick.current = false;
+    };
+    const slide = (event: TouchEvent) => {
+      if (!candidate) return;
+      if (event.touches.length !== 1) {
+        finish(true);
+        return;
+      }
+      const touch = event.touches[0];
+      const dy = touch.clientY - candidate.y,
+        dx = touch.clientX - candidate.x;
+      if (!dragging) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) < 8) return;
+        if (Math.abs(dx) > Math.abs(dy)) {
+          candidate = null;
+          return;
+        }
+        // At full height, let the browser scroll until a new downward gesture
+        // begins at the top. Do not steal a gesture from a scrolling list.
+        if (
+          !candidate.header &&
+          snap === 'full' &&
+          (dy < 0 || (candidate.scroll?.scrollTop ?? 0) > 0)
+        ) {
+          candidate = null;
+          return;
+        }
+        if (!event.cancelable) {
+          candidate = null;
+          return;
+        }
+        cancelAnimationFrame(frame.current);
+        drag.current = {
+          y: candidate.y,
+          height: current.current,
+          lastY: touch.clientY,
+          time: performance.now(),
+          velocity: 0,
+        };
+        dragging = true;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      move(touch);
+    };
+    const finish = (cancelled = false) => {
+      if (dragging) up({ type: cancelled ? 'pointercancel' : 'touchend' });
+      dragging = false;
+      candidate = null;
+    };
+    const end = () => finish();
+    const cancel = () => finish(true);
+    const click = (event: MouseEvent) => {
+      if (suppressedClick.current && event.detail !== 0) {
+        event.preventDefault();
+        event.stopPropagation();
+        suppressedClick.current = false;
+      }
+    };
+    element.addEventListener('touchstart', start, { passive: true });
+    element.addEventListener('touchmove', slide, { passive: false });
+    element.addEventListener('touchend', end);
+    element.addEventListener('touchcancel', cancel);
+    element.addEventListener('click', click, true);
+    return () => {
+      element.removeEventListener('touchstart', start);
+      element.removeEventListener('touchmove', slide);
+      element.removeEventListener('touchend', end);
+      element.removeEventListener('touchcancel', cancel);
+      element.removeEventListener('click', click, true);
+    };
+  });
 
   return (
     <aside
@@ -205,6 +299,7 @@ export function DiscoverySheet({ mobile, snap, onSnap, header, children, mode }:
             <span />
           </button>
           {header}
+          {snap === 'peek' && <span className="sheet-swipe-hint">Swipe up to explore</span>}
         </div>
       )}
       {children}

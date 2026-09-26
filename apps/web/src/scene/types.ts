@@ -3,17 +3,19 @@ import type { Basemap, MapLanguage, SceneBasemap } from './basemaps';
 import type { Place, Quality, ViewMode, TrafficCamera, StationSelection } from '@hk/contracts';
 
 export interface SceneStatus {
+  cityLoading?: boolean;
   ready: boolean;
   message: string;
 }
 
 export type SceneCommand = {
-  location?: { lng: number; lat: number };
+  location?: import('./UserLocation').LocationFix;
   type: 'locate' | 'zoom-in' | 'zoom-out' | 'reset' | 'north' | 'toggle-pitch' | 'search-bus-area';
   sequence: number;
 };
 
 export interface MapSceneProps {
+  cityView: boolean;
   onRotationChange?: (rotated: boolean) => void;
   trainMotion?: import('../features/trains/motion').TrainMotionInput | null;
   onTrainSelect?: (arrival: import('../features/trains/motion').TrainApproach) => void;

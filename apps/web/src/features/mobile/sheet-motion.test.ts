@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { chooseSnap, sheetHeights, springStep } from './sheet-motion';
 it('keeps peek compact while providing half and expanded snap points', () => {
-  expect(sheetHeights(844, 20)).toEqual({ peek: 148, half: 379.8, full: 742.72 });
+  expect(sheetHeights(844, 20)).toEqual({ peek: 116, half: 379.8, full: 742.72 });
 });
 it('flicks advance one snap and never escape the endpoints', () => {
   const heights = sheetHeights(844);

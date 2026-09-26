@@ -19,6 +19,7 @@ export default function MapScene(props: MapSceneProps) {
     onBusStopSelect: props.onBusStopSelect,
     onBusAreaSelect: props.onBusAreaSelect,
   });
+  const [cityLoading, setCityLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -57,6 +58,7 @@ export default function MapScene(props: MapSceneProps) {
         onTrainSelect: (arrival) => callbacks.current.onTrainSelect?.(arrival),
         onSelect: (place) => callbacks.current.onSelect(place),
         onStatus: (status) => {
+          setCityLoading(Boolean(status.cityLoading));
           callbacks.current.onStatus?.(status);
           if (!status.ready) setError(status.message);
         },
@@ -82,6 +84,10 @@ export default function MapScene(props: MapSceneProps) {
       props.mapLanguage,
     );
   }, [props.basemap, props.mapLanguage]);
+
+  useEffect(() => {
+    controller.current?.setCityView(props.cityView);
+  }, [props.cityView]);
 
   useEffect(() => {
     controller.current?.setRainfall(props.rainfall ?? null);
@@ -162,6 +168,11 @@ export default function MapScene(props: MapSceneProps) {
           <summary>Local render diagnostics</summary>
           <pre aria-label="Scene metrics" ref={performanceOutput} />
         </details>
+      )}
+      {cityLoading && (
+        <div className="city-loading" role="status">
+          Loading 3D detail…
+        </div>
       )}
       {error && (
         <div className="map-scene__fallback" role="status">

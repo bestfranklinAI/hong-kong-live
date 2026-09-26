@@ -1,3 +1,4 @@
+import { CityViewControl } from '../scene/CityViewControl';
 import { DiscoverySheet } from '../features/mobile/DiscoverySheet';
 import { MapSettings } from '../features/mobile/MapSettings';
 import { MobileSearch, MobileSearchResults } from '../features/mobile/MobileSearch';
@@ -19,7 +20,6 @@ import {
   Map,
   TrainFront,
   Settings2,
-  Layers,
   LocateFixed,
 } from 'lucide-react';
 import type { Category, Place, ViewMode, TrafficCamera, StationSelection } from '@hk/contracts';
@@ -78,6 +78,7 @@ export function AtlasApp() {
   const [rotated, setRotated] = useState(false);
   const [locationMessage, setLocationMessage] = useState('');
   const [windyControls, setWindyControls] = useState<HTMLDivElement | null>(null);
+  const cityView = usePreferences((state) => state.cityView);
   const basemap = usePreferences((state) => state.basemap);
   const mapLanguage = usePreferences((state) => state.mapLanguage);
   const setBasemap = usePreferences((state) => state.setBasemap);
@@ -281,6 +282,7 @@ export function AtlasApp() {
                   places={places}
                   selectedPlace={selectedPlace}
                   mode={search.mode}
+                  cityView={cityView}
                   basemap={basemap}
                   mapLanguage={mapLanguage}
                   quality={quality}
@@ -445,6 +447,7 @@ export function AtlasApp() {
               <span className="coordinate-label">22.28° N · 114.16° E</span>
             </div>
             <div className="basemap-controls" aria-label="Map layers">
+              <CityViewControl />
               <label>
                 <span>Map style</span>
                 <select
@@ -484,35 +487,39 @@ export function AtlasApp() {
                       setLocationMessage('Location is not available in this browser.');
                       return;
                     }
+                    // iOS requires this request directly inside the user's tap gesture.
+                    const orientation =
+                      window.DeviceOrientationEvent as typeof DeviceOrientationEvent & {
+                        requestPermission?: () => Promise<string>;
+                      };
+                    if (orientation?.requestPermission)
+                      void orientation.requestPermission().catch(() => undefined);
                     setLocationMessage('Finding your location…');
                     navigator.geolocation.getCurrentPosition(
                       ({ coords }) => {
                         setCommand((previous) => ({
                           type: 'locate',
                           sequence: (previous?.sequence ?? 0) + 1,
-                          location: { lng: coords.longitude, lat: coords.latitude },
+                          location: {
+                            lng: coords.longitude,
+                            lat: coords.latitude,
+                            accuracy: coords.accuracy,
+                          },
                         }));
                         setSheetSnap('peek');
-                        setLocationMessage('');
+                        setLocationMessage(
+                          `Location fix · accuracy about ${Math.round(coords.accuracy)} m. Direction appears when compass data is available.`,
+                        );
                       },
                       () =>
                         setLocationMessage(
                           'Could not access location. Check location permission and use an HTTPS connection.',
                         ),
-                      { timeout: 10000, maximumAge: 30000 },
+                      { timeout: 10000, maximumAge: 0, enableHighAccuracy: true },
                     );
                   }}
                 >
                   <LocateFixed size={21} />
-                </IconButton>
-                <IconButton
-                  label="Choose map layers"
-                  onClick={() => {
-                    haptic();
-                    setSettingsOpen(true);
-                  }}
-                >
-                  <Layers size={21} />
                 </IconButton>
                 {rotated && (
                   <IconButton

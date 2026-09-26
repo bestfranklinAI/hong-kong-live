@@ -62,6 +62,12 @@ Copy `apps/web/.env.example` to `apps/web/.env.local` and set `VITE_HK_3D_TILESE
 
 The [LandsD 3D streaming API](https://portal.csdi.gov.hk/csdi-webpage/apidoc/3d-visualisation-map-api) requires a project-issued key. Its dependent tile requests, provider credit requirements and phone performance must be validated before release. A secret-key deployment needs a separately reviewed delivery path.
 
+With a configured URL, **Map dimension** switches between a flat 2D basemap and the textured 3D city. It is available in desktop map controls and mobile **Map settings**. The choice is saved locally; HKO weather keeps its flat observation surface.
+
+City tiles load on first use and remain attached when switching to 2D. Cesium manages a bounded tile cache: Eco 64 MiB, Standard 192 MiB, High 320 MiB, with up to 50% additional overflow for the current view. These budgets cover tile content, not total browser memory. Coarse coverage is prioritized before detail, and camera flights prefetch their destinations. A loading indicator distinguishes ongoing refinement from a ready view. Browser HTTP caching still follows the upstream server headers; this is not offline storage. Reloading or entering Windy destroys the Cesium scene and its in-memory cache. Source mesh gaps and imagery seams cannot be repaired by caching.
+
+Train illustrations use carriages overhead and compact upright badges at oblique angles. They remain timing-based annotations, not physical 3D vehicles or surveyed track elevations.
+
 ## Deterministic development
 
 ```sh
@@ -115,3 +121,7 @@ The first request may wait for the source CSV (45-second timeout). Later users s
 Traffic camera source behavior and verification are recorded in [camera notes](docs/verification/cameras.md).
 
 MTR line/station coverage, source provenance and remaining map-position limits are documented in [MTR notes](docs/data/mtr.md).
+
+### Continuous train illustrations
+
+Train animation retains local illustration identities across small ETA revisions (up to 45 seconds). Speed changes are bounded; an eight-second illustrative station dwell precedes a continuation only when a single compatible downstream estimate exists. Matching uses route connectivity, direction and destination, not an asserted MTR vehicle ID. Missing matches are held briefly and fade out; stale, delayed and fixture data cannot sustain live motion. Dwell duration, acceleration and speed are visualization assumptions, not measured train telemetry. Large revisions and ambiguous branches can still retire an illustration.
