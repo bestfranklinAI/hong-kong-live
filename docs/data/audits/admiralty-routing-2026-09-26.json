@@ -1,0 +1,292 @@
+{
+  "scope": "Source consistency and offline vertex candidate analysis, not physical access or confirmed floor identity",
+  "sourceZTolerance": 0.25,
+  "floorFetchedAt": "2026-09-26T09:11:34.338Z",
+  "floors": [
+    {
+      "id": "0701d311-f1aa-4fb8-b9be-37f2446a9a35",
+      "name": "Platform Level (South Island Line)",
+      "z": -33.63
+    },
+    {
+      "id": "7cdbfe60-67fe-4b23-8d43-f066c9b9e590",
+      "name": "Platform Level (East Rail Line)",
+      "z": -28.03
+    },
+    {
+      "id": "95754497-be9b-4469-ace8-28914668d6c5",
+      "name": "Transfer Concourse Level",
+      "z": -21.08
+    },
+    {
+      "id": "02fe2189-1944-4232-b1bc-f64d6078e6ca",
+      "name": "Platform Level (Tsuen Wan Line / Island Line)",
+      "z": -14.13
+    },
+    {
+      "id": "71ba35c5-5c4e-43d2-b47b-30a9e34fae22",
+      "name": "Exit E1 & E2 Ground Level",
+      "z": 6
+    },
+    {
+      "id": "a09395c1-6e67-4fd3-b819-569cafab63d5",
+      "name": "Exit C1 Ground Level",
+      "z": 6.1
+    },
+    {
+      "id": "c176a132-b951-4eb4-9e2c-b87ac62c75c4",
+      "name": "Exit C2 Ground Level",
+      "z": 5.7
+    },
+    {
+      "id": "84ee10b3-2ba9-4403-9301-da847d2c2b89",
+      "name": "Platform Level (Island Line / Tsuen Wan Line)",
+      "z": -8.93
+    },
+    {
+      "id": "8a2f2114-ab3d-4668-923d-1ca8a35f0770",
+      "name": "Landscape Deck Level",
+      "z": 12.435
+    },
+    {
+      "id": "9b1046de-a386-4082-8c77-aded6ff47d7d",
+      "name": "Concourse Level",
+      "z": -2.14
+    },
+    {
+      "id": "7a407a8c-84a7-4745-a413-5f6e5ab13a82",
+      "name": "Exit B Ground Level",
+      "z": 5.7
+    },
+    {
+      "id": "b2ce0fc5-3c79-4839-be7e-d709bde608eb",
+      "name": "Exit A Ground Level",
+      "z": 5.5
+    },
+    {
+      "id": "f0fd16ba-41b6-4089-841c-5ffa4bd0ab27",
+      "name": "Exit D Ground Level",
+      "z": 5.6
+    }
+  ],
+  "cases": [
+    {
+      "case": "eal-sil",
+      "request": {
+        "start": {
+          "lat": 22.27847169000006,
+          "lng": 114.16575511000008,
+          "name": "Admiralty Station · Platform Level (East Rail Line) · Platform 7 East Rail Line to Lo Wu/Lok Ma Chau",
+          "indoor": {
+            "venueId": "b9b2f6ff-582d-40b0-b82d-027e950e6791",
+            "pointId": "6ce8d8c8-aa87-47b8-b1f3-622331fe3b01"
+          },
+          "z": -28.029999999998836
+        },
+        "end": {
+          "lat": 22.278204410000058,
+          "lng": 114.16585019000001,
+          "name": "Admiralty Station · Platform Level (South Island Line) · Platform 5 South Island Line to South Horizons",
+          "indoor": {
+            "venueId": "b9b2f6ff-582d-40b0-b82d-027e950e6791",
+            "pointId": "a7fa511f-30fc-49ff-90bc-cb03a88daf47"
+          },
+          "z": -33.63000000000466
+        },
+        "profile": "barrier-free",
+        "language": "en"
+      },
+      "distanceM": 69.47850726719307,
+      "durationMinutes": 1.1579751211198843,
+      "endpointOffsetsM": [
+        0,
+        0
+      ],
+      "endpointZ": [
+        -28.029999999998836,
+        -33.63000000000466
+      ],
+      "transitionInstructions": [
+        "Take the elevator"
+      ],
+      "fetchedAt": "2026-09-26T09:11:59.854Z",
+      "vertexCount": 24,
+      "xyCandidates": {
+        "unique": 9,
+        "ambiguous": 15
+      },
+      "xyAndSourceZCandidates": {
+        "unique": 24
+      },
+      "unresolvedVertices": [],
+      "segmentInteriorSamples": {
+        "sameCandidateAtThreeSamples": 22,
+        "unresolvedInterior": 1
+      }
+    },
+    {
+      "case": "eal-ground",
+      "request": {
+        "start": {
+          "lat": 22.27847169000006,
+          "lng": 114.16575511000008,
+          "name": "Admiralty Station · Platform Level (East Rail Line) · Platform 7 East Rail Line to Lo Wu/Lok Ma Chau",
+          "indoor": {
+            "venueId": "b9b2f6ff-582d-40b0-b82d-027e950e6791",
+            "pointId": "6ce8d8c8-aa87-47b8-b1f3-622331fe3b01"
+          },
+          "z": -28.029999999998836
+        },
+        "end": {
+          "lat": 22.278909560000045,
+          "lng": 114.16601088000004,
+          "name": "Admiralty Station · Exit E1 & E2 Ground Level · Exit E1",
+          "indoor": {
+            "venueId": "b9b2f6ff-582d-40b0-b82d-027e950e6791",
+            "pointId": "118294df-2e36-48fe-a3ce-649546156477"
+          },
+          "z": 6
+        },
+        "profile": "barrier-free",
+        "language": "en"
+      },
+      "distanceM": 158.5546101221097,
+      "durationMinutes": 2.642576835368494,
+      "endpointOffsetsM": [
+        0,
+        0
+      ],
+      "endpointZ": [
+        -28.029999999998836,
+        6
+      ],
+      "transitionInstructions": [
+        "Take the elevator",
+        "Take the elevator"
+      ],
+      "fetchedAt": "2026-09-26T09:12:00.500Z",
+      "vertexCount": 46,
+      "xyCandidates": {
+        "unique": 9,
+        "ambiguous": 37
+      },
+      "xyAndSourceZCandidates": {
+        "unique": 46
+      },
+      "unresolvedVertices": [],
+      "segmentInteriorSamples": {
+        "sameCandidateAtThreeSamples": 40,
+        "unresolvedInterior": 5
+      }
+    },
+    {
+      "case": "ground-eal",
+      "request": {
+        "start": {
+          "lat": 22.278909560000045,
+          "lng": 114.16601088000004,
+          "name": "Admiralty Station · Exit E1 & E2 Ground Level · Exit E1",
+          "indoor": {
+            "venueId": "b9b2f6ff-582d-40b0-b82d-027e950e6791",
+            "pointId": "118294df-2e36-48fe-a3ce-649546156477"
+          },
+          "z": 6
+        },
+        "end": {
+          "lat": 22.27847169000006,
+          "lng": 114.16575511000008,
+          "name": "Admiralty Station · Platform Level (East Rail Line) · Platform 7 East Rail Line to Lo Wu/Lok Ma Chau",
+          "indoor": {
+            "venueId": "b9b2f6ff-582d-40b0-b82d-027e950e6791",
+            "pointId": "6ce8d8c8-aa87-47b8-b1f3-622331fe3b01"
+          },
+          "z": -28.029999999998836
+        },
+        "profile": "barrier-free",
+        "language": "en"
+      },
+      "distanceM": 158.5546101221097,
+      "durationMinutes": 2.6425768353684944,
+      "endpointOffsetsM": [
+        0,
+        0
+      ],
+      "endpointZ": [
+        6,
+        -28.029999999998836
+      ],
+      "transitionInstructions": [
+        "Take the elevator",
+        "Take the elevator"
+      ],
+      "fetchedAt": "2026-09-26T09:12:01.186Z",
+      "vertexCount": 46,
+      "xyCandidates": {
+        "ambiguous": 37,
+        "unique": 9
+      },
+      "xyAndSourceZCandidates": {
+        "unique": 46
+      },
+      "unresolvedVertices": [],
+      "segmentInteriorSamples": {
+        "sameCandidateAtThreeSamples": 40,
+        "unresolvedInterior": 5
+      }
+    },
+    {
+      "case": "eal-sil-recommended",
+      "request": {
+        "start": {
+          "lat": 22.27847169000006,
+          "lng": 114.16575511000008,
+          "name": "Admiralty Station · Platform Level (East Rail Line) · Platform 7 East Rail Line to Lo Wu/Lok Ma Chau",
+          "indoor": {
+            "venueId": "b9b2f6ff-582d-40b0-b82d-027e950e6791",
+            "pointId": "6ce8d8c8-aa87-47b8-b1f3-622331fe3b01"
+          },
+          "z": -28.029999999998836
+        },
+        "end": {
+          "lat": 22.278204410000058,
+          "lng": 114.16585019000001,
+          "name": "Admiralty Station · Platform Level (South Island Line) · Platform 5 South Island Line to South Horizons",
+          "indoor": {
+            "venueId": "b9b2f6ff-582d-40b0-b82d-027e950e6791",
+            "pointId": "a7fa511f-30fc-49ff-90bc-cb03a88daf47"
+          },
+          "z": -33.63000000000466
+        },
+        "profile": "recommended",
+        "language": "en"
+      },
+      "distanceM": 69.5019912476751,
+      "durationMinutes": 1.1583665207945846,
+      "endpointOffsetsM": [
+        0,
+        0
+      ],
+      "endpointZ": [
+        -28.029999999998836,
+        -33.63000000000466
+      ],
+      "transitionInstructions": [
+        "Take the escalator"
+      ],
+      "fetchedAt": "2026-09-26T09:12:01.778Z",
+      "vertexCount": 21,
+      "xyCandidates": {
+        "unique": 7,
+        "ambiguous": 14
+      },
+      "xyAndSourceZCandidates": {
+        "unique": 21
+      },
+      "unresolvedVertices": [],
+      "segmentInteriorSamples": {
+        "sameCandidateAtThreeSamples": 19,
+        "unresolvedInterior": 1
+      }
+    }
+  ]
+}

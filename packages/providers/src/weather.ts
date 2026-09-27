@@ -70,11 +70,10 @@ export function normalizeWeather(input: unknown): SourceResult<WeatherSummary> {
   );
   if (!temperature) throw new ProviderError('The reference station temperature is unavailable.');
   const icon = report.icon?.[0] ?? null;
-  // One envelope covers these displayed observations, so use the oldest relevant time.
-  // The report publication time alone must not freshen older measurements/icons.
+  // Measurement freshness is independent of the less frequently updated condition icon.
   const componentTimes = [parseSourceTime(report.temperature.recordTime)];
   if (humidity) componentTimes.push(parseSourceTime(report.humidity?.recordTime));
-  if (icon !== null) componentTimes.push(parseSourceTime(report.iconUpdateTime));
+
   const sourceUpdatedAt = componentTimes.every((time): time is string => time !== null)
     ? (componentTimes.sort()[0] ?? null)
     : null;
@@ -85,6 +84,7 @@ export function normalizeWeather(input: unknown): SourceResult<WeatherSummary> {
       temperature: temperature.value,
       humidity: humidity?.value ?? null,
       icon,
+      iconUpdatedAt: parseSourceTime(report.iconUpdateTime),
       condition:
         icon === null ? 'Condition unavailable' : (CONDITIONS[icon] ?? 'Condition unavailable'),
       station,
@@ -94,7 +94,7 @@ export function normalizeWeather(input: unknown): SourceResult<WeatherSummary> {
 }
 
 export async function fetchWeather(fetcher: Fetcher): Promise<SourceResult<WeatherSummary>> {
-  return normalizeWeather(await fetchJson(WEATHER_SOURCE_URL, fetcher));
+  return normalizeWeather(await fetchJson(WEATHER_SOURCE_URL, fetcher, { timeoutMs: 15_000 }));
 }
 
 /** Match each metric by station; an Observatory humidity reading is never copied elsewhere. */
@@ -135,5 +135,5 @@ export function normalizeRegionalWeather(
 }
 
 export async function fetchWeatherReport(fetcher: Fetcher): Promise<unknown> {
-  return fetchJson(WEATHER_SOURCE_URL, fetcher);
+  return fetchJson(WEATHER_SOURCE_URL, fetcher, { timeoutMs: 15_000 });
 }

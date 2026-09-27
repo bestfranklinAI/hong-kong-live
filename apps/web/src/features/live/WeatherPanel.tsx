@@ -12,14 +12,8 @@ export function WeatherPanel({ rain }: { rain: RainfallControls }) {
   const weather = feed?.data;
   return (
     <>
-      <div className="panel-heading">
-        <span className="eyebrow">OUTSIDE, RIGHT NOW</span>
-        <h1>
-          A feel
-          <br />
-          <span>for the city.</span>
-        </h1>
-        <p>Rainfall forecasts and station observations.</p>
+      <div className="panel-heading explore-heading">
+        <h1>Weather</h1>
       </div>
       <RegionalWeatherPanel />
       <RainfallPanel rain={rain} />
@@ -68,7 +62,7 @@ export function WeatherPanel({ rain }: { rain: RainfallControls }) {
         </button>
       </div>
       <div className="feature-note">
-        <h3>Make a little room for the weather.</h3>
+        <h3>Official warnings</h3>
         <p>
           Check official HKO warnings before making weather-sensitive plans. The rainfall colours
           represent forecast amounts, not warning levels.

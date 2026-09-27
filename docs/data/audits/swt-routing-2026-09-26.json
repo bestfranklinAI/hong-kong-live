@@ -1,0 +1,151 @@
+{
+  "scope": "Public source-data consistency, not field validation",
+  "cases": [
+    {
+      "case": "concourse-platform",
+      "request": {
+        "start": {
+          "lat": 22.326335320000055,
+          "lng": 114.19169240000008,
+          "name": "Sung Wong Toi Station · Concourse Level · Exit A",
+          "indoor": {
+            "venueId": "d47477e8-81bb-4400-943a-e2541261bf4b",
+            "pointId": "55b63c80-8d55-45c6-9074-486213bbaecd"
+          },
+          "z": -3.529999999998836
+        },
+        "end": {
+          "lat": 22.32597701000003,
+          "lng": 114.19129983000005,
+          "name": "Sung Wong Toi Station · Platform Level · Platform 1 Tuen Ma Line to Tuen Mun",
+          "indoor": {
+            "venueId": "d47477e8-81bb-4400-943a-e2541261bf4b",
+            "pointId": "8f217dad-0196-4098-b78e-f762664a5752"
+          },
+          "z": -9.89999999999418
+        },
+        "profile": "barrier-free",
+        "language": "en"
+      },
+      "distanceM": 123.38221165252877,
+      "durationMinutes": 2.056370194208813,
+      "endpointOffsetsM": [
+        0,
+        0
+      ],
+      "endpointZ": [
+        -3.529999999998836,
+        -9.89999999999418
+      ],
+      "liftInstructions": 1,
+      "fetchedAt": "2026-09-26T09:05:39.290Z"
+    },
+    {
+      "case": "platform-ground",
+      "request": {
+        "start": {
+          "lat": 22.32597701000003,
+          "lng": 114.19129983000005,
+          "name": "Sung Wong Toi Station · Platform Level · Platform 1 Tuen Ma Line to Tuen Mun",
+          "indoor": {
+            "venueId": "d47477e8-81bb-4400-943a-e2541261bf4b",
+            "pointId": "8f217dad-0196-4098-b78e-f762664a5752"
+          },
+          "z": -9.89999999999418
+        },
+        "end": {
+          "lat": 22.326120760000038,
+          "lng": 114.19193079000001,
+          "name": "Sung Wong Toi Station · Exit A Ground Level · Exit A",
+          "indoor": {
+            "venueId": "d47477e8-81bb-4400-943a-e2541261bf4b",
+            "pointId": "fe5ea544-cd72-4b32-93cd-26ff4e3ca713"
+          },
+          "z": 7.100000000005821
+        },
+        "profile": "barrier-free",
+        "language": "en"
+      },
+      "distanceM": 160.6000709853777,
+      "durationMinutes": 2.6766678497562943,
+      "endpointOffsetsM": [
+        0,
+        0
+      ],
+      "endpointZ": [
+        -9.89999999999418,
+        7.100000000005821
+      ],
+      "liftInstructions": 2,
+      "fetchedAt": "2026-09-26T09:05:39.895Z"
+    },
+    {
+      "case": "ground-platform",
+      "request": {
+        "start": {
+          "lat": 22.326120760000038,
+          "lng": 114.19193079000001,
+          "name": "Sung Wong Toi Station · Exit A Ground Level · Exit A",
+          "indoor": {
+            "venueId": "d47477e8-81bb-4400-943a-e2541261bf4b",
+            "pointId": "fe5ea544-cd72-4b32-93cd-26ff4e3ca713"
+          },
+          "z": 7.100000000005821
+        },
+        "end": {
+          "lat": 22.32597701000003,
+          "lng": 114.19129983000005,
+          "name": "Sung Wong Toi Station · Platform Level · Platform 1 Tuen Ma Line to Tuen Mun",
+          "indoor": {
+            "venueId": "d47477e8-81bb-4400-943a-e2541261bf4b",
+            "pointId": "8f217dad-0196-4098-b78e-f762664a5752"
+          },
+          "z": -9.89999999999418
+        },
+        "profile": "barrier-free",
+        "language": "en"
+      },
+      "distanceM": 160.60007098537758,
+      "durationMinutes": 2.6766678497562935,
+      "endpointOffsetsM": [
+        0,
+        0
+      ],
+      "endpointZ": [
+        7.100000000005821,
+        -9.89999999999418
+      ],
+      "liftInstructions": 2,
+      "fetchedAt": "2026-09-26T09:05:40.556Z"
+    }
+  ],
+  "networkBuildTime": 1783475226000,
+  "networkSources": [
+    {
+      "name": "merged_PedRoute_line1",
+      "elementType": "esriNETEdge",
+      "sourceType": "esriNSTEdgeFeature",
+      "id": 1
+    },
+    {
+      "name": "NetworkDataset_Indoor_Outdoor_Junctions",
+      "elementType": "esriNETJunction",
+      "sourceType": "esriNSTSystemJunction",
+      "id": 2
+    }
+  ],
+  "directionFeatureKeys": [
+    "attributes",
+    "compressedGeometry",
+    "strings"
+  ],
+  "directionAttributeKeys": [
+    "ETA",
+    "arriveTimeUTC",
+    "length",
+    "maneuverType",
+    "text",
+    "time"
+  ],
+  "explicitStepFloorIdsObserved": false
+}

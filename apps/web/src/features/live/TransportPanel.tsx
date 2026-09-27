@@ -22,14 +22,8 @@ export function TransportPanel({
   const feed = query.data;
   return (
     <>
-      <div className="panel-heading">
-        <span className="eyebrow">YOUR NEXT CONNECTION</span>
-        <h1>
-          A city
-          <br />
-          <span>on the move.</span>
-        </h1>
-        <p>Choose a line, then tap a station on the map or use the picker.</p>
+      <div className="panel-heading explore-heading">
+        <h1>MTR arrivals</h1>
       </div>
       <label className="field-label" htmlFor="line-select">
         MTR line

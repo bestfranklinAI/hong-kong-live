@@ -1,0 +1,126 @@
+{
+  "sampledAt": "2026-09-27T04:26:40.149Z",
+  "method": "Cesium sampleHeightMostDetailed; source points from 2026-09-26 audit; model via configured authorised tileset; surfaces not surveyed or classified",
+  "samples": [
+    {
+      "name": "Elevator",
+      "level": "Exit E1 & E2 Ground Level",
+      "lat": 22.278854650000028,
+      "lng": 114.16608358000008,
+      "sourceZ": 6,
+      "meshHeight": 18.678622752535507,
+      "meshMinusRaw": 12.678622752535507,
+      "meshMinusHKPDHypothesis": 15.296622752535507
+    },
+    {
+      "name": "Stair",
+      "level": "Exit B Ground Level",
+      "lat": 22.279377530000033,
+      "lng": 114.1640153400001,
+      "sourceZ": 5.69999999999709,
+      "meshHeight": 21.506630288418055,
+      "meshMinusRaw": 15.806630288420966,
+      "meshMinusHKPDHypothesis": 18.424630288420964
+    },
+    {
+      "name": "Escalator",
+      "level": "Exit A Ground Level",
+      "lat": 22.279470520000075,
+      "lng": 114.16516636000006,
+      "sourceZ": 5.5,
+      "meshHeight": 21.59905943129371,
+      "meshMinusRaw": 16.09905943129371,
+      "meshMinusHKPDHypothesis": 18.71705943129371
+    },
+    {
+      "name": "Escalator",
+      "level": "Exit E1 & E2 Ground Level",
+      "lat": 22.27909047000003,
+      "lng": 114.16622898000003,
+      "sourceZ": 6,
+      "meshHeight": 16.50763331782643,
+      "meshMinusRaw": 10.507633317826429,
+      "meshMinusHKPDHypothesis": 13.125633317826429
+    },
+    {
+      "name": "Escalator",
+      "level": "Exit E1 & E2 Ground Level",
+      "lat": 22.279071680000072,
+      "lng": 114.16623141000002,
+      "sourceZ": 6,
+      "meshHeight": 16.467757708320573,
+      "meshMinusRaw": 10.467757708320573,
+      "meshMinusHKPDHypothesis": 13.085757708320573
+    },
+    {
+      "name": "Ramp",
+      "level": "Exit E1 & E2 Ground Level",
+      "lat": 22.278901560000065,
+      "lng": 114.16605297000001,
+      "sourceZ": 6,
+      "meshHeight": 6.199849000632209,
+      "meshMinusRaw": 0.19984900063220934,
+      "meshMinusHKPDHypothesis": 2.8178490006322092
+    },
+    {
+      "name": "Stair",
+      "level": "Exit E1 & E2 Ground Level",
+      "lat": 22.279110960000025,
+      "lng": 114.16622084000005,
+      "sourceZ": 6,
+      "meshHeight": 16.595807206392823,
+      "meshMinusRaw": 10.595807206392823,
+      "meshMinusHKPDHypothesis": 13.213807206392824
+    },
+    {
+      "name": "Elevator",
+      "level": "Landscape Deck Level",
+      "lat": 22.278854650000028,
+      "lng": 114.16608358000008,
+      "sourceZ": 12.434999999997672,
+      "meshHeight": 18.678622752535507,
+      "meshMinusRaw": 6.243622752537835,
+      "meshMinusHKPDHypothesis": 8.861622752537835
+    },
+    {
+      "name": "Exit E1",
+      "level": "Exit E1 & E2 Ground Level",
+      "lat": 22.278909560000045,
+      "lng": 114.16601088000004,
+      "sourceZ": 6,
+      "meshHeight": 5.812088111845267,
+      "meshMinusRaw": -0.1879118881547326,
+      "meshMinusHKPDHypothesis": 2.4300881118452673
+    },
+    {
+      "name": "Exit E2",
+      "level": "Exit E1 & E2 Ground Level",
+      "lat": 22.27888752000007,
+      "lng": 114.16624518000003,
+      "sourceZ": 6,
+      "meshHeight": 13.724674827768332,
+      "meshMinusRaw": 7.724674827768332,
+      "meshMinusHKPDHypothesis": 10.342674827768333
+    },
+    {
+      "name": "Exit C1",
+      "level": "Exit C1 Ground Level",
+      "lat": 22.278547570000057,
+      "lng": 114.1647935100001,
+      "sourceZ": 6.100000000005821,
+      "meshHeight": 22.28367934750554,
+      "meshMinusRaw": 16.18367934749972,
+      "meshMinusHKPDHypothesis": 18.801679347499718
+    },
+    {
+      "name": "Exit C2",
+      "level": "Exit C2 Ground Level",
+      "lat": 22.279042960000027,
+      "lng": 114.16478974000006,
+      "sourceZ": 5.69999999999709,
+      "meshHeight": 27.025026670290355,
+      "meshMinusRaw": 21.325026670293266,
+      "meshMinusHKPDHypothesis": 23.943026670293264
+    }
+  ]
+}

@@ -2,7 +2,7 @@ import { SearchResults } from '../search/SearchResults';
 import { SavedPins } from '../search/SavedPins';
 import type { SearchResult } from '@hk/contracts';
 import { useMemo } from 'react';
-import { ArrowUpRight, Bookmark, Search, SlidersHorizontal, X } from 'lucide-react';
+import { Bookmark, Search, SlidersHorizontal, X } from 'lucide-react';
 import type { Category, Place } from '@hk/contracts';
 import { categoryLabels, searchPlaces } from './places';
 import { IconButton, PlaceIcon } from '../../shared/ui';
@@ -51,14 +51,8 @@ export function ExplorePanel({
 
   return (
     <>
-      <div className="panel-heading">
-        <span className="eyebrow">A NEW PERSPECTIVE</span>
-        <h1>
-          Your city,
-          <br />
-          <span>a little closer.</span>
-        </h1>
-        <p>Discover places, public facilities and useful stops across Hong Kong.</p>
+      <div className="panel-heading explore-heading">
+        <h1>Explore Hong Kong</h1>
       </div>
       <div className="search-field">
         <Search size={19} aria-hidden="true" />
@@ -120,21 +114,8 @@ export function ExplorePanel({
               ),
             )}
           </div>
-          {!query && category === 'all' && !savedOnly && (
-            <button
-              className="discovery-banner"
-              onClick={() => onSelect(searchPlaces('Victoria Peak', 'landmark')[0])}
-            >
-              <span className="banner-contours" aria-hidden="true" />
-              <span className="eyebrow">THE CITY FROM ABOVE</span>
-              <strong>Take the scenic view.</strong>
-              <span className="banner-footer">
-                Discover Victoria Peak <ArrowUpRight size={18} />
-              </span>
-            </button>
-          )}
           <div className="results-heading">
-            <h2>{savedOnly ? 'Your saved places' : 'Places to get lost in'}</h2>
+            <h2>{savedOnly ? 'Your saved places' : 'Places'}</h2>
             <span aria-live="polite">
               {results.length} {results.length === 1 ? 'place' : 'places'}
             </span>
@@ -186,7 +167,7 @@ export function ExplorePanel({
             {results.length === 0 && (
               <div className="empty-state">
                 <Search size={24} />
-                <h3>{savedOnly ? 'A little inspiration, saved.' : 'No places found'}</h3>
+                <h3>{savedOnly ? 'No saved places' : 'No places found'}</h3>
                 <p>
                   {savedOnly
                     ? 'Tap a bookmark on any place to keep it here.'
@@ -195,9 +176,7 @@ export function ExplorePanel({
               </div>
             )}
           </div>
-          <p className="catalog-note">
-            A selected collection, not every attraction. Search a district in English or Chinese.
-          </p>
+          <p className="catalog-note">Selected places · search for more.</p>
         </>
       )}
     </>

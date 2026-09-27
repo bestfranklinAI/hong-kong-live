@@ -1,3 +1,5 @@
+import { IndoorPoints } from './IndoorPoints';
+import { WalkingRouteLayer } from './WalkingRouteLayer';
 import { SearchPin } from './SearchPin';
 import { FacilityMarkers } from './FacilityMarkers';
 import type { SearchResult } from '@hk/contracts';
@@ -92,10 +94,12 @@ interface Marker {
 }
 
 interface SceneOptions {
+  onIndoorPointSelect?: (point: import('@hk/contracts').IndoorPoint) => void;
   onFacilitySelect?: (row: SearchResult) => void;
   onSearchPinSelect?: () => void;
   onRotationChange?: (rotated: boolean) => void;
   onTrainSelect?: (arrival: import('../features/trains/motion').TrainApproach) => void;
+  onRoutePoint?: (point: { lat: number; lng: number } | null) => void;
   onBusAreaSelect?: (area: { lng: number; lat: number } | null) => void;
   onSelect: (place: Place) => void;
   onCameraSelect?: (camera: TrafficCamera) => void;
@@ -112,6 +116,8 @@ interface SceneOptions {
 /** Owns every mutable engine object; React sends infrequent semantic commands only. */
 export class SceneController {
   private readonly facilities: FacilityMarkers;
+  private readonly indoorPoints: IndoorPoints;
+  private readonly walkingRoute: WalkingRouteLayer;
   private readonly searchPin: SearchPin;
   private readonly userLocation: UserLocation;
   private readonly trafficCameras: TrafficCameras;
@@ -120,6 +126,7 @@ export class SceneController {
   private readonly busStops: BusStops;
   private busTarget: BusStop | null = null;
   private stationCode?: string;
+  private indoorTarget: { lng: number; lat: number; range: number } | null = null;
   private searchTarget: { lng: number; lat: number } | null = null;
   private stationTarget: { lng: number; lat: number } | null = null;
   private cameraId: string | undefined;
@@ -173,6 +180,8 @@ export class SceneController {
     });
 
     this.searchPin = new SearchPin(this.widget);
+    this.walkingRoute = new WalkingRouteLayer(this.widget);
+    this.indoorPoints = new IndoorPoints(this.widget);
     this.facilities = new FacilityMarkers(this.widget);
     this.userLocation = new UserLocation(this.widget);
     this.trafficCameras = new TrafficCameras(this.widget);
@@ -215,8 +224,18 @@ export class SceneController {
       ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
     );
     this.events.setInputAction((event: { position: Cartesian2 }) => {
+      const indoorPoint = this.indoorPoints.pickAt(event.position);
+      if (indoorPoint) {
+        this.options.onIndoorPointSelect?.(indoorPoint);
+        return;
+      }
       const picked: unknown = scene.pick(event.position, 12, 12);
       if (typeof picked !== 'object' || picked === null || !('id' in picked)) return;
+      if (String(picked.id).startsWith('indoor-point:')) {
+        const point = this.indoorPoints.pick(String(picked.id));
+        if (point) this.options.onIndoorPointSelect?.(point);
+        return;
+      }
       if (picked.id === 'search-pin') {
         this.options.onSearchPinSelect?.();
         return;
@@ -441,7 +460,10 @@ export class SceneController {
     this.viewportInsets = { top, bottom };
     this.viewportSize = { width, height };
     this.widget.resize();
-    if (this.searchTarget) this.focus(this.searchTarget.lng, this.searchTarget.lat, 1400, false);
+    if (this.indoorTarget)
+      this.focus(this.indoorTarget.lng, this.indoorTarget.lat, this.indoorTarget.range, false);
+    else if (this.searchTarget)
+      this.focus(this.searchTarget.lng, this.searchTarget.lat, 1400, false);
     else if (this.trafficTarget)
       this.focus(this.trafficTarget.lng, this.trafficTarget.lat, 3500, false);
     else if (this.busTarget) this.focus(this.busTarget.lng, this.busTarget.lat, 2000, false);
@@ -462,6 +484,25 @@ export class SceneController {
     this.searchPin.set(result);
     if (result?.location) this.focus(result.location.lng, result.location.lat, 1400);
   }
+  setIndoorPoints(
+    points?: import('@hk/contracts').IndoorPoint[],
+    floor?: import('@hk/contracts').IndoorFloor,
+    layout?: import('@hk/contracts').IndoorLayout,
+  ) {
+    this.indoorTarget = this.indoorPoints.set(points, floor, layout);
+    if (this.indoorTarget)
+      this.focus(this.indoorTarget.lng, this.indoorTarget.lat, this.indoorTarget.range);
+  }
+  selectIndoorPoint(id?: string) {
+    this.indoorPoints.select(id);
+  }
+  setWalkingRoute(
+    route: import('@hk/contracts').WalkingRoute | null,
+    sourceHeights = false,
+    showHidden = false,
+  ) {
+    this.walkingRoute.set(route, sourceHeights, showHidden);
+  }
   setFacilities(rows?: SearchResult[]) {
     this.facilities.set(rows);
   }
@@ -478,6 +519,23 @@ export class SceneController {
     const { camera, scene } = this.widget;
     camera.cancelFlight();
     switch (type) {
+      case 'pick-route-point': {
+        const canvas = this.widget.canvas;
+        const point = camera.pickEllipsoid(
+          new Cartesian2(canvas.clientWidth / 2, canvas.clientHeight / 2),
+          scene.globe.ellipsoid,
+        );
+        const location = point ? Cartographic.fromCartesian(point) : null;
+        this.options.onRoutePoint?.(
+          location
+            ? {
+                lng: CesiumMath.toDegrees(location.longitude),
+                lat: CesiumMath.toDegrees(location.latitude),
+              }
+            : null,
+        );
+        break;
+      }
       case 'search-bus-area': {
         const canvas = this.widget.canvas;
         // On phones, use the visible map strip above the expanded panel.
@@ -544,6 +602,8 @@ export class SceneController {
     this.disposed = true;
     for (const remove of this.cleanups) remove();
     this.searchPin.dispose();
+    this.walkingRoute.dispose();
+    this.indoorPoints.dispose();
     this.facilities.dispose();
     this.userLocation.dispose();
     this.trafficCameras.dispose();

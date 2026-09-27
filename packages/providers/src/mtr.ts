@@ -85,5 +85,8 @@ export async function fetchArrivals(
   query: StationQuery,
   fetcher: Fetcher,
 ): Promise<SourceResult<Arrival[]>> {
-  return normalizeArrivals(await fetchJson(mtrSourceUrl(query), fetcher), query);
+  return normalizeArrivals(
+    await fetchJson(mtrSourceUrl(query), fetcher, { timeoutMs: 15_000 }),
+    query,
+  );
 }

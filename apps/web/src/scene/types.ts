@@ -10,11 +10,29 @@ export interface SceneStatus {
 
 export type SceneCommand = {
   location?: import('./UserLocation').LocationFix;
-  type: 'locate' | 'zoom-in' | 'zoom-out' | 'reset' | 'north' | 'toggle-pitch' | 'search-bus-area';
+  type:
+    | 'pick-route-point'
+    | 'locate'
+    | 'zoom-in'
+    | 'zoom-out'
+    | 'reset'
+    | 'north'
+    | 'toggle-pitch'
+    | 'search-bus-area';
   sequence: number;
 };
 
 export interface MapSceneProps {
+  routePicking?: boolean;
+  onRoutePoint?: (point: { lat: number; lng: number } | null) => void;
+  indoorLayout?: import('@hk/contracts').IndoorLayout;
+  indoorFloor?: import('@hk/contracts').IndoorFloor;
+  indoorSelectedId?: string;
+  indoorPoints?: import('@hk/contracts').IndoorPoint[];
+  onIndoorPointSelect?: (point: import('@hk/contracts').IndoorPoint) => void;
+  walkingContext?: boolean;
+  walkingShowHidden?: boolean;
+  walkingRoute?: import('@hk/contracts').WalkingRoute | null;
   facilities?: import('@hk/contracts').SearchResult[];
   onFacilitySelect?: (result: import('@hk/contracts').SearchResult) => void;
   searchPin?: import('@hk/contracts').SearchResult | null;

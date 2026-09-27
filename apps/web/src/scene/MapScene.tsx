@@ -10,6 +10,8 @@ export default function MapScene(props: MapSceneProps) {
   const credits = useRef<HTMLDivElement>(null);
   const controller = useRef<SceneController | null>(null);
   const callbacks = useRef({
+    onRoutePoint: props.onRoutePoint,
+    onIndoorPointSelect: props.onIndoorPointSelect,
     onFacilitySelect: props.onFacilitySelect,
     onSearchPinSelect: props.onSearchPinSelect,
     onRotationChange: props.onRotationChange,
@@ -26,6 +28,8 @@ export default function MapScene(props: MapSceneProps) {
 
   useEffect(() => {
     callbacks.current = {
+      onRoutePoint: props.onRoutePoint,
+      onIndoorPointSelect: props.onIndoorPointSelect,
       onFacilitySelect: props.onFacilitySelect,
       onSearchPinSelect: props.onSearchPinSelect,
       onRotationChange: props.onRotationChange,
@@ -38,6 +42,8 @@ export default function MapScene(props: MapSceneProps) {
       onBusAreaSelect: props.onBusAreaSelect,
     };
   }, [
+    props.onRoutePoint,
+    props.onIndoorPointSelect,
     props.onFacilitySelect,
     props.onSearchPinSelect,
     props.onRotationChange,
@@ -54,6 +60,8 @@ export default function MapScene(props: MapSceneProps) {
     if (!host.current || !credits.current) return;
     try {
       controller.current = new SceneController(host.current, {
+        onRoutePoint: (point) => callbacks.current.onRoutePoint?.(point),
+        onIndoorPointSelect: (point) => callbacks.current.onIndoorPointSelect?.(point),
         onFacilitySelect: (row) => callbacks.current.onFacilitySelect?.(row),
         creditContainer: credits.current,
         onSearchPinSelect: () => callbacks.current.onSearchPinSelect?.(),
@@ -130,6 +138,20 @@ export default function MapScene(props: MapSceneProps) {
   useEffect(() => {
     controller.current?.setSearchPin(props.searchPin ?? null);
   }, [props.searchPin]);
+
+  useEffect(() => {
+    controller.current?.setWalkingRoute(
+      props.walkingRoute ?? null,
+      props.walkingContext,
+      props.walkingShowHidden,
+    );
+  }, [props.walkingRoute, props.walkingContext, props.walkingShowHidden]);
+  useEffect(() => {
+    controller.current?.setIndoorPoints(props.indoorPoints, props.indoorFloor, props.indoorLayout);
+  }, [props.indoorPoints, props.indoorFloor, props.indoorLayout]);
+  useEffect(() => {
+    controller.current?.selectIndoorPoint(props.indoorSelectedId);
+  }, [props.indoorSelectedId]);
   useEffect(() => {
     controller.current?.setFacilities(props.facilities);
   }, [props.facilities]);
@@ -178,6 +200,11 @@ export default function MapScene(props: MapSceneProps) {
     <div className="map-scene" data-testid="map-scene">
       <div className="map-scene__canvas" ref={host} />
       <div className="map-scene__credits" ref={credits} />
+      {props.routePicking && (
+        <div className="route-centre-pin" aria-hidden="true">
+          ＋
+        </div>
+      )}
       {import.meta.env.VITE_SCENE_DIAGNOSTICS === 'true' && (
         <details className="scene-diagnostics">
           <summary>Local render diagnostics</summary>

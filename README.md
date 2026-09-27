@@ -15,7 +15,7 @@ pnpm dev
 
 Open **http://localhost:5173**. Vite proxies `/api` to the local API on port **8787**. Both servers bind to loopback by default. API responses come from live sources; an upstream failure stays an explicitly unavailable response.
 
-If this machine's Node requests time out while `curl` works, the verified local workaround is a longer connection-selection window:
+The Node API uses IPv4-first DNS ordering and a 5-second address-family connection window for provider compatibility. For other Node commands on networks where requests time out while `curl` works:
 
 ```sh
 NODE_OPTIONS="--dns-result-order=ipv4first --network-family-autoselection-attempt-timeout=5000" pnpm dev
@@ -43,6 +43,7 @@ With both devices connected to your Tailscale network, the preview also accepts 
 - 47 selected places across all 18 districts with English/Traditional Chinese search, categories and official source links.
 - Unified search adds bilingual FEHD restaurant licences, LandsD addresses, MTR stations and pasted coordinate pins. Restaurants refresh daily in the running Node API; saved pins stay in your browser. See [search setup and coverage](docs/data/search.md).
 - Explore adds official sports centres, libraries and water refill points with category layers, grouped markers, bilingual search and source details. See [facility coverage and refresh](docs/data/facilities.md).
+- Walking route preview with official LandsD Recommended, Shortest and Barrier-free profiles, bilingual directions and a ground-projected path. Official MTR station points can be selected by named level, with numbered map inspection, selected floor outlines, optional unit/opening detail and a list alternative; building entrance resolution and active guidance are future work. See [walking routing and data audit](docs/data/walking-routes.md).
 - Place selection, camera controls, graphics quality, local bookmarks and shareable URLs.
 - Responsive desktop discovery panel and expandable mobile panel.
 - Windy is the default Weather view, with 16 weather layers and a switch to HKO observations. See [Windy integration](docs/data/windy.md).

@@ -44,7 +44,13 @@ export function useWeather() {
     refetchInterval: 60_000,
     refetchIntervalInBackground: false,
   });
-  return { ...query, data: displayFeed(query.data, query.isError, now, 15 * 60_000, 60_000) };
+  const feed = displayFeed(query.data, query.isError, now, 15 * 60_000, 60_000);
+  const iconAge = now - Date.parse(feed?.data?.iconUpdatedAt ?? '');
+  const data =
+    feed?.data && !(iconAge >= -120_000 && iconAge < 2 * 60 * 60_000)
+      ? { ...feed.data, icon: null, condition: 'Condition unavailable' }
+      : feed?.data;
+  return { ...query, data: feed ? { ...feed, data: data ?? null } : undefined };
 }
 
 export function useArrivals(line: string, station: string, enabled = true) {

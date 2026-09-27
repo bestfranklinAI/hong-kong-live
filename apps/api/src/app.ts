@@ -1,3 +1,4 @@
+import { routingRoutes } from './routing';
 import { searchRoutes } from './search/routes';
 import type { SearchRepository } from './search/repository';
 import { LandsdSearch } from './search/landsd';
@@ -139,6 +140,7 @@ export function createApp(options: AppOptions = {}) {
 
   app.use('/api/v1/weather/rainfall/*', compress());
 
+  app.route('/api/v1/routes', routingRoutes(fetcher, now, mode));
   app.route('/api/v1/buses/kmb', busRoutes(fetcher, now, mode));
   app.route('/api/v1/buses/citybus', citybusRoutes(fetcher, now, mode));
 

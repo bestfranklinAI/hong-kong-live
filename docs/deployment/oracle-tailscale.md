@@ -166,3 +166,15 @@ This simple update can briefly interrupt requests. Keep the previous source/dist
 Then restart the API service.
 
 No Oracle VM was accessed or deployed while preparing these templates. Validate Nginx and both local health checks on your VM before enabling Serve.
+
+## Verify live feeds after an update
+
+Rebuild and copy the frontend, then restart `hk-live-api` so provider changes take effect. Check both feeds, not just the health endpoint:
+
+```sh
+curl -sS http://127.0.0.1:8787/api/v1/weather/current
+curl -sS 'http://127.0.0.1:8787/api/v1/arrivals?line=ISL&station=ADM'
+sudo journalctl -u hk-live-api -n 50 --no-pager
+```
+
+The Node server sets IPv4-first DNS ordering and a 5-second address-family connection window. TLS verification and provider request deadlines remain enabled. Weather measurements and condition icons retain separate source timestamps; an expired icon is hidden without discarding newer temperature/humidity readings. An unavailable result can still reflect a genuine upstream outage or stale measurements.

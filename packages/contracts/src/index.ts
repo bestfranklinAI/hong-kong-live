@@ -6,6 +6,7 @@ export const weatherSummarySchema = z.object({
   humidity: z.number().nullable(),
   condition: z.string(),
   icon: z.number().nullable(),
+  iconUpdatedAt: z.iso.datetime().nullable().optional(),
   station: z.string(),
   updatedAt: z.iso.datetime().nullable(),
 });
@@ -76,3 +77,5 @@ export * from './search';
 export { places, searchPlaces, getPlace, categoryLabels } from './places';
 export * from './map-links';
 export * from './facilities';
+export * from './routing';
+export * from './indoor';

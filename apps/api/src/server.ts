@@ -1,3 +1,5 @@
+import { setDefaultResultOrder } from 'node:dns';
+import { setDefaultAutoSelectFamilyAttemptTimeout } from 'node:net';
 import { fileURLToPath } from 'node:url';
 import { RestaurantStore } from './search/store';
 import { LandsdSearch } from './search/landsd';
@@ -6,6 +8,11 @@ import { serve } from '@hono/node-server';
 import { createApp } from './app';
 import { persistentFacilities } from './search/facility-storage';
 import { FacilityCatalogue } from '@hk/providers';
+
+// Some HK providers fail with Node's short address-family connection window.
+// Keep TLS verification and request deadlines; allow a viable address to connect.
+setDefaultResultOrder('ipv4first');
+setDefaultAutoSelectFamilyAttemptTimeout(5000);
 
 const mode = process.env.HK_DATA_MODE ?? 'live';
 if (mode !== 'fixture' && mode !== 'live') throw new Error('HK_DATA_MODE must be live or fixture.');

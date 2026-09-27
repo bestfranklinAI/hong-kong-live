@@ -21,3 +21,5 @@ export * from './citybus';
 export * from './search';
 export * from './map-links';
 export * from './facilities';
+export * from './routing';
+export * from './indoor';

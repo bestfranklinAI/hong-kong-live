@@ -1,9 +1,17 @@
 import { usePreferences } from '../app/preferences';
 
-/** One persisted choice shared by desktop controls and the mobile settings sheet. */
-export function CityViewControl() {
-  const enabled = usePreferences((state) => state.cityView);
-  const setEnabled = usePreferences((state) => state.setCityView);
+/** Planning can override the persisted general map preference. */
+export function CityViewControl({
+  value,
+  onChange,
+}: {
+  value?: boolean;
+  onChange?: (enabled: boolean) => void;
+}) {
+  const preferred = usePreferences((state) => state.cityView);
+  const setPreferred = usePreferences((state) => state.setCityView);
+  const enabled = value ?? preferred;
+  const setEnabled = onChange ?? setPreferred;
   const available = Boolean(import.meta.env.VITE_HK_3D_TILESET_URL);
   return (
     <label>

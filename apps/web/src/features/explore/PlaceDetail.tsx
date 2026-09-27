@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, Bookmark, Check, ExternalLink, MapPin, Share2, X } from 'lucide-react';
-import type { Place } from '@hk/contracts';
+import { StationIndoorDialog } from '../navigation/StationIndoorDialog';
+import type { Place, RouteEndpoint } from '@hk/contracts';
 import { categoryLabels } from './places';
 import { IconButton, PlaceIcon } from '../../shared/ui';
 import { usePreferences } from '../../app/preferences';
@@ -9,11 +10,14 @@ export function PlaceDetail({
   place,
   onClose,
   onTransit,
+  onRoutePoint,
 }: {
+  onRoutePoint: (point: RouteEndpoint, role: 'start' | 'end') => void;
   place: Place;
   onClose: () => void;
   onTransit: () => void;
 }) {
+  const [indoorOpen, setIndoorOpen] = useState(false);
   const saved = usePreferences((state) => state.savedIds.includes(place.id));
   const toggleSaved = usePreferences((state) => state.toggleSaved);
   const [shareState, setShareState] = useState<'idle' | 'copied' | 'error'>('idle');
@@ -57,6 +61,22 @@ export function PlaceDetail({
         <MapPin size={15} />
         <span>{place.district}</span>
       </div>
+      {place.station && (
+        <>
+          <button className="walking-submit" onClick={() => setIndoorOpen(true)}>
+            View indoor map
+          </button>
+          <StationIndoorDialog
+            place={place}
+            open={indoorOpen}
+            onClose={() => setIndoorOpen(false)}
+            onRoutePoint={(point, role) => {
+              setIndoorOpen(false);
+              onRoutePoint(point, role);
+            }}
+          />
+        </>
+      )}
       <div className="detail-actions">
         <button
           className={`primary-button ${saved ? 'saved' : ''}`}

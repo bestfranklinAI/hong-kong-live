@@ -22,12 +22,13 @@ describe('source time normalization', () => {
 });
 
 describe('HKO current observations', () => {
-  it('uses the named reference station and oldest displayed component timestamp', () => {
+  it('uses the named reference station and oldest measurement timestamp', () => {
     const report = normalizeWeather(weather);
     expect(report.data.temperature).toBe(31);
     expect(report.data.humidity).toBe(67);
     expect(report.data.condition).toBe('Sunny intervals');
-    expect(report.sourceUpdatedAt).toBe('2026-09-13T05:45:00.000Z');
+    expect(report.sourceUpdatedAt).toBe(parseSourceTime(weather.temperature.recordTime));
+    expect(report.data.iconUpdatedAt).toBe(parseSourceTime(weather.iconUpdateTime));
   });
 
   it('does not replace missing observations with zeros or a different station', () => {
@@ -44,6 +45,13 @@ describe('HKO current observations', () => {
       temperature: { data: weather.temperature.data },
     });
     expect(report.sourceUpdatedAt).toBeNull();
+  });
+
+  it('does not let an old icon suppress newer measurements', () => {
+    const report = normalizeWeather({ ...weather, iconUpdateTime: '2026-09-12T01:00:00+08:00' });
+    expect(report.sourceUpdatedAt).toBe(parseSourceTime(weather.temperature.recordTime));
+    expect(report.data.iconUpdatedAt).toBe('2026-09-11T17:00:00.000Z');
+    expect(report.data.temperature).toBe(31);
   });
 
   it('rejects malformed provider data', () => {

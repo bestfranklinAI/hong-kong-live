@@ -9,11 +9,15 @@ export function MapSettings({
   onOpenChange,
   command,
   status,
+  cityView,
+  onCityViewChange,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   command: (command: SceneCommand['type']) => void;
   status: string;
+  cityView?: boolean;
+  onCityViewChange?: (enabled: boolean) => void;
 }) {
   const preferences = usePreferences();
   return (
@@ -73,7 +77,7 @@ export function MapSettings({
           >
             Toggle flat / tilted view
           </button>
-          <CityViewControl />
+          <CityViewControl value={cityView} onChange={onCityViewChange} />
           <details>
             <summary>Map & data credits</summary>
             <p>
