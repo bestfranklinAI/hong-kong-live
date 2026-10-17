@@ -37,13 +37,21 @@ If a phone cannot reach the Network URL, check macOS local-network/firewall perm
 
 With both devices connected to your Tailscale network, the preview also accepts `http://franklins-macbook-pro.seagull-tet.ts.net:4173`. This exact hostname is allowlisted in Vite; API requests use the same frontend proxy.
 
+For phone GPS testing, use HTTPS. With the preview running, start a separate terminal:
+
+```sh
+tailscale serve --https=443 http://127.0.0.1:4173
+```
+
+Keep this foreground process running and open the HTTPS address printed by Tailscale on your connected phone. This serves the preview within your tailnet; it does not enable public Funnel access.
+
 ## Available in the first slice
 
 - Interactive Cesium map with public LandsD topographic/aerial layers, English/Traditional Chinese labels and an OpenStreetMap option. No required paid service.
 - 47 selected places across all 18 districts with English/Traditional Chinese search, categories and official source links.
 - Unified search adds bilingual FEHD restaurant licences, LandsD addresses, MTR stations and pasted coordinate pins. Restaurants refresh daily in the running Node API; saved pins stay in your browser. See [search setup and coverage](docs/data/search.md).
 - Explore adds official sports centres, libraries and water refill points with category layers, grouped markers, bilingual search and source details. See [facility coverage and refresh](docs/data/facilities.md).
-- Walking route preview with official LandsD Recommended, Shortest and Barrier-free profiles, bilingual directions and a ground-projected path. Official MTR station points can be selected by named level, with numbered map inspection, selected floor outlines, optional unit/opening detail and a list alternative; building entrance resolution and active guidance are future work. See [walking routing and data audit](docs/data/walking-routes.md).
+- Navigation-first walking planner with official LandsD Recommended, Shortest and Barrier-free profiles, inline place/coordinate/Google Maps link search, 2D overview and experimental source-height 3D routes. Start walking enables approximate GPS progress, heading-aware follow camera, Recentre and explicit off-route recalculation. Searchable official building and MTR floor plans support expanded viewing, pinch/drag exploration and mapped amenities. Station routes use a quieter overview and floor-by-floor inspection; generic station origins default to a clearly labelled assumed concourse, with optional point selection. Route-supported exits are highlighted and available building plans can display matched route floors. MTR source-point routing remains available; building indoor endpoints are not supported. Indoor positioning and physically verified guidance are not provided. See [walking routing and data audit](docs/data/walking-routes.md).
 - Place selection, camera controls, graphics quality, local bookmarks and shareable URLs.
 - Responsive desktop discovery panel and expandable mobile panel.
 - Windy is the default Weather view, with 16 weather layers and a switch to HKO observations. See [Windy integration](docs/data/windy.md).
@@ -64,6 +72,8 @@ The default map is a **flat LandsD basemap on the globe**, not the textured Land
 Copy `apps/web/.env.example` to `apps/web/.env.local` and set `VITE_HK_3D_TILESET_URL` to a project-authorised tileset URL. Restart Vite afterward. All `VITE_*` values are visible in the browser: only use a credential approved for public-browser delivery. Do not paste a secret key into this setting.
 
 The [LandsD 3D streaming API](https://portal.csdi.gov.hk/csdi-webpage/apidoc/3d-visualisation-map-api) requires a project-issued key. Its dependent tile requests, provider credit requirements and phone performance must be validated before release. A secret-key deployment needs a separately reviewed delivery path.
+
+Map settings offers **Clean buildings** and **Photo city** when the corresponding sources are configured. Set `VITE_HK_3D_BUILDINGS_TILESET_URL` to an authorised [3D Spatial Data building API](https://portal.csdi.gov.hk/csdi-webpage/apidoc/3d-spatial-data-api) URL (`3dsd/WGS84/building/tileset.json`). The canonical LandsD `f2` photo URL can derive this building API URL; other sources require explicit configuration. Clean buildings is the default when available and streams pale, softly shaded building models over a muted basemap. Photo city reveals actual loaded geometry progressively rather than keeping the whole mesh hidden until the first queue settles. The outlined route can remain visible through buildings without altering source heights. Style changes retain the camera, route and source caches, sharing the configured cache target across both sources. First rendered buildings do not mean complete coverage or verified indoor navigation.
 
 With a configured URL, **Map dimension** switches between a flat 2D basemap and the textured 3D city. It is available in desktop map controls and mobile **Map settings**. The choice is saved locally; HKO weather keeps its flat observation surface.
 

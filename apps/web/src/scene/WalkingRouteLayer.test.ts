@@ -26,7 +26,7 @@ vi.mock('cesium', async (original) => {
       }
     },
     PointPrimitiveCollection: Collection,
-    Material: { fromType: vi.fn(() => ({})) },
+    Material: { fromType: vi.fn((type: string, uniforms: unknown) => ({ type, uniforms })) },
   };
 });
 it('keeps geometry in 3D, toggles occlusion without reframing, and clears on close', () => {
@@ -55,6 +55,23 @@ it('keeps geometry in 3D, toggles occlusion without reframing, and clears on clo
   const frames = vi.mocked(widget.camera.flyToBoundingSphere).mock.calls.length;
   layer.set(route, true, true);
   expect(widget.camera.flyToBoundingSphere).toHaveBeenCalledTimes(frames);
+  const overlay = (
+    collections[0] as unknown as {
+      entries: Array<{
+        depthFailAppearance: { material: { type: string; uniforms: { outlineWidth: number } } };
+      }>;
+    }
+  ).entries[0];
+  expect(overlay.depthFailAppearance.material.type).toBe('PolylineOutline');
+  expect(overlay.depthFailAppearance.material.uniforms.outlineWidth).toBe(2);
+  const geometry = (collections[0] as unknown as { entries: unknown[] }).entries[0];
+  layer.set(route, true, true);
+  expect((collections[0] as unknown as { entries: unknown[] }).entries[0]).toBe(geometry);
+  // A replacement from off-route recalculation changes geometry, not the walking camera.
+  const replacement = walkingRouteSchema.parse(fixture.routes['eal-ground']);
+  layer.set(replacement, true, true, false);
+  expect(widget.camera.flyToBoundingSphere).toHaveBeenCalledTimes(frames);
+  expect((collections[0] as unknown as { entries: unknown[] }).entries[0]).not.toBe(geometry);
   layer.set(route, false);
   expect(collections[0].length).toBeGreaterThan(0);
   layer.set(null);
@@ -83,4 +100,30 @@ it('preserves source Z and splits missing-height gaps without affecting 2D cover
     ],
   ]);
   expect(routeDisplayPaths(route, false)[0].map((p) => p[2])).toEqual([3, 3, 3, 3, 3]);
+});
+
+it('reframes the existing route above a changing sheet without rebuilding geometry', () => {
+  const collections: { length: number }[] = [];
+  const widget = {
+    scene: {
+      primitives: {
+        add: (c: { length: number }) => {
+          collections.push(c);
+          return c;
+        },
+        remove: vi.fn(),
+      },
+      requestRender: vi.fn(),
+    },
+    camera: { flyToBoundingSphere: vi.fn() },
+  } as unknown as CesiumWidget;
+  const frame = vi.fn(() => true);
+  const layer = new WalkingRouteLayer(widget, frame);
+  layer.set(walkingRouteSchema.parse(fixture.routes['eal-ground']), true, true);
+  const count = collections[0].length;
+  frame.mockClear();
+  layer.frame();
+  expect(frame).toHaveBeenCalledOnce();
+  expect(collections[0].length).toBe(count);
+  expect(widget.camera.flyToBoundingSphere).not.toHaveBeenCalled();
 });

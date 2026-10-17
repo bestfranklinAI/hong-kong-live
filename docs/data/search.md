@@ -49,3 +49,7 @@ Coordinate parsing works locally even when the API is unavailable. Coordinates o
 ## Verification
 
 Tests cover coordinate validation, bilingual XML joining, malformed snapshots, HK80 conversion, conservative matching, SQLite search/publication, nearby filtering, partial source failures, request coalescing and the HKT refresh boundary. Browser checks complement these tests; physical Android responsiveness and territory-wide address-match coverage require separate measurement.
+
+## Android Google Maps links
+
+A single HTTPS URL may be pasted with its Android share label. Link resolution begins automatically. Direct coordinates are retained when present; a place-ID-only redirect preserves its place label and can use the bounded LandsD address lookup to offer building candidates. Exact building-name matches take precedence over businesses located in that building. The user chooses a candidate; these are approximate references, not verified business entrances or indoor floors. No Google page scripts are executed, and unrelated page camera coordinates are never substituted for a place.

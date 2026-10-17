@@ -11,6 +11,7 @@ export interface IndoorMapChoice {
 
 export const indoorCategoryLabels: Record<IndoorPoint['category'], string> = {
   entry: 'Exit / entry',
+  restroom: 'Toilet',
   elevator: 'Lift',
   platform: 'Platform',
   ramp: 'Ramp',

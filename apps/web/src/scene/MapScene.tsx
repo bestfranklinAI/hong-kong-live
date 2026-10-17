@@ -3,13 +3,16 @@ import 'cesium/Build/Cesium/Widgets/widgets.css';
 import { SceneController } from './SceneController';
 import type { MapSceneProps } from './types';
 import './scene.css';
+import { configuredCitySources } from './city-sources';
 
 export default function MapScene(props: MapSceneProps) {
   const performanceOutput = useRef<HTMLPreElement>(null);
   const host = useRef<HTMLDivElement>(null);
   const credits = useRef<HTMLDivElement>(null);
   const controller = useRef<SceneController | null>(null);
+  const initialPresentation = useRef(props.cityPresentation ?? 'photo');
   const callbacks = useRef({
+    onFollowChange: props.onFollowChange,
     onRoutePoint: props.onRoutePoint,
     onIndoorPointSelect: props.onIndoorPointSelect,
     onFacilitySelect: props.onFacilitySelect,
@@ -20,14 +23,18 @@ export default function MapScene(props: MapSceneProps) {
     onStatus: props.onStatus,
     onCameraSelect: props.onCameraSelect,
     onStationSelect: props.onStationSelect,
+    onIndoorVenueSelect: props.onIndoorVenueSelect,
+    onRouteStationSelect: props.onRouteStationSelect,
     onBusStopSelect: props.onBusStopSelect,
     onBusAreaSelect: props.onBusAreaSelect,
   });
   const [cityLoading, setCityLoading] = useState(false);
+  const [citySlow, setCitySlow] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     callbacks.current = {
+      onFollowChange: props.onFollowChange,
       onRoutePoint: props.onRoutePoint,
       onIndoorPointSelect: props.onIndoorPointSelect,
       onFacilitySelect: props.onFacilitySelect,
@@ -38,10 +45,13 @@ export default function MapScene(props: MapSceneProps) {
       onStatus: props.onStatus,
       onCameraSelect: props.onCameraSelect,
       onStationSelect: props.onStationSelect,
+      onIndoorVenueSelect: props.onIndoorVenueSelect,
+      onRouteStationSelect: props.onRouteStationSelect,
       onBusStopSelect: props.onBusStopSelect,
       onBusAreaSelect: props.onBusAreaSelect,
     };
   }, [
+    props.onFollowChange,
     props.onRoutePoint,
     props.onIndoorPointSelect,
     props.onFacilitySelect,
@@ -52,6 +62,8 @@ export default function MapScene(props: MapSceneProps) {
     props.onStatus,
     props.onCameraSelect,
     props.onStationSelect,
+    props.onIndoorVenueSelect,
+    props.onRouteStationSelect,
     props.onBusStopSelect,
     props.onBusAreaSelect,
   ]);
@@ -69,18 +81,24 @@ export default function MapScene(props: MapSceneProps) {
         performanceOutput: performanceOutput.current ?? undefined,
         onCameraSelect: (camera) => callbacks.current.onCameraSelect?.(camera),
         onStationSelect: (selection) => callbacks.current.onStationSelect?.(selection),
+        onIndoorVenueSelect: (venue) => callbacks.current.onIndoorVenueSelect?.(venue),
+        onRouteStationSelect: (id) => callbacks.current.onRouteStationSelect?.(id),
         onBusAreaSelect: (area) => callbacks.current.onBusAreaSelect?.(area),
         onBusStopSelect: (stop) => callbacks.current.onBusStopSelect?.(stop),
         onTrainSelect: (arrival) => callbacks.current.onTrainSelect?.(arrival),
         onSelect: (place) => callbacks.current.onSelect(place),
         onStatus: (status) => {
           setCityLoading(Boolean(status.cityLoading));
+          setCitySlow(Boolean(status.citySlow));
           callbacks.current.onStatus?.(status);
           if (!status.ready) setError(status.message);
         },
+        onFollowChange: (value) => callbacks.current.onFollowChange?.(value),
         basemap: 'none',
         mapLanguage: 'en',
         tilesetUrl: import.meta.env.VITE_HK_3D_TILESET_URL || undefined,
+        citySources: configuredCitySources,
+        cityPresentation: initialPresentation.current,
       });
     } catch {
       const message =
@@ -102,6 +120,10 @@ export default function MapScene(props: MapSceneProps) {
   }, [props.basemap, props.mapLanguage]);
 
   useEffect(() => {
+    controller.current?.setCityPresentation(props.cityPresentation ?? 'photo');
+  }, [props.cityPresentation]);
+
+  useEffect(() => {
     controller.current?.setCityView(props.cityView);
   }, [props.cityView]);
 
@@ -112,6 +134,14 @@ export default function MapScene(props: MapSceneProps) {
   useEffect(() => {
     controller.current?.setPlaces(props.places);
   }, [props.places]);
+
+  useEffect(() => {
+    controller.current?.setIndoorVenues(props.indoorVenues ?? []);
+  }, [props.indoorVenues]);
+
+  useEffect(() => {
+    controller.current?.setContextPlaces(props.contextPlaces ?? props.places);
+  }, [props.contextPlaces, props.places]);
   useEffect(() => {
     controller.current?.setQuality(props.quality);
   }, [props.quality]);
@@ -140,12 +170,16 @@ export default function MapScene(props: MapSceneProps) {
   }, [props.searchPin]);
 
   useEffect(() => {
+    controller.current?.setNavigation(props.navigation);
+  }, [props.navigation]);
+  useEffect(() => {
     controller.current?.setWalkingRoute(
       props.walkingRoute ?? null,
       props.walkingContext,
       props.walkingShowHidden,
+      props.stationRouteView,
     );
-  }, [props.walkingRoute, props.walkingContext, props.walkingShowHidden]);
+  }, [props.walkingRoute, props.walkingContext, props.walkingShowHidden, props.stationRouteView]);
   useEffect(() => {
     controller.current?.setIndoorPoints(props.indoorPoints, props.indoorFloor, props.indoorLayout);
   }, [props.indoorPoints, props.indoorFloor, props.indoorLayout]);
@@ -194,7 +228,7 @@ export default function MapScene(props: MapSceneProps) {
       observer.disconnect();
       cancelAnimationFrame(frame);
     };
-  }, [props.frameAbove, props.selectedPlace?.id]);
+  }, [props.frameAbove, props.selectedPlace?.id, props.overlayState]);
 
   return (
     <div className="map-scene" data-testid="map-scene">
@@ -213,7 +247,7 @@ export default function MapScene(props: MapSceneProps) {
       )}
       {cityLoading && (
         <div className="city-loading" role="status">
-          Loading 3D detail…
+          {citySlow ? '3D loading slowly…' : 'Loading 3D detail…'}
         </div>
       )}
       {error && (

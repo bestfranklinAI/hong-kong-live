@@ -4,6 +4,7 @@ import {
   indoorPointSchema,
   indoorFloorSchema,
   type IndoorFloors,
+  type IndoorVenue,
   type IndoorLayout,
   indoorStationSchema,
   withinHongKong,
@@ -37,9 +38,12 @@ export function normalizeIndoorPoints(raw: unknown, venueId: string) {
   const points: IndoorPoints['points'] = [];
   for (const f of collection.parse(raw).features) {
     const p = f.properties;
+    const category = text(p.amenity_category).startsWith('restroom')
+      ? 'restroom'
+      : text(p.amenity_category);
     if (
-      !['entry', 'elevator', 'platform', 'ramp', 'stairs', 'escalator'].includes(
-        text(p.amenity_category),
+      !['entry', 'elevator', 'platform', 'ramp', 'stairs', 'escalator', 'restroom'].includes(
+        category,
       )
     )
       continue;
@@ -69,7 +73,7 @@ export function normalizeIndoorPoints(raw: unknown, venueId: string) {
         nameZh: text(p.amenity_name_zh),
         levelName: p.level_name_en,
         levelNameZh: text(p.level_name_zh),
-        category: p.amenity_category,
+        category,
         lng,
         lat,
         z: height,
@@ -144,6 +148,8 @@ export class IndoorCatalogue {
         request: 'GetFeature',
         outputFormat: 'application/json',
       });
+      if (feature === 'venue_polygon')
+        query.set('propertyName', 'venue_id,venue_name_en,venue_name_zh');
       if (venueId) query.set('cql_filter', `venue_id='${z.uuid().parse(venueId)}'`);
       const raw = await fetchJson(`${BASE}${feature}?${query}`, this.fetcher, {
         maxBytes: 6 * 1024 * 1024,
@@ -161,38 +167,70 @@ export class IndoorCatalogue {
     const d = await this.load('stations', 'mtr_venue_polygon', normalizeIndoorStations);
     return { stations: d.value, fetchedAt: d.fetchedAt };
   }
-  async points(id: string): Promise<IndoorPoints> {
+  async buildings(): Promise<{ venues: IndoorVenue[]; fetchedAt: string }> {
+    const d = await this.load('buildings', 'venue_polygon', (raw) => {
+      const records = new Map(
+        collection.parse(raw).features.map((row) => [row.properties.venue_id, row.properties]),
+      );
+      return normalizeIndoorStations(raw).map((venue) => {
+        // This service's bbox property uses south/west/north/east order.
+        const box = z
+          .tuple([
+            z.number().finite(),
+            z.number().finite(),
+            z.number().finite(),
+            z.number().finite(),
+          ])
+          .safeParse(records.get(venue.id)?.bbox);
+        const location =
+          box.success &&
+          box.data[0] <= box.data[2] &&
+          box.data[1] <= box.data[3] &&
+          withinHongKong({ lat: box.data[0], lng: box.data[1] }) &&
+          withinHongKong({ lat: box.data[2], lng: box.data[3] })
+            ? { lat: (box.data[0] + box.data[2]) / 2, lng: (box.data[1] + box.data[3]) / 2 }
+            : undefined;
+        return {
+          ...venue,
+          kind: 'building' as const,
+          ...(location && withinHongKong(location) ? { location } : {}),
+        };
+      });
+    });
+    return { venues: d.value, fetchedAt: d.fetchedAt };
+  }
+  async points(id: string, kind: 'station' | 'building' = 'station'): Promise<IndoorPoints> {
     z.uuid().parse(id);
     const d = await this.load(
-      `points:${id}`,
-      'mtr_amenity_point',
+      `${kind}:points:${id}`,
+      kind === 'station' ? 'mtr_amenity_point' : 'amenity_point',
       (raw) => normalizeIndoorPoints(raw, id),
       id,
     );
     return { points: d.value, fetchedAt: d.fetchedAt, sourceUpdatedAt: null };
   }
-  async floors(id: string): Promise<IndoorFloors> {
+  async floors(id: string, kind: 'station' | 'building' = 'station'): Promise<IndoorFloors> {
     z.uuid().parse(id);
     const d = await this.load(
-      `floors:${id}`,
-      'mtr_level_polygon',
+      `${kind}:floors:${id}`,
+      kind === 'station' ? 'mtr_level_polygon' : 'level_polygon',
       (raw) => normalizeIndoorFloors(raw, id),
       id,
     );
     return { floors: d.value, fetchedAt: d.fetchedAt, sourceUpdatedAt: null };
   }
-  async layout(id: string): Promise<IndoorLayout> {
+  async layout(id: string, kind: 'station' | 'building' = 'station'): Promise<IndoorLayout> {
     z.uuid().parse(id);
     const [units, openings] = await Promise.all([
       this.load(
-        `units:${id}`,
-        'mtr_unit_polygon',
+        `${kind}:units:${id}`,
+        kind === 'station' ? 'mtr_unit_polygon' : 'unit_polygon',
         (raw) => normalizeIndoorLayout(raw, id, 'unit'),
         id,
       ),
       this.load(
-        `openings:${id}`,
-        'mtr_opening_line',
+        `${kind}:openings:${id}`,
+        kind === 'station' ? 'mtr_opening_line' : 'opening_line',
         (raw) => normalizeIndoorLayout(raw, id, 'opening'),
         id,
       ),
@@ -205,7 +243,56 @@ export class IndoorCatalogue {
       sourceUpdatedAt: null,
     };
   }
-  async resolve(endpoint: RouteEndpoint): Promise<RouteEndpoint> {
+  async resolve(
+    endpoint: RouteEndpoint,
+    profile?: 'recommended' | 'shortest' | 'barrier-free',
+  ): Promise<RouteEndpoint> {
+    if (!endpoint.indoor && endpoint.assumedConcourse) {
+      const key = (name: string) =>
+        name.toLowerCase().replace(/\bmtr\b|\bstation\b|港鐵|鐵路站|站|\s+/g, '');
+      const station = (await this.stations()).stations.find(
+        (s) => key(s.name) === key(endpoint.name) || key(s.nameZh) === key(endpoint.name),
+      );
+      if (!station)
+        throw new ProviderError(
+          'No station concourse is available. Choose a mapped starting point.',
+        );
+      const floors = (await this.floors(station.id)).floors.filter(
+        (f) => /\bconcourse\b/i.test(f.name) || /大堂/.test(f.nameZh),
+      );
+      const points = (await this.points(station.id)).points;
+      const candidates = points.filter(
+        (p) =>
+          floors.some((f) => f.id === p.levelId) &&
+          p.category !== 'platform' &&
+          p.category !== 'restroom',
+      );
+      // Prefer a real internal connector over an exit; never invent a centroid as a walking node.
+      const allowed =
+        profile === 'barrier-free'
+          ? candidates.filter((p) => !['stairs', 'escalator'].includes(p.category))
+          : candidates;
+      const connectors = allowed.filter((p) => p.category !== 'entry' && p.category !== 'stairs');
+      const pool = connectors.length ? connectors : allowed;
+      const distance = (p: { lat: number; lng: number }) =>
+        Math.hypot(
+          p.lat - endpoint.lat,
+          (p.lng - endpoint.lng) * Math.cos((endpoint.lat * Math.PI) / 180),
+        );
+      const point = [...pool].sort((a, b) => distance(a) - distance(b))[0];
+      if (!point)
+        throw new ProviderError(
+          'No mapped concourse starting point is available. Choose an entrance or use current location.',
+        );
+      return {
+        ...endpoint,
+        name: `${station.name} · ${point.levelName} (assumed concourse)`,
+        lat: point.lat,
+        lng: point.lng,
+        z: point.z,
+        indoor: { venueId: station.id, pointId: point.id },
+      };
+    }
     if (!endpoint.indoor) return endpoint;
     const { venueId, pointId } = endpoint.indoor;
     const station = (await this.stations()).stations.find((s) => s.id === venueId);

@@ -1,5 +1,6 @@
 import {
   coordinateResult,
+  extractMapLink,
   coordinatesSchema,
   MAP_LINK_MAX_LENGTH,
   withinHongKong,
@@ -23,6 +24,7 @@ const empty = (message: string): MapLinkResponse => ({
   result: null,
   coordinateKind: null,
   message,
+  candidates: [],
 });
 
 /** Exact hosts and Maps-only paths, checked again before every redirect request. */
@@ -55,6 +57,24 @@ function pair(value: string | null): Coordinates | null {
   if (!match) return null;
   const parsed = coordinatesSchema.safeParse({ lat: Number(match[1]), lng: Number(match[2]) });
   return parsed.success ? parsed.data : null;
+}
+
+export function sharedPlaceFromUrl(url: URL) {
+  const raw = url.pathname.match(/\/place\/([^/]+)/)?.[1];
+  if (!raw) return undefined;
+  try {
+    const address = decodeURIComponent(raw.replace(/\+/g, ' ')).trim().slice(0, 1000);
+    const parts = address.split(',').map((part) => part.trim());
+    const name =
+      /^(?:\d+\s*\/\s*f|(?:room|unit|floor)\s+\w+)/i.test(parts[0]) && parts[1]
+        ? parts[1]
+        : parts[0];
+    if (!name || pair(name)) return undefined;
+    const clean = new URL(url.origin + url.pathname);
+    return { name, address, url: clean.href };
+  } catch {
+    return undefined;
+  }
 }
 
 export function coordinatesFromMapUrl(url: URL): MapLinkResponse {
@@ -105,6 +125,7 @@ export function coordinatesFromMapUrl(url: URL): MapLinkResponse {
   if (!withinHongKong(location))
     return empty('The coordinates in this link are outside the Hong Kong study area.');
   return {
+    candidates: [],
     result: {
       ...coordinateResult(location),
       name: kind === 'place' ? 'Shared map pin' : 'Shared map centre',
@@ -122,11 +143,20 @@ export async function resolveGoogleMapsLink(
   input: string,
   fetcher: Fetcher,
 ): Promise<MapLinkResponse> {
-  let url = allowedMapUrl(input.trim());
+  let url = allowedMapUrl(extractMapLink(input));
   const seen = new Set<string>();
   const signal = AbortSignal.timeout(8000);
   for (let hop = 0; hop < 6; hop++) {
-    if (googleHosts.has(url.hostname)) return coordinatesFromMapUrl(url);
+    if (googleHosts.has(url.hostname)) {
+      const resolved = coordinatesFromMapUrl(url);
+      const place = sharedPlaceFromUrl(url);
+      if (place) {
+        resolved.place = place;
+        if (resolved.result && resolved.coordinateKind === 'place')
+          resolved.result.name = place.name;
+      }
+      return resolved;
+    }
     if (!shortHosts.has(url.hostname) || seen.has(url.href))
       return empty('The map link has a redirect loop. Paste coordinates instead.');
     seen.add(url.href);

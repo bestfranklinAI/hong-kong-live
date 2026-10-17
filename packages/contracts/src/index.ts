@@ -79,3 +79,6 @@ export * from './map-links';
 export * from './facilities';
 export * from './routing';
 export * from './indoor';
+export type { MapNameLabel } from './map-labels';
+
+export type { StationRouteSegment, StationRouteContext, StationRouteView } from './station-route';

@@ -4,6 +4,11 @@ import { coordinatesSchema, withinHongKong } from './search';
 export const routeEndpointSchema = coordinatesSchema
   .extend({
     name: z.string().trim().min(1).max(1000),
+    station: z
+      .object({ line: z.string().min(3).max(4), station: z.string().regex(/^[A-Z]{3}$/) })
+      .optional(),
+    // Explicit UI assumption, never a measured indoor position.
+    assumedConcourse: z.boolean().optional(),
     indoor: z.object({ venueId: z.uuid(), pointId: z.uuid() }).optional(),
     // Source heights are optional. Never derive a floor or ground height from GPS.
     z: z.number().finite().min(-500).max(2000).optional(),

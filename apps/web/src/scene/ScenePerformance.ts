@@ -1,4 +1,5 @@
 import type { CesiumWidget } from 'cesium';
+import type { CityLayers } from './CityLayers';
 
 function percentile(values: number[], fraction: number) {
   if (!values.length) return null;
@@ -24,12 +25,14 @@ export class ScenePerformance {
   private firstSettledMs: number | null = null;
   private added = 0;
   private removed = 0;
-  private resources = { background: 0, labels: 0, other: 0 };
+  private resources = { background: 0, labels: 0, city: 0, other: 0 };
   private durations: number[] = [];
+  private cityDurations: number[] = [];
 
   constructor(
     private widget: CesiumWidget,
     private output: HTMLElement,
+    private citySnapshot?: () => ReturnType<CityLayers['snapshot']>,
   ) {
     const { scene, camera, imageryLayers } = widget;
     this.cleanups.push(
@@ -54,11 +57,20 @@ export class ScenePerformance {
       scene.postRender.addEventListener(() => {
         this.frames++;
         const now = performance.now();
-        if (this.moving && this.lastFrame && this.intervals.length < 3600)
+        if (!document.hidden && this.moving && this.lastFrame && this.intervals.length < 3600)
           this.intervals.push(now - this.lastFrame);
         this.lastFrame = now;
       }),
     );
+    const visibility = () => {
+      this.lastFrame = 0;
+      if (document.hidden) {
+        this.intervals = [];
+        this.lastMotion = null;
+      }
+    };
+    document.addEventListener('visibilitychange', visibility);
+    this.cleanups.push(() => document.removeEventListener('visibilitychange', visibility));
     this.cleanups.push(
       scene.globe.tileLoadProgressEvent.addEventListener((pending: number) => {
         this.pending = pending;
@@ -76,15 +88,27 @@ export class ScenePerformance {
       this.observer = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
           const url = new URL(entry.name);
-          if (!['mapapi.geodata.gov.hk', 'tile.openstreetmap.org'].includes(url.hostname)) continue;
-          const kind = url.pathname.includes('/label/')
-            ? 'labels'
-            : url.pathname.includes('/basemap/') || url.pathname.includes('/imagery/')
-              ? 'background'
-              : 'other';
+          if (
+            !['mapapi.geodata.gov.hk', 'tile.openstreetmap.org', 'data.map.gov.hk'].includes(
+              url.hostname,
+            )
+          )
+            continue;
+          const kind =
+            url.hostname === 'data.map.gov.hk' && url.pathname.startsWith('/api/3d-data/')
+              ? 'city'
+              : url.pathname.includes('/label/')
+                ? 'labels'
+                : url.pathname.includes('/basemap/') || url.pathname.includes('/imagery/')
+                  ? 'background'
+                  : 'other';
           this.resources[kind]++;
           if (this.durations.length === 1000) this.durations.shift();
           this.durations.push(entry.duration);
+          if (kind === 'city') {
+            if (this.cityDurations.length === 1000) this.cityDurations.shift();
+            this.cityDurations.push(entry.duration);
+          }
         }
       });
       this.observer.observe({ type: 'resource', buffered: true });
@@ -97,6 +121,7 @@ export class ScenePerformance {
     this.output.textContent = JSON.stringify(
       {
         elapsedMs: Math.round(performance.now() - this.started),
+        visibility: document.visibilityState,
         drawsSinceLastSample: this.frames - this.previousFrames,
         totalDraws: this.frames,
         moving: this.moving,
@@ -109,6 +134,8 @@ export class ScenePerformance {
         layerCount: this.widget.imageryLayers.length,
         tileResourceCompletions: this.resources,
         resourceDurationP95Ms: percentile(this.durations, 0.95),
+        cityResourceDurationP95Ms: percentile(this.cityDurations, 0.95),
+        city: this.citySnapshot?.(),
         globeCacheTiles: this.widget.scene.globe.tileCacheSize,
         canvas: { width: this.widget.canvas.width, height: this.widget.canvas.height },
         viewport: {

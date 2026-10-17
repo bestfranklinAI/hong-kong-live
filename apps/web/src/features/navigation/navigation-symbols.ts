@@ -1,5 +1,6 @@
 /** Shared vector symbols for the renderer and accessible DOM cards. */
 export const navigationPaths = {
+  restroom: ['M6 3h.01M18 3h.01', 'M4 8h4v7H4zM16 8h4v7h-4z', 'M5 15v6m2-6v6m10-6v6m2-6v6'],
   elevator: ['M5 3h14v18H5z', 'M9 10V6m-2 2 2-2 2 2', 'M15 14v4m-2-2 2 2 2-2'],
   stairs: ['M3 20h5v-5h5v-5h5V5h3'],
   escalator: ['M3 18h5l8-10h5', 'M3 14h3l8-10h7', 'M11 9V5', 'M10 2h2'],

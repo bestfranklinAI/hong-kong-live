@@ -3,6 +3,8 @@ import type { Basemap, MapLanguage, SceneBasemap } from './basemaps';
 import type { Place, Quality, ViewMode, TrafficCamera, StationSelection } from '@hk/contracts';
 
 export interface SceneStatus {
+  cityUnavailable?: boolean;
+  citySlow?: boolean;
   cityLoading?: boolean;
   ready: boolean;
   message: string;
@@ -11,6 +13,8 @@ export interface SceneStatus {
 export type SceneCommand = {
   location?: import('./UserLocation').LocationFix;
   type:
+    | 'route-overview'
+    | 'retry-city'
     | 'pick-route-point'
     | 'locate'
     | 'zoom-in'
@@ -23,6 +27,7 @@ export type SceneCommand = {
 };
 
 export interface MapSceneProps {
+  contextPlaces?: Place[];
   routePicking?: boolean;
   onRoutePoint?: (point: { lat: number; lng: number } | null) => void;
   indoorLayout?: import('@hk/contracts').IndoorLayout;
@@ -32,12 +37,23 @@ export interface MapSceneProps {
   onIndoorPointSelect?: (point: import('@hk/contracts').IndoorPoint) => void;
   walkingContext?: boolean;
   walkingShowHidden?: boolean;
+  navigation?: {
+    planning: boolean;
+    active: boolean;
+    following: boolean;
+    fix: import('./UserLocation').LocationFix | null;
+    z?: number | null;
+  };
+  onFollowChange?: (following: boolean) => void;
+  stationRouteView?: import('@hk/contracts').StationRouteView;
+  onRouteStationSelect?: (id: string) => void;
   walkingRoute?: import('@hk/contracts').WalkingRoute | null;
   facilities?: import('@hk/contracts').SearchResult[];
   onFacilitySelect?: (result: import('@hk/contracts').SearchResult) => void;
   searchPin?: import('@hk/contracts').SearchResult | null;
   onSearchPinSelect?: () => void;
   cityView: boolean;
+  cityPresentation?: import('./CityLayers').CityPresentation;
   onRotationChange?: (rotated: boolean) => void;
   trainMotion?: import('../features/trains/motion').TrainMotionInput | null;
   onTrainSelect?: (arrival: import('../features/trains/motion').TrainApproach) => void;
@@ -46,6 +62,8 @@ export interface MapSceneProps {
   selectedBusStop?: import('@hk/contracts').BusStop | null;
   onBusStopSelect?: (stop: import('@hk/contracts').BusStop) => void;
   stationSelection?: StationSelection | null;
+  indoorVenues?: import('@hk/contracts').IndoorVenue[];
+  onIndoorVenueSelect?: (venue: import('@hk/contracts').IndoorVenue) => void;
   onStationSelect?: (selection: StationSelection) => void;
   cameras?: TrafficCamera[];
   selectedCamera?: TrafficCamera | null;
@@ -62,6 +80,8 @@ export interface MapSceneProps {
   command?: SceneCommand;
   /** Frame selection in the visible space above this overlay, when present. */
   frameAbove?: string;
+  /** Explicit overlay layout changes rebind obstruction measurements after React commits. */
+  overlayState?: string;
 }
 
 export interface SceneDiagnostics {
@@ -73,6 +93,15 @@ export interface SceneDiagnostics {
   renderedFrames: number;
   pendingGlobeTiles: number;
   pendingCityTiles: number;
+  cityNetworkRequests: number;
+  cityProcessingTiles: number;
+  failedCityTiles: number;
+  loadedCityTiles: number;
+  unloadedCityTiles: number;
+  cityMemoryBytes: number;
+  cityCoverageReady: boolean;
+  firstCityCoverageMs: number | null;
+  firstCityVisibleMs: number | null;
   cityTiles: 'not-configured' | 'loading' | 'ready' | 'error';
   basemap: SceneBasemap;
   terrain: 'ellipsoid';

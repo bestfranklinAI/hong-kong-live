@@ -67,7 +67,7 @@ Endpoints carry venue and point UUIDs. Before solving, the API resolves these ag
 - Fixture mode does not fetch live indoor data. Publication timestamps are unknown; fetch dates are shown separately.
 - [Official indoor MTR API](https://tools.csdi.gov.hk/csdi-webpage/apidoc/3d-indoor-mtr-station-map) documents station-by-station requests. Public sample records are saved in `fixtures/providers/landsd-*-swt-2026-09-26.json` for deterministic normalization tests; the venue fixture omits unused polygon geometry.
 
-Physical route checks, building interiors outside MTR, lift availability, paid-area exclusion and automatic indoor positioning remain unimplemented.
+Physical route checks, building indoor routing, lift availability, paid-area exclusion and automatic indoor positioning remain unimplemented. Building floor-plan viewing is now supported separately; see the viewer integration below.
 
 Live mobile verification: Sung Wong Toi Concourse Level / Exit A → Platform Level / Platform 1 returned a 123 m barrier-free-profile route with an elevator instruction. Both route ends matched the selected source heights and rounded horizontal offsets were 0 m. This verifies the integration only, not current lift availability or physical passage.
 
@@ -125,3 +125,30 @@ A live barrier-free request from Sung Wong Toi platform lift to concourse Exit A
 ### Direct station map access
 
 Explore station detail cards now offer **View indoor map**, without entering the walking planner. The popup matches the selected station to one unique official catalogue name (English or Chinese, ignoring station suffixes); ambiguous or missing matches show an unavailable message. It loads the station floor plan on demand, defaults to the named concourse where present, and lets users choose a mapped point as **Start here** or **Directions here**. The planner retains that point's venue ID, point ID and source Z for backend validation. Desktop uses a large dialog; mobile uses a bottom-anchored scrolling dialog. This is a floor-plan browser, not automatic indoor position tracking. Browser checks covered Admiralty level switching, origin handoff and destination handoff at 390 × 844. Physical Android testing is separate.
+
+## Building floor-plan viewer — 17 October 2026
+
+This map-first viewer supersedes the earlier station/point-list picker described in the historical implementation notes above.
+
+- `GET /api/v1/routes/indoor/buildings` returns the public building venue catalogue.
+- `GET /api/v1/routes/indoor/buildings/:uuid/{floors,points,layout}` fetches fixed LandsD layers for one venue. IDs and layer names are validated before provider I/O.
+- Building and station cache keys are separate. Layer responses are capped at 6 MiB / 20 seconds; geometry validation retains source floor IDs and XYZ. Truncated or oversized data is unavailable rather than silently presented as complete.
+- The live public catalogue returned 689 building venues in this check. Billion Centre returned 34 floor outlines; its ground-floor plan, amenities and boundaries rendered through the application API. These are observations of this source response, not a guarantee of coverage or access.
+- The small captured Billion Centre sample in `fixtures/providers/landsd-building-sample-2026-10-17.json` supports deterministic normalization tests; it is never a runtime fallback.
+- The viewer prioritises source exits, lifts and toilets, supports expansion, pan, pinch/zoom and Fit, and defaults to the supplied MTR concourse or building ground floor when available. Long exit/amenity lists are removed from its default layout. Building plans can show geometrically matched route overlays; building indoor endpoints remain unsupported. MTR endpoint resolution uses the station catalogue.
+
+Source: https://portal.csdi.gov.hk/csdi-webpage/apidoc/3d-indoor-map-api
+
+## Kowloon reference-start audit — 17 October 2026
+
+A public Kowloon Station reference → Jordan Station reference request returned 1,623.1 m, matching the scale of the reported example. This is a representative reproduction; the screenshot alone does not establish its exact destination. The source begins on Kowloon Station Platform Level 2 (Airport Express), then names a lift, In-town Check In Level, an escalator, Exit C1 Concourse Level, Elements and a footbridge. Selecting a station reference is therefore not equivalent to selecting its concourse or a street entrance.
+
+The captured normalized route and eight station floors are in `fixtures/providers/kowloon-jordan-route-2026-10-17.json`, used only for deterministic tests. Of 241 source edges, 62 fall in the station-area classification: 52 uniquely match three named floor geometries, three are height-changing edges, and seven remain unassigned. These are geometric associations, not source-returned floor IDs or surveyed validation. Multiple height-changing edges may describe one connection. No loop is deleted or straightened, and no separate route paths are joined.
+
+Tests cover a small off-centre hole, concave boundaries, disconnected floor parts, overlapping same-height floors, unknown heights, route-preserving overview styling and assumed-concourse resolution, building floor selection and route-exit matching. Floor views show source lift/escalator text only where the direction explicitly names the selected floor. The public source audit does not validate current barriers, hours, lift operation or a physical walk.
+
+### PopCorn 1 source mismatch — 17 October 2026
+
+A public entrance-to-entrance test returned explicit `Popcorn 1 Level G` directions with route Z approximately 6.95 m. The indoor Ground Floor geometry is at 5.65 m and the venue has three distinct Ground Floor IDs. Strict 0.25 m height matching therefore finds no confirmed floor segments. This is a source representation mismatch, not a verified 1.3 m datum correction.
+
+The building viewer can now make a separately labelled **2D direction-level match**: complete route edges must fit the cumulative distance interval of an explicit venue-and-level instruction, and uniquely intersect the corresponding named floor footprint. Geometry/direction total lengths must agree within 1% (minimum 2 m). Route lines are clipped to the floor outline; no source Z is changed, and this match is not promoted into a verified 3D alignment. A G-only instruction bounded by two explicit instructions for the same venue and level can share that 2D match. Other unnamed or ambiguous portions remain unassigned. The recorded route and floors are in `popcorn-route-2026-10-17.json` for regression tests only.

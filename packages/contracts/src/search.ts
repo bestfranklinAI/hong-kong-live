@@ -51,6 +51,9 @@ export const searchResultSchema = z.object({
   sourceDate: z.string().nullable().default(null),
   station: z.object({ line: z.string(), station: z.string() }).optional(),
   placeId: z.string().optional(),
+  sharedPlace: z
+    .object({ name: z.string().max(1000), address: z.string().max(3000), url: z.url() })
+    .optional(),
   licenceType: z.string().optional(),
   expiryDate: z.string().optional(),
   facility: z

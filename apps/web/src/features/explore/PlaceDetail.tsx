@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, Bookmark, Check, ExternalLink, MapPin, Share2, X } from 'lucide-react';
+import { BuildingIndoorButton } from '../navigation/BuildingIndoorButton';
 import { StationIndoorDialog } from '../navigation/StationIndoorDialog';
 import type { Place, RouteEndpoint } from '@hk/contracts';
 import { categoryLabels } from './places';
@@ -61,6 +62,13 @@ export function PlaceDetail({
         <MapPin size={15} />
         <span>{place.district}</span>
       </div>
+      <button
+        className="walking-submit"
+        onClick={() => onRoutePoint({ lat: place.lat, lng: place.lng, name: place.name }, 'end')}
+      >
+        Directions
+      </button>
+      {!place.station && <BuildingIndoorButton name={place.name} nameZh={place.nameZh} />}
       {place.station && (
         <>
           <button className="walking-submit" onClick={() => setIndoorOpen(true)}>

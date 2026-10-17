@@ -86,3 +86,23 @@ it('rejects invalid layout identifiers and fixture mode before fetching', async 
   ).toBe(503);
   expect(fetcher).not.toHaveBeenCalled();
 });
+
+it('rejects building layer and ID injection before provider calls and respects fixture isolation', async () => {
+  const fetcher = vi.fn();
+  const app = createApp({ fetcher });
+  expect(
+    (await app.request('http://localhost/api/v1/routes/indoor/buildings/invalid/floors')).status,
+  ).toBe(400);
+  expect(
+    (
+      await app.request(
+        'http://localhost/api/v1/routes/indoor/buildings/c598bde2-fb35-427c-9ad6-8ffb6abbadf9/arbitrary',
+      )
+    ).status,
+  ).toBe(400);
+  const fixture = createApp({ fetcher, mode: 'fixture' });
+  expect((await fixture.request('http://localhost/api/v1/routes/indoor/buildings')).status).toBe(
+    503,
+  );
+  expect(fetcher).not.toHaveBeenCalled();
+});

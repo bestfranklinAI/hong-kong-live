@@ -2,9 +2,13 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Basemap, MapLanguage } from '../scene/basemaps';
 import type { Quality } from '@hk/contracts';
+import type { CityPresentation } from '../scene/CityLayers';
+import { configuredCitySources, hasCitySource } from '../scene/city-sources';
 
 interface Preferences {
   cityView: boolean;
+  cityPresentation: CityPresentation;
+  setCityPresentation: (presentation: CityPresentation) => void;
   setCityView: (enabled: boolean) => void;
   savedIds: string[];
   quality: Quality;
@@ -19,7 +23,9 @@ interface Preferences {
 export const usePreferences = create<Preferences>()(
   persist(
     (set) => ({
-      cityView: Boolean(import.meta.env.VITE_HK_3D_TILESET_URL),
+      cityView: hasCitySource,
+      cityPresentation: configuredCitySources.buildings ? 'buildings' : 'photo',
+      setCityPresentation: (cityPresentation) => set({ cityPresentation }),
       setCityView: (cityView) => set({ cityView }),
       savedIds: [],
       quality: 'balanced',
@@ -38,8 +44,9 @@ export const usePreferences = create<Preferences>()(
     {
       name: 'hk-live-preferences',
       version: 1,
-      partialize: ({ savedIds, quality, basemap, mapLanguage, cityView }) => ({
+      partialize: ({ savedIds, quality, basemap, mapLanguage, cityView, cityPresentation }) => ({
         cityView,
+        cityPresentation,
         savedIds,
         quality,
         basemap,
@@ -50,6 +57,12 @@ export const usePreferences = create<Preferences>()(
         return {
           ...current,
           cityView: typeof saved?.cityView === 'boolean' ? saved.cityView : current.cityView,
+          cityPresentation:
+            saved?.cityPresentation === 'buildings' && configuredCitySources.buildings
+              ? 'buildings'
+              : saved?.cityPresentation === 'photo' && configuredCitySources.photo
+                ? 'photo'
+                : current.cityPresentation,
           basemap:
             saved?.basemap === 'landsd-aerial' || saved?.basemap === 'openstreetmap'
               ? saved.basemap

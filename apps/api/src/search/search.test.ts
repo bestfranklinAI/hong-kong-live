@@ -142,3 +142,64 @@ it('resolves map links through a bounded POST endpoint with fixture isolation', 
   await fixture.request('/links/resolve', request('https://maps.app.goo.gl/example'));
   expect(fetcher).not.toHaveBeenCalled();
 });
+
+it('offers the exact shared building, retaining its provenance and excluding a shop in it', async () => {
+  const landsd = {
+    search: vi.fn(async () => [
+      {
+        id: 'building',
+        kind: 'address',
+        name: 'Arion Commercial Centre',
+        nameZh: '聯發商業中心',
+        address: "2-12 Queen's Road West",
+        addressZh: '',
+        district: '',
+        location: { lat: 22.28636, lng: 114.14836 },
+        locationPrecision: 'reference',
+        source: 'LandsD',
+        sourceDate: null,
+      },
+      {
+        id: 'shop',
+        kind: 'address',
+        name: 'Circle K',
+        nameZh: '',
+        address: 'Arion Commercial Centre',
+        addressZh: '',
+        district: '',
+        location: { lat: 22.2863, lng: 114.1483 },
+        locationPrecision: 'reference',
+        source: 'LandsD',
+        sourceDate: null,
+      },
+    ]),
+  };
+  const fetcher = vi.fn(
+    async () =>
+      new Response(null, {
+        status: 302,
+        headers: {
+          location:
+            'https://www.google.com/maps/place/23%2FF,+Priv%C3%A9+Technologies,+Arion+Commercial+Centre/data=!4m2!3m1!1s0xabc:0xdef',
+        },
+      }),
+  );
+  const app = searchRoutes(
+    store(),
+    landsd as unknown as import('./landsd').LandsdSearch,
+    'live',
+    () => now,
+    fetcher,
+  );
+  const response = await app.request('/links/resolve', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url: 'Shared place\nhttps://maps.app.goo.gl/PWTUHjF9J7LeMndV6' }),
+  });
+  const result = await response.json();
+  expect(result.result).toBeNull();
+  expect(result.candidates).toHaveLength(1);
+  expect(result.candidates[0].name).toBe('Arion Commercial Centre');
+  expect(result.candidates[0].source).toBe('LandsD');
+  expect(result.candidates[0].sharedPlace.name).toContain('Privé');
+});

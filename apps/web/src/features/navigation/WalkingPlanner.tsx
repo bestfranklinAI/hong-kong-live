@@ -1,7 +1,20 @@
-import { StationFloorPlan } from './StationFloorPlan';
+import {
+  Building2,
+  ChevronRight,
+  ArrowDownUp,
+  ArrowLeft,
+  LocateFixed,
+  MapPin,
+  Navigation,
+  Settings2,
+  X,
+} from 'lucide-react';
+import { StationIndoorDialog } from './StationIndoorDialog';
+import { StationStartChoice } from './StationStartChoice';
+import { StationRouteCards } from './StationRouteCards';
+import { endpointStation } from './station-endpoint';
 import { RouteDirections } from './RouteDirections';
 import type { IndoorMapChoice } from './indoor-map';
-import { IndoorEndpointPicker } from './IndoorEndpointPicker';
 import { RouteHeightProfile } from './RouteHeightProfile';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -10,6 +23,7 @@ import {
   type RouteEndpoint,
   type RouteRequest,
   type WalkingRoute,
+  type StationRouteContext,
 } from '@hk/contracts';
 import { SearchResults } from '../search/SearchResults';
 import './walking.css';
@@ -25,7 +39,20 @@ export function WalkingPlanner({
   origin,
   onRoute,
   onClose,
+  onStart,
+  initialRoute,
+  onEndpointPreview,
+  stationContexts = [],
+  onInspectStation,
+  stationLoading = false,
+  stationUnavailable = false,
 }: {
+  stationContexts?: StationRouteContext[];
+  onInspectStation: (id: string) => void;
+  stationLoading?: boolean;
+  stationUnavailable?: boolean;
+  onEndpointPreview: (point: RouteEndpoint, result?: import('@hk/contracts').SearchResult) => void;
+  initialRoute?: WalkingRoute | null;
   showHidden: boolean;
   onShowHidden: (enabled: boolean) => void;
   contextView: boolean;
@@ -36,30 +63,50 @@ export function WalkingPlanner({
   origin?: RouteEndpoint;
   onRoute: (route: WalkingRoute | null) => void;
   onClose: () => void;
+  onStart: (route: WalkingRoute) => void;
 }) {
   const [start, setStart] = useState<RouteEndpoint | undefined>(origin);
   const [end, setEnd] = useState(destination);
-  const [editing, setEditing] = useState<'start' | 'end'>(origin ? 'end' : 'start');
+  const [currentOrigin, setCurrentOrigin] = useState(!origin || origin.name === 'Current location');
+  const [editing, setEditing] = useState<'start' | 'end' | null>(destination ? null : 'end');
   const [query, setQuery] = useState('');
-  const [indoorOpen, setIndoorOpen] = useState(false);
-  const [profile, setProfile] = useState<RouteRequest['profile']>('recommended');
-  const [language, setLanguage] = useState<RouteRequest['language']>('en');
-  const [route, setRoute] = useState<WalkingRoute>();
+  const [stationPicker, setStationPicker] = useState<{
+    place: { name: string; nameZh: string };
+    role: 'start' | 'end';
+  } | null>(null);
+  const startStation = !currentOrigin ? endpointStation(start) : null;
+  const endStation = endpointStation(end);
+  const [browseIndoor, setBrowseIndoor] = useState(false);
+  const [profile, setProfile] = useState<RouteRequest['profile']>(
+    initialRoute?.request.profile ?? 'recommended',
+  );
+  const [language, setLanguage] = useState<RouteRequest['language']>(
+    initialRoute?.request.language ?? 'en',
+  );
+  const [route, setRoute] = useState<WalkingRoute | undefined>(initialRoute ?? undefined);
+  const [destinationInfo, setDestinationInfo] = useState<import('@hk/contracts').SearchResult>();
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [locating, setLocating] = useState(false);
-  const [locationNote, setLocationNote] = useState('');
-  const locationRequest = useRef(0);
+  const pending = useRef<AbortController | null>(null);
+  const revision = useRef(0);
   useEffect(
     () => () => {
-      locationRequest.current++;
+      revision.current++;
+      pending.current?.abort();
     },
     [],
   );
-  function choosePoint(point: RouteEndpoint) {
-    setLocationNote('');
-    locationRequest.current++;
+  function invalidate() {
+    revision.current++;
+    pending.current?.abort();
+    setBusy(false);
     setLocating(false);
+    setRoute(undefined);
+    onRoute(null);
+    setError('');
+  }
+  function choosePoint(point: RouteEndpoint, result?: import('@hk/contracts').SearchResult) {
     const validated = routeEndpointSchema.safeParse(point);
     if (!validated.success) {
       setError('Choose a point within Hong Kong.');
@@ -68,273 +115,421 @@ export function WalkingPlanner({
     invalidate();
     if (editing === 'start') {
       setStart(point);
-      setEditing('end');
-    } else setEnd(point);
-    setQuery('');
-  }
-  function useLocation() {
-    if (!navigator.geolocation || !window.isSecureContext) {
-      setError('Current location requires HTTPS (or localhost) and browser location permission.');
-      return;
+      setCurrentOrigin(false);
+    } else {
+      setEnd(point);
+      setDestinationInfo(undefined);
+      onEndpointPreview(point, result);
     }
-    const request = ++locationRequest.current;
-    setLocating(true);
-    setError('');
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        if (request !== locationRequest.current) return;
-        choosePoint({ lat: coords.latitude, lng: coords.longitude, name: 'Current location' });
-        setLocationNote(
-          `GPS accuracy about ${Math.round(coords.accuracy)} m. Check your entrance; GPS cannot identify your floor.`,
-        );
-      },
-      () => {
-        if (request === locationRequest.current) {
-          setLocating(false);
-          setError('Location unavailable. Check permission, or choose a point on the map.');
-        }
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+    setEditing(null);
+    setQuery('');
+    onIndoorMap(null);
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  }
+  async function getLocation() {
+    if (!navigator.geolocation || !window.isSecureContext)
+      throw new Error(
+        'Location needs HTTPS and browser permission. You can enter a starting point instead.',
+      );
+    return new Promise<RouteEndpoint>((resolve, reject) =>
+      navigator.geolocation.getCurrentPosition(
+        ({ coords }) => {
+          const point = routeEndpointSchema.safeParse({
+            lat: coords.latitude,
+            lng: coords.longitude,
+            name: 'Current location',
+          });
+          if (point.success) resolve(point.data);
+          else reject(new Error('Your location is outside Hong Kong. Choose a starting point.'));
+        },
+        () =>
+          reject(
+            new Error('Location unavailable. Allow location access or enter a starting point.'),
+          ),
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+      ),
     );
   }
-  const pending = useRef<AbortController | null>(null);
-  useEffect(() => () => pending.current?.abort(), []);
-  function invalidate() {
-    pending.current?.abort();
-    setBusy(false);
-    setRoute(undefined);
-    onRoute(null);
-    setError('');
-  }
   async function plan() {
-    if (!start || !end) return;
-    pending.current?.abort();
+    if (!end) {
+      setEditing('end');
+      return;
+    }
+    invalidate();
+    const request = revision.current;
+    setBusy(true);
+    setEditing(null);
+    setQuery('');
     const controller = new AbortController();
     pending.current = controller;
-    setBusy(true);
-    setError('');
     try {
+      let from = start;
+      if (currentOrigin) {
+        setLocating(true);
+        from = await getLocation();
+      }
+      if (request !== revision.current) return;
+      setLocating(false);
+      if (!from) throw new Error('Choose a starting point.');
+      if (!currentOrigin && startStation && !from.indoor)
+        from = { ...from, assumedConcourse: true };
+      setStart(from);
       const response = await fetch('/api/v1/routes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ start, end, profile, language }),
+        body: JSON.stringify({ start: from, end, profile, language }),
         signal: controller.signal,
       });
       const data = await response.json();
       if (!response.ok)
         throw new Error(typeof data.error === 'string' ? data.error : 'Route unavailable.');
       const result = walkingRouteSchema.parse(data);
-      if (controller.signal.aborted) return;
+      if (request !== revision.current || controller.signal.aborted) return;
       setRoute(result);
       onRoute(result);
-      setQuery('');
     } catch (err) {
-      if (!controller.signal.aborted)
+      if (request === revision.current && !controller.signal.aborted)
         setError(err instanceof Error ? err.message : 'Route unavailable.');
     } finally {
-      if (!controller.signal.aborted) setBusy(false);
+      if (request === revision.current) {
+        setBusy(false);
+        setLocating(false);
+      }
     }
   }
   return (
-    <section className="walking-planner" aria-label="Walking route planner">
-      <div className="results-heading">
-        <h2>Walking directions</h2>
-        <button className="text-button" onClick={onClose}>
-          Close directions
-        </button>
-      </div>
-      <div className="endpoint-actions" aria-label="Navigation map view">
-        <button
-          aria-pressed={!contextView}
-          onClick={() => {
-            onContextView(false);
-          }}
-        >
-          2D overview
-        </button>
-        <button
-          aria-pressed={contextView}
-          disabled={!import.meta.env.VITE_HK_3D_TILESET_URL}
-          onClick={() => {
-            onContextView(true);
-          }}
-        >
-          3D · experimental
-        </button>
-      </div>
-      {contextView && (
-        <div className="floor-coverage-note">
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 44 }}>
-            <input
-              type="checkbox"
-              checked={showHidden}
-              onChange={(event) => onShowHidden(event.target.checked)}
-            />
-            Show hidden sections
-          </label>
-          {route?.paths.some((path) => path.some((point) => point[2] === null)) && (
-            <p>
-              Some sections have no source height and are omitted in 3D. Use 2D for the full route.
-            </p>
-          )}
+    <section className="walking-planner navigation-planner" aria-label="Walking route planner">
+      {route ? (
+        <div className="navigation-route-actions">
+          <h2 className="sr-only">Directions</h2>
+          <button className="icon-button" onClick={onClose} aria-label="Close directions">
+            <ArrowLeft size={20} />
+          </button>
+          <button className="walking-submit navigation-start" onClick={() => onStart(route)}>
+            <Navigation size={20} />
+            Start walking
+          </button>
+        </div>
+      ) : (
+        <div className="navigation-title">
+          <button className="icon-button" onClick={onClose} aria-label="Close directions">
+            <ArrowLeft size={20} />
+          </button>
+          <h2>Walking route</h2>
         </div>
       )}
-      <div className="walking-endpoints">
-        <button
-          aria-pressed={editing === 'start'}
-          onClick={() => {
-            locationRequest.current++;
-            setLocating(false);
-            setEditing('start');
-            setQuery('');
+      {route && <StationRouteCards contexts={stationContexts} onInspect={onInspectStation} />}
+      {route && stationLoading && (
+        <p className="search-notice" role="status">
+          Preparing station sections…
+        </p>
+      )}
+      {route && stationUnavailable && (
+        <p className="search-notice">Station detail unavailable. Follow the source directions.</p>
+      )}
+      {stationPicker && (
+        <StationIndoorDialog
+          place={stationPicker.place}
+          routeRole={stationPicker.role}
+          open
+          onClose={() => setStationPicker(null)}
+          onRoutePoint={(point, role) => {
+            invalidate();
+            if (role === 'start') {
+              setStart(point);
+              setCurrentOrigin(false);
+            } else {
+              setEnd(point);
+              onEndpointPreview(point);
+            }
+            setEditing(null);
+            setStationPicker(null);
           }}
-        >
-          <small>FROM</small>
-          <strong>{start?.name ?? 'Choose a starting point'}</strong>
-        </button>
-        <button
-          aria-pressed={editing === 'end'}
-          onClick={() => {
-            locationRequest.current++;
-            setLocating(false);
-            setEditing('end');
-            setQuery('');
+        />
+      )}
+      <button className="text-button indoor-browse-launch" onClick={() => setBrowseIndoor(true)}>
+        <Building2 size={20} />
+        <span>Indoor maps</span>
+        <ChevronRight size={18} />
+      </button>
+      {browseIndoor && (
+        <StationIndoorDialog
+          open
+          onClose={() => setBrowseIndoor(false)}
+          onRoutePoint={(point, role) => {
+            invalidate();
+            if (role === 'start') {
+              setStart(point);
+              setCurrentOrigin(false);
+            } else {
+              setEnd(point);
+              onEndpointPreview(point);
+            }
+            setEditing(null);
+            setBrowseIndoor(false);
           }}
-        >
-          <small>TO</small>
-          <strong>{end?.name ?? 'Choose a destination'}</strong>
-        </button>
-      </div>
-      <div className="endpoint-actions" aria-label="Choose route endpoint">
-        <button onClick={useLocation} disabled={locating}>
-          {locating ? 'Finding location…' : 'Use current location'}
-        </button>
+        />
+      )}
+      <div className="route-fields">
+        <div className="route-field-stack">
+          {(['start', 'end'] as const).map((role) => (
+            <label key={role} className={`route-field ${editing === role ? 'editing' : ''}`}>
+              {role === 'start' ? <LocateFixed size={18} /> : <MapPin size={18} />}
+              <span>
+                <small>{role === 'start' ? 'From' : 'To'}</small>
+                <input
+                  aria-label={role === 'start' ? 'Starting point' : 'Destination'}
+                  placeholder="Place, link or coordinates"
+                  value={
+                    editing === role
+                      ? query
+                      : role === 'start' && currentOrigin
+                        ? 'Current location'
+                        : ((role === 'start' ? start?.name : end?.name) ?? '')
+                  }
+                  onKeyDown={(event) => {
+                    if (event.key === 'ArrowDown' || (event.key === 'Enter' && query.trim())) {
+                      const result = event.currentTarget
+                        .closest('section')
+                        ?.querySelector<HTMLButtonElement>('.search-result');
+                      if (result) {
+                        event.preventDefault();
+                        if (event.key === 'Enter') result.click();
+                        else result.focus();
+                      }
+                    }
+                  }}
+                  autoComplete="off"
+                  autoFocus={
+                    role === 'end' &&
+                    !destination &&
+                    window.matchMedia('(min-width: 701px)').matches
+                  }
+                  onFocus={(event) => {
+                    setEditing(role);
+                    setQuery('');
+                    onIndoorMap(null);
+                    event.currentTarget.select();
+                  }}
+                  onChange={(event) => {
+                    invalidate();
+                    setQuery(event.target.value);
+                    if (role === 'start') {
+                      setStart(undefined);
+                      setCurrentOrigin(false);
+                    } else setEnd(undefined);
+                  }}
+                />
+              </span>
+              {editing === role && query && (
+                <button
+                  className="icon-button"
+                  aria-label="Clear endpoint search"
+                  type="button"
+                  onClick={() => setQuery('')}
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </label>
+          ))}
+        </div>
         <button
+          className="icon-button route-swap"
+          aria-label="Swap start and destination"
+          disabled={!start || !end}
           onClick={() => {
-            locationRequest.current++;
-            setLocating(false);
-            setIndoorOpen(false);
-            onIndoorMap(null);
-            onPickMap(choosePoint);
-          }}
-        >
-          Choose on map
-        </button>
-        <button
-          disabled={!start && !end}
-          onClick={() => {
-            locationRequest.current++;
-            setLocating(false);
             invalidate();
             setStart(end);
             setEnd(start);
+            setCurrentOrigin(false);
+            setEditing(null);
+            setQuery('');
           }}
         >
-          Swap start and destination
+          <ArrowDownUp size={18} />
         </button>
       </div>
-      {locationNote && (
-        <p className="search-notice" role="status">
-          {locationNote}
-        </p>
+      {editing && (
+        <div className="endpoint-search-panel">
+          {query ? (
+            <SearchResults
+              compact
+              key={editing}
+              query={query}
+              language={language === 'en' ? 'en' : 'tc'}
+              onSelect={(row) => {
+                if (!row.location) {
+                  setError('Choose a result with a mapped location.');
+                  return;
+                }
+                choosePoint(
+                  {
+                    ...row.location,
+                    name: row.sharedPlace?.name ?? row.name,
+                    ...(row.station ? { station: row.station } : {}),
+                  },
+                  row,
+                );
+                if (editing === 'end') setDestinationInfo(row);
+              }}
+            />
+          ) : (
+            <div className="endpoint-shortcuts">
+              <button
+                onClick={() => {
+                  invalidate();
+                  if (editing === 'start') {
+                    setCurrentOrigin(true);
+                    setStart(undefined);
+                    setEditing(null);
+                  } else {
+                    const request = revision.current;
+                    setLocating(true);
+                    void getLocation()
+                      .then((point) => {
+                        if (request === revision.current) choosePoint(point);
+                      })
+                      .catch((err: Error) => {
+                        if (request === revision.current) setError(err.message);
+                      })
+                      .finally(() => {
+                        if (request === revision.current) setLocating(false);
+                      });
+                  }
+                }}
+              >
+                <LocateFixed size={18} />
+                Current location
+              </button>
+              <button
+                onClick={() => {
+                  onIndoorMap(null);
+                  onPickMap(choosePoint);
+                }}
+              >
+                <MapPin size={18} />
+                Choose on map
+              </button>
+            </div>
+          )}
+        </div>
       )}
-      <p className="search-notice">
-        Choosing {editing === 'start' ? 'starting point' : 'destination'} · map pins use surface
-        coordinates, not an indoor floor.
-      </p>
-      <button
-        className="text-button"
-        aria-expanded={indoorOpen}
-        onClick={() => setIndoorOpen(!indoorOpen)}
-      >
-        {indoorOpen ? 'Hide station level picker' : 'Choose a station entrance or level'}
-      </button>
-      {indoorOpen && (
-        <IndoorEndpointPicker
-          onMap={onIndoorMap}
-          key={editing}
-          onSelect={(point) => {
-            choosePoint(point);
-            setIndoorOpen(false);
+      {startStation && (
+        <StationStartChoice
+          station={startStation}
+          route={route}
+          onChoose={() => setStationPicker({ place: startStation, role: 'start' })}
+          onCurrent={() => {
+            invalidate();
+            setStart(undefined);
+            setCurrentOrigin(true);
+            setEditing(null);
           }}
         />
       )}
-      <label className="walking-search">
-        Search {editing === 'start' ? 'starting point' : 'destination'}
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Place, address or latitude, longitude"
-        />
-      </label>
-      {query && (
-        <SearchResults
-          query={query}
-          language={language === 'en' ? 'en' : 'tc'}
-          onSelect={(row) => {
-            if (!row.location) {
-              setError('Choose a result with coordinates.');
-              return;
-            }
-            choosePoint({ ...row.location, name: row.name });
-          }}
-        />
+      {endStation && (
+        <details className="station-destination-choice">
+          <summary>{endStation.name} · reference destination</summary>
+          <button
+            className="text-button"
+            onClick={() => setStationPicker({ place: endStation, role: 'end' })}
+          >
+            Choose destination entrance or floor
+          </button>
+        </details>
       )}
-      <div className="walking-options">
-        <label>
-          Route preference
-          <select
-            value={profile}
-            onChange={(e) => {
-              invalidate();
-              setProfile(e.target.value as RouteRequest['profile']);
-            }}
-          >
-            <option value="recommended">Recommended</option>
-            <option value="shortest">Shortest</option>
-            <option value="barrier-free">Barrier-free</option>
-          </select>
-        </label>
-        <label>
-          Directions
-          <select
-            value={language}
-            onChange={(e) => {
-              invalidate();
-              setLanguage(e.target.value as RouteRequest['language']);
-            }}
-          >
-            <option value="en">English</option>
-            <option value="zh-HK">繁體中文</option>
-          </select>
-        </label>
+      {!editing && end && destinationInfo && (
+        <div className="destination-summary">
+          <span>{destinationInfo.address}</span>
+          {destinationInfo.sharedPlace && (
+            <>
+              <small>Building reference · floor and entrance unverified</small>
+              <details>
+                <summary>Place details</summary>
+                <p>{destinationInfo.sharedPlace.address}</p>
+                <a href={destinationInfo.sharedPlace.url} target="_blank" rel="noreferrer">
+                  Open in Google Maps ↗
+                </a>
+              </details>
+            </>
+          )}
+        </div>
+      )}
+      {!editing && (
+        <div className="route-preferences" aria-label="Walking preference">
+          {(
+            [
+              ['recommended', 'Recommended'],
+              ['shortest', 'Shortest'],
+              ['barrier-free', 'Step-free'],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              aria-pressed={profile === value}
+              onClick={() => {
+                invalidate();
+                setProfile(value);
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="route-toolbar">
+        <button className="text-button" onClick={() => onContextView(!contextView)}>
+          {contextView ? '3D view' : '2D view'}
+        </button>
+        <details className="route-options">
+          <summary>
+            <Settings2 size={16} />
+            Options
+          </summary>
+          <label>
+            Directions language
+            <select
+              value={language}
+              onChange={(e) => {
+                invalidate();
+                setLanguage(e.target.value as RouteRequest['language']);
+              }}
+            >
+              <option value="en">English</option>
+              <option value="zh-HK">繁體中文</option>
+            </select>
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              checked={showHidden}
+              onChange={(e) => onShowHidden(e.target.checked)}
+            />
+            Show obscured route
+          </label>
+          <p>
+            Step-free follows recorded restrictions, without live lift status. 3D uses source
+            heights; indoor positioning is not available.
+          </p>
+        </details>
       </div>
-      <details className="route-indoor-details">
-        <summary>Route information</summary>
-        <p>
-          Recommended favours indoor links and fewer stairs; it does not guarantee shelter.
-          Barrier-free uses recorded restrictions, not live lift status.
+      {error && (
+        <p className="navigation-error" role="alert">
+          {error}
         </p>
-        <p>
-          3D uses source heights, with limited checks in Admiralty. Indoor spaces are not part of
-          the city model. Hidden sections appear dashed when enabled; dashes do not mean
-          underground.
-        </p>
-        <p>
-          Map picking uses 2D. Choose a station level for indoor endpoints; ordinary pins do not
-          identify floors.
-        </p>
-      </details>
-      <button
-        className="walking-submit"
-        disabled={!start || !end || busy}
-        onClick={() => void plan()}
-      >
-        {busy ? 'Finding a walking route…' : 'Show walking route'}
-      </button>
-      {error && <p role="alert">{error}</p>}
+      )}
+      {!route && (
+        <button
+          className="walking-submit"
+          disabled={!end || (!currentOrigin && !start) || busy}
+          onClick={() => void plan()}
+        >
+          {locating ? 'Finding your location…' : busy ? 'Finding route…' : 'Find walking route'}
+        </button>
+      )}
       {route && (
-        <article aria-label="Walking directions">
+        <article className="route-result" aria-label="Walking directions">
           <h3>
             {Math.round(route.distanceM)} m · about {Math.max(1, Math.round(route.durationMinutes))}{' '}
             min
@@ -345,25 +540,10 @@ export function WalkingPlanner({
               {Math.round(route.endpointOffsetsM[1])} m at destination.
             </p>
           )}
-          {(route.request.start.indoor || route.request.end.indoor) && (
-            <details className="route-indoor-details">
-              <summary>View station floor plan</summary>
-              {[route.request.start, route.request.end]
-                .filter(
-                  (point, index, all) =>
-                    point.indoor &&
-                    all.findIndex((other) => other.indoor?.venueId === point.indoor?.venueId) ===
-                      index,
-                )
-                .map((point) => (
-                  <StationFloorPlan key={point.indoor!.venueId} endpoint={point} />
-                ))}
-            </details>
-          )}
-          {!(route.request.start.indoor || route.request.end.indoor) && (
-            <p className="floor-coverage-note">Choose a station endpoint to view its floor plan.</p>
-          )}
-          <RouteDirections route={route} />
+          <details className="route-indoor-details">
+            <summary>Step-by-step directions</summary>
+            <RouteDirections route={route} />
+          </details>
           <details>
             <summary>Inspect source height profile</summary>
             <RouteHeightProfile key={route.fetchedAt} route={route} />

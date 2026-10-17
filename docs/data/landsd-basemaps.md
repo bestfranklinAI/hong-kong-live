@@ -21,7 +21,7 @@ No tile proxy, bulk downloader, background prefetcher or tile archive is added. 
 
 ## Separate 3D access
 
-The [public 3D streaming documentation](https://portal.csdi.gov.hk/csdi-webpage/apidoc/3d-visualisation-map-api) directs developers to `3dmap@landsd.gov.hk` for free keys. It is distinct from the Government Bureaux/Departments portal. Our project-specific approval remains pending; no sample key is used. Public raster integration does not depend on this request.
+The [public 3D streaming documentation](https://portal.csdi.gov.hk/csdi-webpage/apidoc/3d-visualisation-map-api) directs developers to `3dmap@landsd.gov.hk` for free keys. It is distinct from the Government Bureaux/Departments portal. Project-authorised access is configured locally; no documentation sample key is used. Public raster integration does not depend on a 3D key.
 
 ## Verification
 

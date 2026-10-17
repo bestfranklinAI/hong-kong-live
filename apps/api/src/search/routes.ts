@@ -9,6 +9,7 @@ import {
   parseCoordinates,
   coordinateResult,
   isMapLinkInput,
+  extractMapLink,
   MAP_LINK_MAX_LENGTH,
   type SearchResult,
   type SearchResponse,
@@ -210,7 +211,7 @@ export function searchRoutes(
         body.url.length > MAP_LINK_MAX_LENGTH
       )
         return c.json({ error: 'Provide a Google Maps link of at most 8192 characters.' }, 400);
-      url = allowedMapUrl(body.url.trim()).href;
+      url = allowedMapUrl(extractMapLink(body.url)).href;
     } catch {
       return c.json({ error: 'Paste a supported Google Maps HTTPS link.' }, 400);
     }
@@ -230,7 +231,30 @@ export function searchRoutes(
     }
     activeLinks++;
     try {
-      return c.json(await resolveGoogleMapsLink(url, fetcher));
+      const resolved = await resolveGoogleMapsLink(url, fetcher);
+      if (!resolved.result && resolved.place && landsd) {
+        const address = resolved.place.address;
+        const building = address
+          .split(',')
+          .map((part) => part.trim())
+          .find((part) => /(?:centre|center|building|tower|plaza|house|大廈|中心)/i.test(part));
+        const rows = await landsd.search(building ?? address).catch(() => []);
+        const exact = building
+          ? rows.filter((row) => normalizeSearchText(row.name) === normalizeSearchText(building))
+          : [];
+        resolved.candidates = (exact.length ? exact : rows)
+          .filter((row) => row.location)
+          .slice(0, 5)
+          .map((row) => ({
+            ...row,
+            sharedPlace: resolved.place,
+            address: row.address || address,
+          }));
+        resolved.message = resolved.candidates.length
+          ? 'Choose the building location. The shared floor or business entrance is not verified.'
+          : 'Place recognised, but its address could not be located. Try the street address or choose on map.';
+      }
+      return c.json(resolved);
     } catch {
       return c.json({
         result: null,

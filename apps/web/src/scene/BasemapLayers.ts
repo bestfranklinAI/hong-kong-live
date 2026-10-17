@@ -9,6 +9,8 @@ interface Entry {
 
 /** Retain unchanged layers and their GPU resources. Replaced layers never stay hidden in memory. */
 export class BasemapLayers {
+  private labelsVisible = true;
+  private muted = false;
   private entries = new Map<string, Entry>();
   constructor(
     private collection: ImageryLayerCollection,
@@ -37,9 +39,27 @@ export class BasemapLayers {
         entry.failed = true;
         this.onError();
       });
+      if (definition.key.startsWith('labels:')) entry.layer.show = this.labelsVisible;
+      this.style(entry.layer);
       this.entries.set(definition.key, entry);
       this.collection.add(entry.layer, index);
     });
+  }
+
+  setLabelVisibility(visible: boolean) {
+    this.labelsVisible = visible;
+    for (const [key, entry] of this.entries)
+      if (key.startsWith('labels:')) entry.layer.show = visible;
+  }
+  setMuted(muted: boolean) {
+    this.muted = muted;
+    for (const entry of this.entries.values()) this.style(entry.layer);
+  }
+  private style(layer: ImageryLayer) {
+    // Keep the original raster and credits; only harmonise its colour beneath clean models.
+    layer.saturation = this.muted ? 0.18 : 1;
+    layer.contrast = this.muted ? 0.8 : 1;
+    layer.brightness = this.muted ? 1.08 : 1;
   }
 
   private remove(key: string, entry: Entry) {

@@ -15,9 +15,11 @@ import { MapLinkResult } from './MapLinkResult';
 
 export function SearchResults({
   query,
+  compact = false,
   language,
   onSelect,
 }: {
+  compact?: boolean;
   query: string;
   language: 'en' | 'tc';
   onSelect: (result: SearchResult) => void;
@@ -119,7 +121,10 @@ export function SearchResults({
           <span role="status">Searching…</span>
         )}
       </div>
-      {notices.map((notice) => (
+      {(!compact || coordinates.kind !== 'coordinates' || !coordinates.supported
+        ? notices
+        : []
+      ).map((notice) => (
         <p className="search-notice" key={notice}>
           {notice}
         </p>
@@ -163,7 +168,17 @@ export function SearchResults({
             {row.nameZh && language === 'en' && <span>{row.nameZh}</span>}
             <span>{language === 'tc' ? row.addressZh || row.address : row.address}</span>
             <small>
-              {row.source === 'user' ? 'Go to coordinates' : `${row.source} · ${row.kind}`}
+              {compact
+                ? row.kind === 'station'
+                  ? 'MTR station'
+                  : row.kind === 'restaurant'
+                    ? 'Restaurant'
+                    : row.kind === 'coordinate'
+                      ? 'Coordinates'
+                      : row.district
+                : row.source === 'user'
+                  ? 'Go to coordinates'
+                  : `${row.source} · ${row.kind}`}
               {!row.location && row.kind === 'restaurant' ? ' · location not yet verified' : ''}
             </small>
           </span>
@@ -179,7 +194,7 @@ export function SearchResults({
             coordinates.
           </p>
         )}
-      {coordinates.kind === 'text' && search.data?.catalogue.sourceDate && (
+      {!compact && coordinates.kind === 'text' && search.data?.catalogue.sourceDate && (
         <p className="search-provenance">
           Restaurant catalogue: {search.data.catalogue.count.toLocaleString()} licences ·{' '}
           <a

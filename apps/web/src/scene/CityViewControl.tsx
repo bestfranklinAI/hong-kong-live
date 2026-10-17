@@ -1,4 +1,5 @@
 import { usePreferences } from '../app/preferences';
+import { hasCitySource } from './city-sources';
 
 /** Planning can override the persisted general map preference. */
 export function CityViewControl({
@@ -12,7 +13,7 @@ export function CityViewControl({
   const setPreferred = usePreferences((state) => state.setCityView);
   const enabled = value ?? preferred;
   const setEnabled = onChange ?? setPreferred;
-  const available = Boolean(import.meta.env.VITE_HK_3D_TILESET_URL);
+  const available = hasCitySource;
   return (
     <label>
       <span>Map dimension</span>

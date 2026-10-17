@@ -9,7 +9,7 @@ export const indoorPointSchema = coordinatesSchema.extend({
   nameZh: z.string(),
   levelName: z.string(),
   levelNameZh: z.string(),
-  category: z.enum(['entry', 'elevator', 'platform', 'ramp', 'stairs', 'escalator']),
+  category: z.enum(['entry', 'elevator', 'platform', 'ramp', 'stairs', 'escalator', 'restroom']),
   z: z.number().finite().min(-500).max(2000),
 });
 export const indoorStationsSchema = z.object({
@@ -63,3 +63,14 @@ export const indoorLayoutSchema = z.object({
 export type IndoorLayoutFeature = z.infer<typeof indoorLayoutFeatureSchema>;
 export type IndoorLayout = z.infer<typeof indoorLayoutSchema>;
 export { indoorLayoutFeatureSchema };
+
+export const indoorVenueSchema = indoorStationSchema.extend({
+  kind: z.enum(['station', 'building']),
+  // Venue-envelope centre for a map label, never a public entrance or indoor position.
+  location: coordinatesSchema.optional(),
+});
+export const indoorVenuesSchema = z.object({
+  venues: z.array(indoorVenueSchema),
+  fetchedAt: z.iso.datetime(),
+});
+export type IndoorVenue = z.infer<typeof indoorVenueSchema>;

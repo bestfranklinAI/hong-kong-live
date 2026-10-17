@@ -121,3 +121,122 @@
     top: calc(env(safe-area-inset-top) + 144px);
   }
 }
+
+/* Semantic labels float above the city. Canvas handles pointer gestures and hit tests. */
+.map-context-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 2;
+}
+.map-context-label {
+  --label-accent: #147d73;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 44px;
+  min-width: 44px;
+  padding: 5px 10px 5px 5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 22px;
+  background: rgba(255, 255, 250, 0.96);
+  box-shadow:
+    0 3px 12px rgba(13, 40, 35, 0.18),
+    0 0 0 1px rgba(24, 60, 52, 0.07);
+  color: #193d35;
+  font:
+    600 13px/1.2 system-ui,
+    sans-serif;
+  text-align: left;
+  white-space: nowrap;
+  will-change: transform;
+}
+.map-context-label[hidden],
+.map-context-labels[hidden] {
+  display: none;
+}
+.map-context-label--station {
+  --label-accent: #a23b58;
+}
+.map-context-label--culture {
+  --label-accent: #7760a1;
+}
+.map-context-label--waterfront {
+  --label-accent: #237f9b;
+}
+.map-context-label--landmark {
+  --label-accent: #a56b37;
+}
+.map-context-label--target {
+  --label-accent: #bb563b;
+}
+.map-context-label__icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--label-accent);
+  color: white;
+}
+.map-context-label__icon svg {
+  width: 19px;
+  height: 19px;
+}
+.map-context-label__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.map-context-label:focus-visible {
+  outline: 3px solid #147d73;
+  outline-offset: 3px;
+}
+.map-context-label--minimal {
+  min-width: 0;
+  height: 24px;
+  padding: 0 4px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #233d39;
+  font:
+    600 12px/24px system-ui,
+    sans-serif;
+  text-align: center;
+  text-shadow:
+    -1px -1px 0 #fffffff0,
+    1px -1px 0 #fffffff0,
+    -1px 1px 0 #fffffff0,
+    1px 1px 0 #fffffff0,
+    0 1px 5px white;
+}
+.map-context-label--street {
+  letter-spacing: 0.03em;
+}
+.map-context-label--building {
+  font-weight: 500;
+  color: #41554f;
+}
+.map-context-label--indoor {
+  --label-accent: #24785d;
+  border-color: #b8d5ca;
+  background: #f3faf6f5;
+  color: #174c40;
+}
+.map-context-label--indoor .map-context-label__icon {
+  color: white;
+}
+.map-context-label--station-section {
+  --label-accent: #35695d;
+  border-color: #83b6a2;
+  background: #f4fbf6;
+  box-shadow: 0 3px 12px #173d3a26;
+}

@@ -1,3 +1,7 @@
+import { NavigationCamera } from './NavigationCamera';
+import { MapLabels } from './MapLabels';
+import { CityLayers, type CityPresentation, type CitySources } from './CityLayers';
+import { installFlatMapRotation } from './FlatMapRotation';
 import { IndoorPoints } from './IndoorPoints';
 import { WalkingRouteLayer } from './WalkingRouteLayer';
 import { SearchPin } from './SearchPin';
@@ -19,15 +23,10 @@ import {
   Cartesian2,
   Cartesian3,
   Cartographic,
-  Cesium3DTileset,
   CesiumWidget,
   Color,
   EllipsoidTerrainProvider,
-  DistanceDisplayCondition,
   HeadingPitchRange,
-  HorizontalOrigin,
-  LabelCollection,
-  LabelStyle,
   Math as CesiumMath,
   Matrix4,
   NearFarScalar,
@@ -37,8 +36,6 @@ import {
   ScreenSpaceEventType,
   SceneTransforms,
   Transforms,
-  VerticalOrigin,
-  type Label,
   type PointPrimitive,
 } from 'cesium';
 import {
@@ -56,7 +53,6 @@ const WEATHER_RANGE = 85_000;
 const COLOURS = {
   marker: Color.fromCssColorString('#147d73'),
   selected: Color.fromCssColorString('#fa704d'),
-  ink: Color.fromCssColorString('#173d3a'),
   water: Color.fromCssColorString('#b9d6db'),
 };
 
@@ -70,7 +66,7 @@ const QUALITY = {
     msaa: 1,
   },
   balanced: {
-    resolution: 1.25,
+    resolution: 1,
     screenSpaceError: 20,
     cacheBytes: 192 * 1024 ** 2,
     globeError: 2.5,
@@ -90,7 +86,6 @@ const QUALITY = {
 interface Marker {
   place: Place;
   point: PointPrimitive;
-  label: Label;
 }
 
 interface SceneOptions {
@@ -104,11 +99,17 @@ interface SceneOptions {
   onSelect: (place: Place) => void;
   onCameraSelect?: (camera: TrafficCamera) => void;
   onBusStopSelect?: (stop: BusStop) => void;
+  onRouteStationSelect?: (id: string) => void;
+  onIndoorVenueSelect?: (venue: import('@hk/contracts').IndoorVenue) => void;
   onStationSelect?: (selection: StationSelection) => void;
   onStatus: (status: SceneStatus) => void;
   creditContainer: HTMLElement;
   performanceOutput?: HTMLElement;
+  measurePerformance?: boolean;
+  cityPresentation?: 'photo' | 'buildings';
   tilesetUrl?: string;
+  citySources?: CitySources;
+  onFollowChange?: (following: boolean) => void;
   basemap: SceneBasemap;
   mapLanguage: MapLanguage;
 }
@@ -134,24 +135,25 @@ export class SceneController {
   private readonly rainfall: RainfallLayer;
   private readonly widget: CesiumWidget;
   private readonly points: PointPrimitiveCollection;
-  private readonly labels: LabelCollection;
+  private readonly contextLabels: MapLabels;
   private readonly events: ScreenSpaceEventHandler;
   private readonly cleanups: Array<() => void> = [];
   private readonly markers = new Map<string, Marker>();
   private readonly reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   private readonly inspector: SceneInspector;
-  private tileset?: Cesium3DTileset;
+  private readonly city: CityLayers;
+  private navigation: NavigationCamera;
+  private navigating = false;
+  private planning = false;
+  private hasWalkingRoute = false;
   private mode: ViewMode = 'explore';
   private quality: Quality = 'balanced';
   private selected: Place | null = null;
   private pitched = true;
   private cityView = false;
-  private cityRequested = false;
   private disposed = false;
   private renderedFrames = 0;
   private pendingGlobeTiles = 0;
-  private pendingCityTiles = 0;
-  private cityState: SceneDiagnostics['cityTiles'] = 'not-configured';
   private readonly basemapLayers: BasemapLayers;
   private basemap: SceneBasemap = 'none';
   private mapLanguage: MapLanguage = 'en';
@@ -179,21 +181,48 @@ export class SceneController {
       contextOptions: { webgl: { alpha: false, antialias: false } },
     });
 
+    this.city = new CityLayers(
+      this.widget,
+      options.citySources ?? { [options.cityPresentation ?? 'photo']: options.tilesetUrl },
+      options.cityPresentation ?? 'photo',
+      QUALITY[this.quality],
+      () => this.reportStatus(),
+    );
+    this.cleanups.push(() => this.city.dispose());
     this.searchPin = new SearchPin(this.widget);
-    this.walkingRoute = new WalkingRouteLayer(this.widget);
+    this.walkingRoute = new WalkingRouteLayer(
+      this.widget,
+      (centre, pitch, range, duration, heading) =>
+        this.flyToFramedTarget(centre, pitch, range, duration, heading),
+    );
     this.indoorPoints = new IndoorPoints(this.widget);
     this.facilities = new FacilityMarkers(this.widget);
     this.userLocation = new UserLocation(this.widget);
+    this.navigation = new NavigationCamera(
+      this.widget,
+      this.userLocation,
+      options.onFollowChange,
+      () => this.viewportInsets,
+      () => this.cityView,
+    );
     this.trafficCameras = new TrafficCameras(this.widget);
     this.mtr = new MtrStations(this.widget);
     this.trainMotion = new TrainMotion(this.widget);
     this.busStops = new BusStops(this.widget);
     this.rainfall = new RainfallLayer(this.widget);
     this.basemapLayers = new BasemapLayers(this.widget.imageryLayers, () => this.reportStatus());
-    if (import.meta.env.VITE_SCENE_DIAGNOSTICS === 'true' && options.performanceOutput) {
-      const measurements = new ScenePerformance(this.widget, options.performanceOutput);
+    if (
+      (import.meta.env.VITE_SCENE_DIAGNOSTICS === 'true' || options.measurePerformance) &&
+      options.performanceOutput
+    ) {
+      const measurements = new ScenePerformance(this.widget, options.performanceOutput, () =>
+        this.city.snapshot(),
+      );
       this.cleanups.push(() => measurements.dispose());
     }
+    this.cleanups.push(
+      installFlatMapRotation(this.widget, () => !this.cityView || this.mode === 'weather'),
+    );
     const { scene } = this.widget;
     this.cleanups.push(
       scene.renderError.addEventListener((_scene, error) => {
@@ -217,13 +246,22 @@ export class SceneController {
     );
 
     this.points = scene.primitives.add(new PointPrimitiveCollection());
-    this.labels = scene.primitives.add(new LabelCollection({ scene }));
+    this.contextLabels = new MapLabels(
+      this.widget,
+      (place) => this.options.onSelect(place),
+      (station) => this.options.onStationSelect?.(station),
+      () => this.viewportInsets,
+      () => this.options.onSearchPinSelect?.(),
+      (venue) => this.options.onIndoorVenueSelect?.(venue),
+      (id) => this.options.onRouteStationSelect?.(id),
+    );
     this.events = new ScreenSpaceEventHandler(this.widget.canvas);
     this.events.setInputAction(
       () => this.command('zoom-in'),
       ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
     );
     this.events.setInputAction((event: { position: Cartesian2 }) => {
+      if (this.contextLabels.pickAt(event.position)) return;
       const indoorPoint = this.indoorPoints.pickAt(event.position);
       if (indoorPoint) {
         this.options.onIndoorPointSelect?.(indoorPoint);
@@ -320,6 +358,7 @@ export class SceneController {
     if (this.disposed || (this.basemap === basemap && this.mapLanguage === language)) return;
     this.basemap = basemap;
     this.mapLanguage = language;
+    this.contextLabels.setLanguage(language);
     this.basemapLayers.update(basemapLayerDefinitions(basemap, language));
     this.reportStatus();
     this.widget.scene.requestRender();
@@ -328,7 +367,6 @@ export class SceneController {
   setPlaces(places: Place[]): void {
     if (this.disposed) return;
     this.points.removeAll();
-    this.labels.removeAll();
     this.markers.clear();
     for (const place of places) {
       const position = Cartesian3.fromDegrees(place.lng, place.lat, 8);
@@ -342,25 +380,17 @@ export class SceneController {
         disableDepthTestDistance: Number.POSITIVE_INFINITY,
         scaleByDistance: new NearFarScalar(500, 1.25, 20_000, 0.7),
       });
-      const label = this.labels.add({
-        id: place.id,
-        position,
-        text: place.name,
-        font: '600 13px system-ui, sans-serif',
-        fillColor: COLOURS.ink,
-        outlineColor: Color.WHITE,
-        outlineWidth: 4,
-        style: LabelStyle.FILL_AND_OUTLINE,
-        pixelOffset: new Cartesian2(0, -15),
-        horizontalOrigin: HorizontalOrigin.CENTER,
-        verticalOrigin: VerticalOrigin.BOTTOM,
-        disableDepthTestDistance: Number.POSITIVE_INFINITY,
-        scaleByDistance: new NearFarScalar(800, 1, 25_000, 0.65),
-      });
-      this.markers.set(place.id, { place, point, label });
+      this.markers.set(place.id, { place, point });
     }
     this.updateMarkerSelection();
     this.widget.scene.requestRender();
+  }
+
+  setIndoorVenues(venues: import('@hk/contracts').IndoorVenue[]): void {
+    this.contextLabels.setIndoorVenues(venues);
+  }
+  setContextPlaces(places: Place[]): void {
+    this.contextLabels.setPlaces(places);
   }
 
   selectPlace(place: Place | null): void {
@@ -376,7 +406,6 @@ export class SceneController {
     this.trafficTarget = selected;
     this.trafficCameras.set(cameras, selected?.id);
     this.points.show = this.mode === 'explore';
-    this.labels.show = this.mode === 'explore';
     if (selected && selected.id !== this.cameraId) this.focus(selected.lng, selected.lat, 3500);
     this.cameraId = selected?.id;
   }
@@ -407,9 +436,11 @@ export class SceneController {
     if (this.disposed || mode === this.mode) return;
     this.mode = mode;
     this.points.show = mode === 'explore';
-    this.labels.show = mode === 'explore';
+    this.contextLabels.setVisible(mode !== 'weather');
+    this.contextLabels.setCompact(mode !== 'explore' || this.navigating);
     // Globe imagery is hidden by opaque city meshes; weather gets a clear top-down surface.
-    if (this.tileset) this.tileset.show = this.cityView && mode !== 'weather';
+    this.city.setActive(this.cityView && mode !== 'weather');
+    this.updateCityBasemap();
     this.widget.scene.screenSpaceCameraController.enableTilt = this.cityView && mode !== 'weather';
     this.reportStatus();
     const centre = this.selected ?? HARBOUR;
@@ -435,11 +466,7 @@ export class SceneController {
     this.widget.scene.globe.maximumScreenSpaceError = preset.globeError;
     // A tile-count retention target, not a byte limit; current visible tiles may exceed it.
     this.widget.scene.globe.tileCacheSize = preset.globeCacheTiles;
-    if (this.tileset) {
-      this.tileset.maximumScreenSpaceError = preset.screenSpaceError;
-      this.tileset.cacheBytes = preset.cacheBytes;
-      this.tileset.maximumCacheOverflowBytes = preset.cacheBytes / 2;
-    }
+    this.city.setQuality(preset);
     this.widget.scene.requestRender();
   }
 
@@ -458,9 +485,15 @@ export class SceneController {
     )
       return;
     this.viewportInsets = { top, bottom };
+    this.contextLabels.invalidate();
     this.viewportSize = { width, height };
     this.widget.resize();
-    if (this.indoorTarget)
+    if (this.navigating) {
+      this.widget.scene.requestRender();
+      return;
+    }
+    if (this.hasWalkingRoute) this.walkingRoute.frame();
+    else if (this.indoorTarget)
       this.focus(this.indoorTarget.lng, this.indoorTarget.lat, this.indoorTarget.range, false);
     else if (this.searchTarget)
       this.focus(this.searchTarget.lng, this.searchTarget.lat, 1400, false);
@@ -482,6 +515,7 @@ export class SceneController {
   setSearchPin(result: SearchResult | null) {
     this.searchTarget = result?.location ?? null;
     this.searchPin.set(result);
+    this.contextLabels.setTarget(result);
     if (result?.location) this.focus(result.location.lng, result.location.lat, 1400);
   }
   setIndoorPoints(
@@ -500,11 +534,27 @@ export class SceneController {
     route: import('@hk/contracts').WalkingRoute | null,
     sourceHeights = false,
     showHidden = false,
+    stationView?: import('@hk/contracts').StationRouteView,
   ) {
-    this.walkingRoute.set(route, sourceHeights, showHidden);
+    this.contextLabels.setRouteStations(stationView?.stations ?? []);
+    this.hasWalkingRoute = Boolean(route);
+    // Recalculation must not replace the walking camera with a route overview.
+    this.walkingRoute.set(route, sourceHeights, showHidden, !this.navigating, stationView);
   }
   setFacilities(rows?: SearchResult[]) {
     this.facilities.set(rows);
+  }
+
+  setNavigation(state?: import('./types').MapSceneProps['navigation']) {
+    const enteringPlanner = !this.planning && Boolean(state?.planning);
+    this.planning = state?.planning ?? false;
+    // Fetch the root manifest during destination entry, without traversing city tiles in 2D.
+    if (enteringPlanner) this.requestCity();
+    this.navigating = state?.active ?? false;
+    this.contextLabels.setVisible(this.mode !== 'weather');
+    this.contextLabels.setCompact(this.mode !== 'explore' || this.navigating);
+    this.navigation.set(this.navigating, state?.following ?? true, state?.fix ?? null, state?.z);
+    this.city.setNavigating(this.navigating);
   }
 
   locate(location: LocationFix): void {
@@ -516,9 +566,23 @@ export class SceneController {
 
   command(type: SceneCommand['type']): void {
     if (this.disposed) return;
+    if (
+      type === 'zoom-in' ||
+      type === 'zoom-out' ||
+      type === 'reset' ||
+      type === 'north' ||
+      type === 'toggle-pitch'
+    )
+      this.navigation.pause();
     const { camera, scene } = this.widget;
     camera.cancelFlight();
     switch (type) {
+      case 'route-overview':
+        this.walkingRoute.frame(true);
+        break;
+      case 'retry-city':
+        this.city.retry();
+        break;
       case 'pick-route-point': {
         const canvas = this.widget.canvas;
         const point = camera.pickEllipsoid(
@@ -602,9 +666,11 @@ export class SceneController {
     this.disposed = true;
     for (const remove of this.cleanups) remove();
     this.searchPin.dispose();
+    this.contextLabels.dispose();
     this.walkingRoute.dispose();
     this.indoorPoints.dispose();
     this.facilities.dispose();
+    this.navigation.dispose();
     this.userLocation.dispose();
     this.trafficCameras.dispose();
     this.trainMotion.dispose();
@@ -667,6 +733,7 @@ export class SceneController {
     pitch: number,
     range: number,
     duration: number,
+    heading = 0,
   ): boolean {
     const { camera, canvas } = this.widget;
     if (this.viewportInsets.bottom === 0 || !(camera.frustum instanceof PerspectiveFrustum))
@@ -674,16 +741,28 @@ export class SceneController {
     const fovy = camera.frustum.fovy;
     if (fovy === undefined || canvas.clientHeight === 0) return false;
     const transform = Transforms.eastNorthUpToFixedFrame(centre);
-    const localOffset = new Cartesian3(0, -Math.cos(pitch) * range, -Math.sin(pitch) * range);
+    const localOffset = new Cartesian3(
+      -Math.sin(heading) * Math.cos(pitch) * range,
+      -Math.cos(heading) * Math.cos(pitch) * range,
+      -Math.sin(pitch) * range,
+    );
     const destination = Matrix4.multiplyByPoint(transform, localOffset, new Cartesian3());
     const direction = Matrix4.multiplyByPointAsVector(
       transform,
-      new Cartesian3(0, Math.cos(pitch), Math.sin(pitch)),
+      new Cartesian3(
+        Math.sin(heading) * Math.cos(pitch),
+        Math.cos(heading) * Math.cos(pitch),
+        Math.sin(pitch),
+      ),
       new Cartesian3(),
     );
     const up = Matrix4.multiplyByPointAsVector(
       transform,
-      new Cartesian3(0, -Math.sin(pitch), Math.cos(pitch)),
+      new Cartesian3(
+        -Math.sin(heading) * Math.sin(pitch),
+        -Math.cos(heading) * Math.sin(pitch),
+        Math.cos(pitch),
+      ),
       new Cartesian3(),
     );
     const verticalFraction =
@@ -704,123 +783,73 @@ export class SceneController {
       const selected = marker.place.id === this.selected?.id;
       marker.point.color = selected ? COLOURS.selected : COLOURS.marker;
       marker.point.pixelSize = selected ? 19 : 12;
-      marker.label.fillColor = selected ? COLOURS.selected : COLOURS.ink;
-      marker.label.scale = selected ? 1.1 : 1;
-      // Keep the regional view readable while preserving the selected name.
-      marker.label.distanceDisplayCondition = selected
-        ? new DistanceDisplayCondition()
-        : new DistanceDisplayCondition(0, 6000);
     }
   }
 
   setCityView(enabled: boolean): void {
-    this.cityView = enabled && Boolean(this.options.tilesetUrl);
+    this.cityView = enabled && this.city.configured;
     this.pitched = this.cityView;
     this.widget.scene.screenSpaceCameraController.enableTilt =
       this.cityView && this.mode !== 'weather';
-    // Keep the same tileset and its bounded cache when returning to the flat map.
-    if (this.tileset) this.tileset.show = this.cityView && this.mode !== 'weather';
-    if (this.cityView && !this.cityRequested && this.options.tilesetUrl) {
-      this.cityRequested = true;
-      void this.loadCity(this.options.tilesetUrl);
-    }
+    this.city.setActive(this.cityView && this.mode !== 'weather');
+    this.updateCityBasemap();
     this.reorient(CesiumMath.toRadians(this.cityView && this.mode !== 'weather' ? -55 : -90));
     this.reportStatus();
     this.widget.scene.requestRender();
   }
 
-  private async loadCity(url: string): Promise<void> {
-    this.cityState = 'loading';
+  setCityPresentation(presentation: CityPresentation): void {
+    this.city.setPresentation(presentation);
+    this.updateCityBasemap();
     this.reportStatus();
-    try {
-      const parsed = new URL(url, window.location.origin);
-      if (!['https:', 'http:'].includes(parsed.protocol))
-        throw new Error('Unsupported tileset protocol');
-      const preset = QUALITY[this.quality];
-      const tileset = await Cesium3DTileset.fromUrl(parsed.toString(), {
-        maximumScreenSpaceError: preset.screenSpaceError,
-        cacheBytes: preset.cacheBytes,
-        maximumCacheOverflowBytes: preset.cacheBytes / 2,
-        dynamicScreenSpaceError: true,
-        foveatedScreenSpaceError: true,
-        preloadWhenHidden: false,
-        preloadFlightDestinations: true,
-        // Load coarse coverage first and retain parents until their replacements are ready.
-        skipLevelOfDetail: false,
-        progressiveResolutionHeightFraction: 0.3,
-        cullRequestsWhileMovingMultiplier: 20,
-        foveatedTimeDelay: 0.1,
-      });
-      // A StrictMode remount can finish after its first widget has been disposed.
-      if (this.disposed) {
-        tileset.destroy();
-        return;
-      }
-      this.tileset = this.widget.scene.primitives.add(tileset);
-      // Quality may have changed while the manifest was loading.
-      this.setQuality(this.quality);
-      tileset.show = this.cityView && this.mode !== 'weather';
-      this.cleanups.push(
-        tileset.loadProgress.addEventListener((pending: number, processing: number) => {
-          this.pendingCityTiles = pending + processing;
-          const next = tileset.tilesLoaded ? 'ready' : 'loading';
-          if (this.cityState !== 'error' && this.cityState !== next) {
-            this.cityState = next;
-            this.reportStatus();
-          }
-        }),
-      );
-      this.cleanups.push(
-        tileset.tileFailed.addEventListener(() => {
-          this.cityState = 'error';
-          this.reportStatus();
-        }),
-      );
-      this.cleanups.push(
-        tileset.allTilesLoaded.addEventListener(() => {
-          if (this.cityState !== 'ready') {
-            this.cityState = 'ready';
-            this.reportStatus();
-          }
-        }),
-      );
-      this.reportStatus();
-      this.widget.scene.requestRender();
-    } catch {
-      if (this.disposed) return;
-      this.cityState = 'error';
-      this.cityRequested = false; // A later 2D → 3D toggle can retry a failed manifest.
-      this.reportStatus();
-    }
+    this.widget.scene.requestRender();
+  }
+
+  private updateCityBasemap() {
+    // Raster text warps with the ground in 3D; upright semantic labels stay readable.
+    this.basemapLayers.setLabelVisibility(!this.cityView || this.mode === 'weather');
+    this.basemapLayers.setMuted(
+      this.cityView && this.mode !== 'weather' && this.city.presentationStyle === 'buildings',
+    );
+  }
+
+  private requestCity(): void {
+    this.city.warm();
   }
 
   private reportStatus(): void {
     if (this.disposed) return;
-    const cityVisible = this.cityView && this.mode !== 'weather';
+    const city = this.city.snapshot();
+    const visible = this.cityView && this.mode !== 'weather';
     const message = this.basemapLayers.hasErrors
       ? 'Some map tiles could not load. Place search is still available.'
-      : !cityVisible
+      : !visible
         ? `${basemapNames[this.basemap]} · 2D map`
-        : this.cityState === 'loading'
-          ? 'Loading the connected 3D city…'
-          : this.cityState === 'ready'
+        : city.state === 'loading'
+          ? city.firstVisibleMs !== null
+            ? 'Refining 3D detail…'
+            : 'Preparing 3D · map remains usable'
+          : city.state === 'ready'
             ? `3D city connected · ${basemapNames[this.basemap]}`
-            : this.cityState === 'error'
-              ? this.tileset
+            : city.state === 'error'
+              ? city.firstVisibleMs !== null
                 ? 'Some 3D tiles unavailable · showing available coverage'
-                : '3D city unavailable · showing the flat basemap'
+                : '3D detail unavailable · map remains usable'
               : this.basemap === 'none'
                 ? 'Test scene · external map imagery disabled'
                 : `${basemapNames[this.basemap]} · flat basemap · 3D city not connected`;
     this.options.onStatus({
       ready: true,
       message,
-      cityLoading: cityVisible && this.cityState === 'loading',
+      cityLoading: visible && city.state === 'loading' && city.firstVisibleMs === null,
+      cityUnavailable: visible && city.state === 'error',
+      citySlow: visible && city.slow,
     });
   }
 
   private snapshot(): SceneDiagnostics {
     const { camera, canvas } = this.widget;
+    const city = this.city.snapshot();
     const screenPoint = this.selected
       ? SceneTransforms.worldToWindowCoordinates(
           this.widget.scene,
@@ -835,8 +864,17 @@ export class SceneController {
       placeCount: this.markers.size,
       renderedFrames: this.renderedFrames,
       pendingGlobeTiles: this.pendingGlobeTiles,
-      pendingCityTiles: this.pendingCityTiles,
-      cityTiles: this.cityState,
+      pendingCityTiles: city.network + city.processing,
+      cityNetworkRequests: city.network,
+      cityProcessingTiles: city.processing,
+      failedCityTiles: city.failed,
+      loadedCityTiles: city.loaded,
+      unloadedCityTiles: city.unloaded,
+      cityMemoryBytes: city.memoryBytes,
+      cityCoverageReady: city.coverageReady,
+      firstCityCoverageMs: city.firstCoverageMs,
+      firstCityVisibleMs: city.firstVisibleMs,
+      cityTiles: city.state,
       basemap: this.basemap,
       terrain: 'ellipsoid',
       canvas: { width: canvas.width, height: canvas.height },

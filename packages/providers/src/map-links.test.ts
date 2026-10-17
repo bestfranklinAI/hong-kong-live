@@ -95,3 +95,18 @@ it('stops loops, missing redirects, HTML landing pages and upstream failures', a
     }),
   ).rejects.toThrow();
 });
+it('retains an Android place-ID label without inventing coordinates from its page camera', async () => {
+  const url =
+    'https://www.google.com/maps/place/23%2FF,+Priv%C3%A9+Technologies,+Arion+Commercial+Centre/data=!4m2!3m1!1s0x3403ffee4df16973:0xd66bdee44dad4660';
+  const fetcher = vi.fn(
+    async () => new Response(null, { status: 302, headers: { location: url } }),
+  );
+  const result = await resolveGoogleMapsLink(
+    'Privé Technologies\nhttps://maps.app.goo.gl/PWTUHjF9J7LeMndV6',
+    fetcher,
+  );
+  expect(result.place?.name).toBe('Privé Technologies');
+  expect(result.place?.address).toContain('Arion Commercial Centre');
+  expect(result.result).toBeNull();
+  expect(fetcher).toHaveBeenCalledTimes(1);
+});

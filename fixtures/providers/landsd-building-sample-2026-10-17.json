@@ -1,0 +1,1372 @@
+{
+  "source": "https://portal.csdi.gov.hk/csdi-webpage/apidoc/3d-indoor-map-api",
+  "capturedAt": "2026-10-17",
+  "venue": {
+    "features": [
+      {
+        "type": "Feature",
+        "id": "venue_polygon.31",
+        "geometry": null,
+        "properties": {
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "venue_name_en": "Billion Centre",
+          "venue_name_zh": "億京中心",
+          "bbox": [
+            22.32098300000007,
+            114.20580356000005,
+            22.321975990000055,
+            114.20626814000002
+          ]
+        }
+      }
+    ]
+  },
+  "floors": {
+    "features": [
+      {
+        "type": "Feature",
+        "id": "level_polygon.786",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                114.20622810000009,
+                22.321005800000023,
+                4.529999999998836
+              ],
+              [
+                114.20605420000004,
+                22.32099080000006,
+                4.529999999998836
+              ],
+              [
+                114.20605320000004,
+                22.321000800000036,
+                4.529999999998836
+              ],
+              [
+                114.20603590000007,
+                22.320992200000035,
+                4.529999999998836
+              ],
+              [
+                114.20602230000009,
+                22.320987900000034,
+                4.529999999998836
+              ],
+              [
+                114.20600820000004,
+                22.32098540000004,
+                4.529999999998836
+              ],
+              [
+                114.20599390000007,
+                22.320984800000076,
+                4.529999999998836
+              ],
+              [
+                114.20597960000009,
+                22.32098600000006,
+                4.529999999998836
+              ],
+              [
+                114.20596560000001,
+                22.320989000000054,
+                4.529999999998836
+              ],
+              [
+                114.20595230000004,
+                22.320993800000053,
+                4.529999999998836
+              ],
+              [
+                114.20593970000004,
+                22.321000300000037,
+                4.529999999998836
+              ],
+              [
+                114.2059283000001,
+                22.321008300000074,
+                4.529999999998836
+              ],
+              [
+                114.20591810000008,
+                22.321017700000027,
+                4.529999999998836
+              ],
+              [
+                114.20591150000007,
+                22.32102560000004,
+                4.529999999998836
+              ],
+              [
+                114.20590410000011,
+                22.321037000000047,
+                4.529999999998836
+              ],
+              [
+                114.20590030000005,
+                22.32104460000005,
+                4.529999999998836
+              ],
+              [
+                114.20589730000006,
+                22.321052400000042,
+                4.529999999998836
+              ],
+              [
+                114.20589540000003,
+                22.321058900000025,
+                4.529999999998836
+              ],
+              [
+                114.20589400000006,
+                22.321065400000066,
+                4.529999999998836
+              ],
+              [
+                114.20589310000003,
+                22.321072000000072,
+                4.529999999998836
+              ],
+              [
+                114.20589110000003,
+                22.321091500000023,
+                4.529999999998836
+              ],
+              [
+                114.20586570000012,
+                22.321345200000053,
+                4.529999999998836
+              ],
+              [
+                114.20586360000004,
+                22.321366500000067,
+                4.529999999998836
+              ],
+              [
+                114.2058479000001,
+                22.321523900000045,
+                4.529999999998836
+              ],
+              [
+                114.20584150000002,
+                22.321587500000078,
+                4.529999999998836
+              ],
+              [
+                114.20582480000007,
+                22.321753700000045,
+                4.529999999998836
+              ],
+              [
+                114.20580780000012,
+                22.321924100000047,
+                4.529999999998836
+              ],
+              [
+                114.20580670000004,
+                22.321935100000076,
+                4.529999999998836
+              ],
+              [
+                114.20580550000011,
+                22.32194670000007,
+                4.529999999998836
+              ],
+              [
+                114.20584610000003,
+                22.321950300000026,
+                4.529999999998836
+              ],
+              [
+                114.20586720000006,
+                22.321952200000055,
+                4.529999999998836
+              ],
+              [
+                114.20594280000012,
+                22.32195900000005,
+                4.529999999998836
+              ],
+              [
+                114.20611300000007,
+                22.321974200000056,
+                4.529999999998836
+              ],
+              [
+                114.20617320000008,
+                22.321937400000024,
+                4.529999999998836
+              ],
+              [
+                114.20618280000008,
+                22.321841500000062,
+                4.529999999998836
+              ],
+              [
+                114.20618390000004,
+                22.321830800000043,
+                4.529999999998836
+              ],
+              [
+                114.20618630000001,
+                22.32180630000005,
+                4.529999999998836
+              ],
+              [
+                114.20618740000009,
+                22.32179560000003,
+                4.529999999998836
+              ],
+              [
+                114.20618840000009,
+                22.321785900000066,
+                4.529999999998836
+              ],
+              [
+                114.20620860000008,
+                22.321584100000052,
+                4.529999999998836
+              ],
+              [
+                114.20621110000002,
+                22.321558800000048,
+                4.529999999998836
+              ],
+              [
+                114.20622790000004,
+                22.321391000000062,
+                4.529999999998836
+              ],
+              [
+                114.2062304000001,
+                22.321366900000044,
+                4.529999999998836
+              ],
+              [
+                114.20623160000002,
+                22.32135470000003,
+                4.529999999998836
+              ],
+              [
+                114.20625050000001,
+                22.32116590000004,
+                4.529999999998836
+              ],
+              [
+                114.20625150000001,
+                22.321156200000075,
+                4.529999999998836
+              ],
+              [
+                114.20625300000006,
+                22.321141300000022,
+                4.529999999998836
+              ],
+              [
+                114.20625440000003,
+                22.321127400000023,
+                4.529999999998836
+              ],
+              [
+                114.20626620000007,
+                22.321009100000026,
+                4.529999999998836
+              ],
+              [
+                114.20623920000003,
+                22.321006800000077,
+                4.529999999998836
+              ],
+              [
+                114.20622810000009,
+                22.321005800000023,
+                4.529999999998836
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "level_category": "unspecified",
+          "level_restriction": null,
+          "level_outdoor": 0,
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "venue_category": "businesscampus",
+          "venue_name_en": "Billion Centre",
+          "venue_name_zh": "億京中心",
+          "venue_alt_name": null,
+          "venue_restriction": null,
+          "venue_hours": null,
+          "venue_website": null,
+          "venue_phone": null,
+          "address_address": "1 WANG KWONG ROAD",
+          "address_unit": null,
+          "address_locality": "KWUN TONG DISTRICT",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "building_category": "unspecified",
+          "building_name_en": "Billion Centre",
+          "building_name_zh": "億京中心",
+          "building_alt_name": null,
+          "building_restriction": "",
+          "bbox": [
+            114.20580550000011,
+            22.320984800000076,
+            114.20626620000007,
+            22.321974200000056
+          ]
+        }
+      }
+    ]
+  },
+  "points": {
+    "features": [
+      {
+        "type": "Feature",
+        "id": "amenity_point.25328",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            114.20613601000002,
+            22.321795120000047,
+            4.529999999998836
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "amenity_id": "80bf54b7-114a-46aa-ad1c-20af0cd17e35",
+          "amenity_category": "elevator",
+          "amenity_name_en": "Elevator",
+          "amenity_name_zh": "升降機",
+          "amenity_alt_name": null,
+          "amenity_accessibility": null,
+          "amenity_phone": null,
+          "amenity_website": null,
+          "amenity_hours": null,
+          "amenity_correlation_id": null,
+          "unit_id": "01e9ae7a-1fe9-4c18-8780-a0268af4fb0f",
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "bbox": [
+            114.20613601000002,
+            22.321795120000047,
+            114.20613601000002,
+            22.321795120000047
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "amenity_point.25329",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            114.20620105000012,
+            22.321382450000044,
+            4.529999999998836
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "amenity_id": "5c20b7f8-c491-4994-9324-778edda4f2f7",
+          "amenity_category": "stairs",
+          "amenity_name_en": "Stairs",
+          "amenity_name_zh": "樓梯",
+          "amenity_alt_name": null,
+          "amenity_accessibility": null,
+          "amenity_phone": null,
+          "amenity_website": null,
+          "amenity_hours": null,
+          "amenity_correlation_id": null,
+          "unit_id": "2544474f-3fbc-432e-97c1-ece0c56baec4",
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "bbox": [
+            114.20620105000012,
+            22.321382450000044,
+            114.20620105000012,
+            22.321382450000044
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "amenity_point.25330",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            114.20619734000002,
+            22.32114794000006,
+            4.529999999998836
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "amenity_id": "0e043b42-53b2-4f94-942b-2203b34966c5",
+          "amenity_category": "elevator",
+          "amenity_name_en": "Elevator",
+          "amenity_name_zh": "升降機",
+          "amenity_alt_name": null,
+          "amenity_accessibility": null,
+          "amenity_phone": null,
+          "amenity_website": null,
+          "amenity_hours": null,
+          "amenity_correlation_id": null,
+          "unit_id": "bb0fde51-117d-44c4-bdde-2541fac8c2b1",
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "bbox": [
+            114.20619734000002,
+            22.32114794000006,
+            114.20619734000002,
+            22.32114794000006
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "amenity_point.25331",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            114.20618359000002,
+            22.32156279000003,
+            4.529999999998836
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "amenity_id": "c03b9649-a3f6-4c0f-9c7a-4937afdb0702",
+          "amenity_category": "stairs",
+          "amenity_name_en": "Stairs",
+          "amenity_name_zh": "樓梯",
+          "amenity_alt_name": null,
+          "amenity_accessibility": null,
+          "amenity_phone": null,
+          "amenity_website": null,
+          "amenity_hours": null,
+          "amenity_correlation_id": null,
+          "unit_id": "da308e77-1974-4e19-beff-2e09793f3d31",
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "bbox": [
+            114.20618359000002,
+            22.32156279000003,
+            114.20618359000002,
+            22.32156279000003
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "amenity_point.25332",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            114.20583377000003,
+            22.321931930000062,
+            4.529999999998836
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "amenity_id": "5af60f53-2d8b-4825-951f-6b85a1bc0ffb",
+          "amenity_category": "stairs",
+          "amenity_name_en": "Stairs",
+          "amenity_name_zh": "樓梯",
+          "amenity_alt_name": null,
+          "amenity_accessibility": null,
+          "amenity_phone": null,
+          "amenity_website": null,
+          "amenity_hours": null,
+          "amenity_correlation_id": null,
+          "unit_id": "c2c35d4e-9e7f-406c-9178-998473b36e3e",
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "bbox": [
+            114.20583377000003,
+            22.321931930000062,
+            114.20583377000003,
+            22.321931930000062
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "amenity_point.25333",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            114.20617890000005,
+            22.321350410000036,
+            4.529999999998836
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "amenity_id": "cfe4b079-4788-415b-a907-2b0b4910d4b9",
+          "amenity_category": "elevator",
+          "amenity_name_en": "Elevator",
+          "amenity_name_zh": "升降機",
+          "amenity_alt_name": null,
+          "amenity_accessibility": null,
+          "amenity_phone": null,
+          "amenity_website": null,
+          "amenity_hours": null,
+          "amenity_correlation_id": null,
+          "unit_id": "935365f9-c63a-4def-b7f4-f7eab320ce3c",
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "bbox": [
+            114.20617890000005,
+            22.321350410000036,
+            114.20617890000005,
+            22.321350410000036
+          ]
+        }
+      }
+    ]
+  },
+  "units": {
+    "features": [
+      {
+        "type": "Feature",
+        "id": "unit_polygon.29485",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                114.20612380000011,
+                22.32178310000006,
+                4.529999999998836
+              ],
+              [
+                114.20612160000007,
+                22.321804800000052,
+                4.529999999998836
+              ],
+              [
+                114.20614820000003,
+                22.321807100000058,
+                4.529999999998836
+              ],
+              [
+                114.20615050000004,
+                22.321785500000033,
+                4.529999999998836
+              ],
+              [
+                114.20612380000011,
+                22.32178310000006,
+                4.529999999998836
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "unit_id": "01e9ae7a-1fe9-4c18-8780-a0268af4fb0f",
+          "unit_category": "elevator",
+          "unit_name_en": "Elevator",
+          "unit_name_zh": "升降機",
+          "unit_alt_name": null,
+          "unit_unitnumbername": null,
+          "unit_restriction": null,
+          "unit_accessibility": null,
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "level_category": "unspecified",
+          "level_restriction": null,
+          "level_outdoor": 0,
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "venue_category": "businesscampus",
+          "venue_name_en": "Billion Centre",
+          "venue_name_zh": "億京中心",
+          "venue_alt_name": null,
+          "venue_restriction": null,
+          "venue_hours": null,
+          "venue_website": null,
+          "venue_phone": null,
+          "address_address": "1 WANG KWONG ROAD",
+          "address_unit": null,
+          "address_locality": "KWUN TONG DISTRICT",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "building_category": "unspecified",
+          "building_name_en": "Billion Centre",
+          "building_name_zh": "億京中心",
+          "building_alt_name": null,
+          "building_restriction": "",
+          "bbox": [
+            114.20612160000007,
+            22.32178310000006,
+            114.20615050000004,
+            22.321807100000058
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "unit_polygon.29486",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                114.20618750000006,
+                22.321375000000046,
+                4.529999999998836
+              ],
+              [
+                114.20618620000005,
+                22.32138740000005,
+                4.529999999998836
+              ],
+              [
+                114.20621460000007,
+                22.321389900000042,
+                4.529999999998836
+              ],
+              [
+                114.20621590000007,
+                22.32137750000004,
+                4.529999999998836
+              ],
+              [
+                114.20618750000006,
+                22.321375000000046,
+                4.529999999998836
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "unit_id": "2544474f-3fbc-432e-97c1-ece0c56baec4",
+          "unit_category": "stairs",
+          "unit_name_en": "Stairs",
+          "unit_name_zh": "樓梯",
+          "unit_alt_name": null,
+          "unit_unitnumbername": null,
+          "unit_restriction": null,
+          "unit_accessibility": null,
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "level_category": "unspecified",
+          "level_restriction": null,
+          "level_outdoor": 0,
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "venue_category": "businesscampus",
+          "venue_name_en": "Billion Centre",
+          "venue_name_zh": "億京中心",
+          "venue_alt_name": null,
+          "venue_restriction": null,
+          "venue_hours": null,
+          "venue_website": null,
+          "venue_phone": null,
+          "address_address": "1 WANG KWONG ROAD",
+          "address_unit": null,
+          "address_locality": "KWUN TONG DISTRICT",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "building_category": "unspecified",
+          "building_name_en": "Billion Centre",
+          "building_name_zh": "億京中心",
+          "building_alt_name": null,
+          "building_restriction": "",
+          "bbox": [
+            114.20618620000005,
+            22.321375000000046,
+            114.20621590000007,
+            22.321389900000042
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "unit_polygon.29487",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                114.20618400000001,
+                22.32113570000007,
+                4.529999999998836
+              ],
+              [
+                114.20618180000008,
+                22.321157800000037,
+                4.529999999998836
+              ],
+              [
+                114.20621070000004,
+                22.321160200000065,
+                4.529999999998836
+              ],
+              [
+                114.20621280000012,
+                22.321138000000076,
+                4.529999999998836
+              ],
+              [
+                114.20618400000001,
+                22.32113570000007,
+                4.529999999998836
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "unit_id": "bb0fde51-117d-44c4-bdde-2541fac8c2b1",
+          "unit_category": "elevator",
+          "unit_name_en": "Elevator",
+          "unit_name_zh": "升降機",
+          "unit_alt_name": null,
+          "unit_unitnumbername": null,
+          "unit_restriction": null,
+          "unit_accessibility": null,
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "level_category": "unspecified",
+          "level_restriction": null,
+          "level_outdoor": 0,
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "venue_category": "businesscampus",
+          "venue_name_en": "Billion Centre",
+          "venue_name_zh": "億京中心",
+          "venue_alt_name": null,
+          "venue_restriction": null,
+          "venue_hours": null,
+          "venue_website": null,
+          "venue_phone": null,
+          "address_address": "1 WANG KWONG ROAD",
+          "address_unit": null,
+          "address_locality": "KWUN TONG DISTRICT",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "building_category": "unspecified",
+          "building_name_en": "Billion Centre",
+          "building_name_zh": "億京中心",
+          "building_alt_name": null,
+          "building_restriction": "",
+          "bbox": [
+            114.20618180000008,
+            22.32113570000007,
+            114.20621280000012,
+            22.321160200000065
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "unit_polygon.29488",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                114.20616870000003,
+                22.32156800000007,
+                4.529999999998836
+              ],
+              [
+                114.2061973000001,
+                22.321570300000076,
+                4.529999999998836
+              ],
+              [
+                114.2061986000001,
+                22.321557700000028,
+                4.529999999998836
+              ],
+              [
+                114.20616990000008,
+                22.321555200000034,
+                4.529999999998836
+              ],
+              [
+                114.20616870000003,
+                22.32156800000007,
+                4.529999999998836
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "unit_id": "da308e77-1974-4e19-beff-2e09793f3d31",
+          "unit_category": "stairs",
+          "unit_name_en": "Stairs",
+          "unit_name_zh": "樓梯",
+          "unit_alt_name": null,
+          "unit_unitnumbername": null,
+          "unit_restriction": null,
+          "unit_accessibility": null,
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "level_category": "unspecified",
+          "level_restriction": null,
+          "level_outdoor": 0,
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "venue_category": "businesscampus",
+          "venue_name_en": "Billion Centre",
+          "venue_name_zh": "億京中心",
+          "venue_alt_name": null,
+          "venue_restriction": null,
+          "venue_hours": null,
+          "venue_website": null,
+          "venue_phone": null,
+          "address_address": "1 WANG KWONG ROAD",
+          "address_unit": null,
+          "address_locality": "KWUN TONG DISTRICT",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "building_category": "unspecified",
+          "building_name_en": "Billion Centre",
+          "building_name_zh": "億京中心",
+          "building_alt_name": null,
+          "building_restriction": "",
+          "bbox": [
+            114.20616870000003,
+            22.321555200000034,
+            114.2061986000001,
+            22.321570300000076
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "unit_polygon.29489",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                114.20616990000008,
+                22.321555200000034,
+                4.529999999998836
+              ],
+              [
+                114.20615850000002,
+                22.321561100000054,
+                4.529999999998836
+              ],
+              [
+                114.20615790000011,
+                22.32156750000007,
+                4.529999999998836
+              ],
+              [
+                114.20614130000001,
+                22.321566200000063,
+                4.529999999998836
+              ],
+              [
+                114.20614010000008,
+                22.321578200000033,
+                4.529999999998836
+              ],
+              [
+                114.2061675000001,
+                22.32158050000004,
+                4.529999999998836
+              ],
+              [
+                114.20616990000008,
+                22.321555200000034,
+                4.529999999998836
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "unit_id": "ca043a23-b585-4e23-b135-1b44158e5b2e",
+          "unit_category": "walkway",
+          "unit_name_en": "CORRIDOR",
+          "unit_name_zh": "走廊",
+          "unit_alt_name": null,
+          "unit_unitnumbername": null,
+          "unit_restriction": null,
+          "unit_accessibility": null,
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "level_category": "unspecified",
+          "level_restriction": null,
+          "level_outdoor": 0,
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "venue_category": "businesscampus",
+          "venue_name_en": "Billion Centre",
+          "venue_name_zh": "億京中心",
+          "venue_alt_name": null,
+          "venue_restriction": null,
+          "venue_hours": null,
+          "venue_website": null,
+          "venue_phone": null,
+          "address_address": "1 WANG KWONG ROAD",
+          "address_unit": null,
+          "address_locality": "KWUN TONG DISTRICT",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "building_category": "unspecified",
+          "building_name_en": "Billion Centre",
+          "building_name_zh": "億京中心",
+          "building_alt_name": null,
+          "building_restriction": "",
+          "bbox": [
+            114.20614010000008,
+            22.321555200000034,
+            114.20616990000008,
+            22.32158050000004
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "unit_polygon.29490",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                114.20616990000008,
+                22.321555200000034,
+                4.529999999998836
+              ],
+              [
+                114.20614260000002,
+                22.321552800000063,
+                4.529999999998836
+              ],
+              [
+                114.20614130000001,
+                22.321566200000063,
+                4.529999999998836
+              ],
+              [
+                114.20615790000011,
+                22.32156750000007,
+                4.529999999998836
+              ],
+              [
+                114.20615850000002,
+                22.321561100000054,
+                4.529999999998836
+              ],
+              [
+                114.20616990000008,
+                22.321555200000034,
+                4.529999999998836
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "unit_id": "1ae9c182-a49f-4a2e-9d02-8e5b3d99fd77",
+          "unit_category": "nonpublic",
+          "unit_name_en": "TELECOM DUCT",
+          "unit_name_zh": "電線/ 槽/管",
+          "unit_alt_name": null,
+          "unit_unitnumbername": null,
+          "unit_restriction": null,
+          "unit_accessibility": null,
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "level_category": "unspecified",
+          "level_restriction": null,
+          "level_outdoor": 0,
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "venue_category": "businesscampus",
+          "venue_name_en": "Billion Centre",
+          "venue_name_zh": "億京中心",
+          "venue_alt_name": null,
+          "venue_restriction": null,
+          "venue_hours": null,
+          "venue_website": null,
+          "venue_phone": null,
+          "address_address": "1 WANG KWONG ROAD",
+          "address_unit": null,
+          "address_locality": "KWUN TONG DISTRICT",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "building_category": "unspecified",
+          "building_name_en": "Billion Centre",
+          "building_name_zh": "億京中心",
+          "building_alt_name": null,
+          "building_restriction": "",
+          "bbox": [
+            114.20614130000001,
+            22.321552800000063,
+            114.20616990000008,
+            22.32156750000007
+          ]
+        }
+      }
+    ]
+  },
+  "openings": {
+    "features": [
+      {
+        "type": "Feature",
+        "id": "opening_line.25503",
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              114.20581800000002,
+              22.321821800000066,
+              4.529999999998836
+            ],
+            [
+              114.20582020000006,
+              22.321799600000077,
+              4.529999999998836
+            ]
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "opening_id": "8355e0e2-6311-4f9d-9976-156e11bd0d24",
+          "opening_category": "pedestrian",
+          "opening_accessibility": null,
+          "opening_access_control": null,
+          "opening_door_automatic": null,
+          "opening_door_material": null,
+          "opening_door_type": null,
+          "opening_name": null,
+          "opening_alt_name": null,
+          "opening_display_height": null,
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "bbox": [
+            114.20581800000002,
+            22.321799600000077,
+            114.20582020000006,
+            22.321821800000066
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "opening_line.25504",
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              114.20581140000002,
+              22.32188750000006,
+              4.529999999998836
+            ],
+            [
+              114.20581350000009,
+              22.321867100000077,
+              4.529999999998836
+            ]
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "opening_id": "c5fbed02-5a1c-494d-8867-20476b182a51",
+          "opening_category": "pedestrian",
+          "opening_accessibility": null,
+          "opening_access_control": null,
+          "opening_door_automatic": null,
+          "opening_door_material": null,
+          "opening_door_type": null,
+          "opening_name": null,
+          "opening_alt_name": null,
+          "opening_display_height": null,
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "bbox": [
+            114.20581140000002,
+            22.321867100000077,
+            114.20581350000009,
+            22.32188750000006
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "opening_line.25523",
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              114.20583840000006,
+              22.321618800000067,
+              4.529999999998836
+            ],
+            [
+              114.20584070000007,
+              22.321595500000058,
+              4.529999999998836
+            ]
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "opening_id": "35c07513-9303-4d74-ba20-9f1899ce732c",
+          "opening_category": "pedestrian",
+          "opening_accessibility": null,
+          "opening_access_control": null,
+          "opening_door_automatic": null,
+          "opening_door_material": null,
+          "opening_door_type": null,
+          "opening_name": null,
+          "opening_alt_name": null,
+          "opening_display_height": null,
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "bbox": [
+            114.20583840000006,
+            22.321595500000058,
+            114.20584070000007,
+            22.321618800000067
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "opening_line.25524",
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              114.2058320000001,
+              22.32168180000008,
+              4.529999999998836
+            ],
+            [
+              114.2058343000001,
+              22.321658900000045,
+              4.529999999998836
+            ]
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "opening_id": "37473050-2a3d-43a1-88cd-79c22dc02928",
+          "opening_category": "pedestrian",
+          "opening_accessibility": null,
+          "opening_access_control": null,
+          "opening_door_automatic": null,
+          "opening_door_material": null,
+          "opening_door_type": null,
+          "opening_name": null,
+          "opening_alt_name": null,
+          "opening_display_height": null,
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "bbox": [
+            114.2058320000001,
+            22.321658900000045,
+            114.2058343000001,
+            22.32168180000008
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "opening_line.25593",
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              114.20616360000008,
+              22.321839900000043,
+              4.529999999998836
+            ],
+            [
+              114.20616470000004,
+              22.32182910000006,
+              4.529999999998836
+            ]
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "opening_id": "e92e66b1-e457-435a-be79-70ae9787a480",
+          "opening_category": "pedestrian",
+          "opening_accessibility": null,
+          "opening_access_control": null,
+          "opening_door_automatic": null,
+          "opening_door_material": null,
+          "opening_door_type": null,
+          "opening_name": null,
+          "opening_alt_name": null,
+          "opening_display_height": null,
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "bbox": [
+            114.20616360000008,
+            22.32182910000006,
+            114.20616470000004,
+            22.321839900000043
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "opening_line.25633",
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              114.20586460000004,
+              22.32135690000007,
+              4.529999999998836
+            ],
+            [
+              114.20586560000004,
+              22.321346000000062,
+              4.529999999998836
+            ]
+          ]
+        },
+        "geometry_name": "shape",
+        "properties": {
+          "opening_id": "1de72cf8-e28c-4540-9e2e-264b1bdb6669",
+          "opening_category": "pedestrian",
+          "opening_accessibility": null,
+          "opening_access_control": null,
+          "opening_door_automatic": null,
+          "opening_door_material": null,
+          "opening_door_type": null,
+          "opening_name": null,
+          "opening_alt_name": null,
+          "opening_display_height": null,
+          "level_id": "42550647-0e68-431b-b868-eee30cc2f9d1",
+          "level_floorpolyid": "F3926320268P2009081002000000",
+          "level_ordinal": 0,
+          "level_z_value": 4.53,
+          "level_name_en": "GF",
+          "level_name_zh": null,
+          "level_short_name_en": "G",
+          "venue_id": "c598bde2-fb35-427c-9ad6-8ffb6abbadf9",
+          "building_id": "d992b395-a6c1-4147-b663-822c417a9796",
+          "bbox": [
+            114.20586460000004,
+            22.321346000000062,
+            114.20586560000004,
+            22.32135690000007
+          ]
+        }
+      }
+    ]
+  }
+}

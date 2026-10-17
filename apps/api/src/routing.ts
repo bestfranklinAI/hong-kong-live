@@ -65,14 +65,34 @@ export function routingRoutes(fetcher: Fetcher, now: () => number, mode: DataMod
       return c.json({ error: 'Station layout is unavailable. Try again.' }, 502);
     }
   });
+  app.get('/indoor/buildings', async (c) => {
+    try {
+      return c.json(await indoor.buildings());
+    } catch {
+      return c.json({ error: 'Building indoor catalogue is unavailable. Try again.' }, 502);
+    }
+  });
+  app.get('/indoor/buildings/:id/:layer', async (c) => {
+    const id = indoorStationSchema.shape.id.safeParse(c.req.param('id'));
+    const layer = c.req.param('layer');
+    if (!id.success || !['points', 'floors', 'layout'].includes(layer))
+      return c.json({ error: 'Choose a valid building and indoor layer.' }, 400);
+    try {
+      if (layer === 'points') return c.json(await indoor.points(id.data, 'building'));
+      if (layer === 'floors') return c.json(await indoor.floors(id.data, 'building'));
+      return c.json(await indoor.layout(id.data, 'building'));
+    } catch {
+      return c.json({ error: 'Building indoor map is unavailable. Try again.' }, 502);
+    }
+  });
   app.post('/', async (c) => {
     const parsed = routeRequestSchema.safeParse(await c.req.json().catch(() => null));
     if (!parsed.success)
       return c.json({ error: 'Choose valid start and destination points in Hong Kong.' }, 400);
     try {
       const [start, end] = await Promise.all([
-        indoor.resolve(parsed.data.start),
-        indoor.resolve(parsed.data.end),
+        indoor.resolve(parsed.data.start, parsed.data.profile),
+        indoor.resolve(parsed.data.end, parsed.data.profile),
       ]);
       return c.json(await router.route({ ...parsed.data, start, end }));
     } catch (error) {

@@ -12,11 +12,17 @@ export interface LocationFix {
   lng: number;
   lat: number;
   accuracy: number;
+  heading?: number;
+  timestamp?: number;
+  z?: number;
 }
 const svg = (body: string) =>
   `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">${body}</svg>`)}`;
 const dot = svg(
   '<circle cx="64" cy="64" r="13" fill="#fff"/><circle cx="64" cy="64" r="9" fill="#2687ef"/>',
+);
+const arrow = svg(
+  '<path d="M64 18 96 98 64 83 32 98Z" fill="#2687ef" stroke="#fff" stroke-width="7" stroke-linejoin="round"/>',
 );
 const cone = svg(
   '<defs><linearGradient id="a" x2="0" y2="1"><stop stop-color="#2687ef" stop-opacity="0"/><stop offset="1" stop-color="#2687ef" stop-opacity=".5"/></linearGradient></defs><path d="M64 64 25 6Q64 -8 103 6Z" fill="url(#a)"/>',
@@ -27,6 +33,7 @@ export class UserLocation {
   private readonly markers: BillboardCollection;
   private readonly rings: PolylineCollection;
   private fix?: LocationFix;
+  private navigating = false;
   private heading?: number;
   private headingAt = 0;
   private readonly removeRender: () => void;
@@ -81,6 +88,25 @@ export class UserLocation {
     window.addEventListener('deviceorientation', this.orientation);
     this.widget.scene.requestRender();
   }
+  setNavigating(enabled: boolean) {
+    this.navigating = enabled;
+    this.widget.scene.requestRender();
+  }
+  clear() {
+    this.fix = undefined;
+    this.heading = undefined;
+    clearTimeout(this.expiry);
+    window.removeEventListener('deviceorientationabsolute', this.orientation as EventListener);
+    window.removeEventListener('deviceorientation', this.orientation);
+    this.rings.removeAll();
+    for (let i = 0; i < this.markers.length; i++) this.markers.get(i).show = false;
+    this.widget.scene.requestRender();
+  }
+  direction() {
+    return this.heading !== undefined && Date.now() - this.headingAt < 10000
+      ? this.heading
+      : this.fix?.heading;
+  }
   private offset(heading: number, metres: number) {
     const fix = this.fix!;
     const angle = (heading * Math.PI) / 180;
@@ -88,7 +114,7 @@ export class UserLocation {
       fix.lng +
         (Math.sin(angle) * metres) / (111195 * Math.max(0.01, Math.cos((fix.lat * Math.PI) / 180))),
       fix.lat + (Math.cos(angle) * metres) / 111195,
-      3,
+      fix.z ?? 3,
     );
   }
   private render() {
@@ -98,6 +124,17 @@ export class UserLocation {
       coneMarker = this.markers.get(0);
     dotMarker.position = position;
     dotMarker.show = true;
+    const heading = this.direction();
+    dotMarker.image = this.navigating && heading !== undefined ? arrow : dot;
+    dotMarker.width = dotMarker.height = this.navigating ? 76 : 96;
+    if (this.navigating && heading !== undefined) {
+      const a = SceneTransforms.worldToWindowCoordinates(this.widget.scene, position);
+      const b = SceneTransforms.worldToWindowCoordinates(
+        this.widget.scene,
+        this.offset(heading, 100),
+      );
+      if (a && b) dotMarker.rotation = Math.atan2(a.x - b.x, a.y - b.y);
+    } else dotMarker.rotation = 0;
     coneMarker.position = position;
     coneMarker.show = this.heading !== undefined && Date.now() - this.headingAt < 10000;
     if (coneMarker.show) {

@@ -1,3 +1,4 @@
+import { BuildingIndoorButton } from '../navigation/BuildingIndoorButton';
 import { useState } from 'react';
 import type { SearchResult } from '@hk/contracts';
 import { savePin } from './SavedPins';
@@ -5,10 +6,12 @@ export function SelectedSearchPlace({
   result,
   onClose,
   onNearby,
+  onDirections,
 }: {
   result: SearchResult;
   onClose: () => void;
   onNearby: () => void;
+  onDirections: () => void;
 }) {
   const [message, setMessage] = useState('');
   if (!result.location) return null;
@@ -18,7 +21,12 @@ export function SelectedSearchPlace({
       <button className="text-button" onClick={onClose}>
         Close pin ×
       </button>
-      <h2>{result.name}</h2>
+      <h2>{result.sharedPlace?.name ?? result.name}</h2>
+      {result.sharedPlace && (
+        <a href={result.sharedPlace.url} target="_blank" rel="noreferrer">
+          View shared place in Google Maps ↗
+        </a>
+      )}
       {result.nameZh && <p>{result.nameZh}</p>}
       <p>{result.address}</p>
       <small>
@@ -61,6 +69,14 @@ export function SelectedSearchPlace({
           </p>
         </>
       )}
+      <button className="walking-submit" onClick={onDirections}>
+        Directions
+      </button>
+      <BuildingIndoorButton
+        key={result.id}
+        name={result.sharedPlace?.name ?? result.name}
+        nameZh={result.nameZh}
+      />
       <div className="pin-actions">
         <button
           onClick={() =>

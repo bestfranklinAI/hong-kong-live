@@ -4,6 +4,9 @@ import { fileURLToPath } from 'node:url';
 export default defineConfig({
   resolve: {
     alias: {
+      '@hk/providers/map-labels': fileURLToPath(
+        new URL('./packages/providers/src/map-labels.ts', import.meta.url),
+      ),
       '@hk/contracts': fileURLToPath(new URL('./packages/contracts/src/index.ts', import.meta.url)),
       '@hk/providers': fileURLToPath(new URL('./packages/providers/src/index.ts', import.meta.url)),
     },

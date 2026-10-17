@@ -910,12 +910,16 @@ svg {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--forest);
   min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #cbded8;
+  border-radius: 10px;
+  background: var(--surface);
 }
 .text-button:hover {
-  text-decoration: underline;
+  background: #e9f2ed;
 }
 .feature-note {
   background: #f0f3e8;

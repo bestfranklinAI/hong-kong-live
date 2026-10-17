@@ -50,3 +50,19 @@ Open port 4174, expand “Local render diagnostics”, and run the same UI journ
 ## Remaining gates
 
 Physical Android frame times, high-DPI memory/thermal stability and real cold/warm network tests remain unmeasured. No promise of instant revisits or reloads is made: browser cache eviction, new zoom levels, image decoding and GPU texture preparation still matter. Four regression tests cover retained layer identity, no-op updates, error/listener ownership and disposal. The complete suite now contains 49 passing tests.
+
+## Navigation diagnostics update — 17 October 2026
+
+The optional snapshot now includes the selected city source's aggregate loading state, pending requests, processing count, loaded/unloaded/failed counts, estimated retained tile memory, first rendered geometry and first settled coverage times. It contains no GPS coordinates, provider URLs or project credentials. Measurements stay in the local page; nothing is uploaded.
+
+Hidden-page intervals are excluded from motion samples and the sample is reset when visibility changes. Keep the phone screen on and the browser foregrounded. Request-render frame intervals are still not GPU execution time, and the first geometry may be a small part of the scene rather than useful complete coverage.
+
+For a physical-phone session, use the existing HTTPS preview with an explicitly instrumented build:
+
+```sh
+VITE_SCENE_DIAGNOSTICS=true pnpm build
+```
+
+The already-running preview serves the new build after reload. If no preview is running, start `pnpm preview` after stopping conflicting project servers. Open the tailnet HTTPS address on the phone and expand Local render diagnostics only when collecting a sample. Record the chosen quality, network type, `city` values and motion percentiles after an initial visit and a repeat visit. Do not send a screenshot containing your precise location; the aggregate JSON itself has no coordinates.
+
+Restore the ordinary build afterward with `pnpm build` and reload. These instructions do not establish a completed physical-device benchmark. No 3D startup or Android smoothness claim is supported until that evidence is collected.

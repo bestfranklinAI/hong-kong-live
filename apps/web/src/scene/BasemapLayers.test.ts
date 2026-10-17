@@ -32,6 +32,23 @@ function setup() {
 }
 
 describe('basemap resource ownership', () => {
+  it('harmonises retained and replacement layers in clean 3D and restores their original colour', () => {
+    const { stack, definitions, layers, collection } = setup();
+    stack.update(definitions('landsd-map', 'en'));
+    const background = layers[1];
+    stack.setMuted(true);
+    expect(background.saturation).toBe(0.18);
+    stack.update(definitions('landsd-map', 'tc'));
+    expect(layers[1]).toBe(background);
+    expect(layers[2].saturation).toBe(0.18);
+    stack.setMuted(false);
+    expect(
+      layers.every(
+        (layer) => layer.saturation === 1 && layer.contrast === 1 && layer.brightness === 1,
+      ),
+    ).toBe(true);
+    expect(collection.remove).toHaveBeenCalledTimes(1);
+  });
   it('changes only labels when language changes, retaining the background layer identity', () => {
     const { stack, definitions, layers, collection } = setup();
     stack.update(definitions('landsd-map', 'en'));
@@ -67,6 +84,21 @@ describe('basemap resource ownership', () => {
     stack.update(definitions('openstreetmap', 'tc'));
     expect(stack.hasErrors).toBe(false);
     expect(layers).toHaveLength(1);
+  });
+
+  it('hides draped labels for navigation while retaining their resources and choice across replacements', () => {
+    const { stack, definitions, layers, collection } = setup();
+    stack.update(definitions('landsd-map', 'en'));
+    const labels = layers[2];
+    stack.setLabelVisibility(false);
+    expect(labels.show).toBe(false);
+    stack.setLabelVisibility(true);
+    expect(layers[2]).toBe(labels);
+    expect(labels.show).toBe(true);
+    expect(collection.remove).not.toHaveBeenCalled();
+    stack.setLabelVisibility(false);
+    stack.update(definitions('landsd-map', 'tc'));
+    expect(layers[2].show).toBe(false);
   });
 
   it('none mode and disposal release all layer resources, and disposal is repeatable', () => {

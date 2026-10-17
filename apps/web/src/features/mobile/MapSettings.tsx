@@ -2,22 +2,22 @@ import { CityViewControl } from '../../scene/CityViewControl';
 import { Dialog } from '@base-ui/react/dialog';
 import { X } from 'lucide-react';
 import { usePreferences } from '../../app/preferences';
-import type { SceneCommand } from '../../scene/types';
+import { configuredCitySources } from '../../scene/city-sources';
 
 export function MapSettings({
   open,
   onOpenChange,
-  command,
   status,
   cityView,
   onCityViewChange,
+  onRetryCity,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  command: (command: SceneCommand['type']) => void;
   status: string;
   cityView?: boolean;
   onCityViewChange?: (enabled: boolean) => void;
+  onRetryCity?: () => void;
 }) {
   const preferences = usePreferences();
   return (
@@ -26,12 +26,11 @@ export function MapSettings({
         <Dialog.Backdrop className="dialog-backdrop" />
         <Dialog.Popup className="about-dialog map-settings">
           <div className="dialog-top">
-            <span className="eyebrow">MAKE IT YOUR MAP</span>
+            <Dialog.Title>Map settings</Dialog.Title>
             <Dialog.Close className="icon-button" aria-label="Close map settings">
               <X size={20} />
             </Dialog.Close>
           </div>
-          <Dialog.Title>Map & appearance</Dialog.Title>
           <Dialog.Description>Choose your view, labels and graphics quality.</Dialog.Description>
           <label>
             Map style
@@ -68,16 +67,33 @@ export function MapSettings({
               <option value="detailed">High detail</option>
             </select>
           </label>
-          <button
-            className="text-button"
-            onClick={() => {
-              command('toggle-pitch');
-              onOpenChange(false);
-            }}
-          >
-            Toggle flat / tilted view
-          </button>
           <CityViewControl value={cityView} onChange={onCityViewChange} />
+          {(configuredCitySources.buildings || configuredCitySources.photo) && (
+            <label>
+              3D style
+              <select
+                value={preferences.cityPresentation}
+                onChange={(event) => {
+                  const style = event.target.value as typeof preferences.cityPresentation;
+                  preferences.setCityPresentation(style);
+                  // Pair each 3D treatment with a coherent ground layer; it remains editable.
+                  preferences.setBasemap(style === 'photo' ? 'landsd-aerial' : 'landsd-map');
+                }}
+              >
+                <option value="buildings" disabled={!configuredCitySources.buildings}>
+                  Clean buildings
+                </option>
+                <option value="photo" disabled={!configuredCitySources.photo}>
+                  Photo city
+                </option>
+              </select>
+            </label>
+          )}
+          {onRetryCity && (
+            <button className="text-button" onClick={onRetryCity}>
+              Retry 3D loading
+            </button>
+          )}
           <details>
             <summary>Map & data credits</summary>
             <p>

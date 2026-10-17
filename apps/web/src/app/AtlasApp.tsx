@@ -1,7 +1,16 @@
+import { RouteMapSwitcher } from '../features/navigation/RouteMapSwitcher';
+import { useRouteStations } from '../features/navigation/use-route-stations';
+import { useQuery } from '@tanstack/react-query';
+import { indoorVenuesSchema, type IndoorVenue } from '@hk/contracts';
+import { getJson } from '../features/live/queries';
+import { useRouteRecalculation } from '../features/navigation/use-route-recalculation';
+import { WalkingGuidance } from '../features/navigation/WalkingGuidance';
+import { StationIndoorDialog } from '../features/navigation/StationIndoorDialog';
+import { useWalkingGuidance } from '../features/navigation/use-walking-guidance';
 import { indoorCategoryLabels, type IndoorMapChoice } from '../features/navigation/indoor-map';
 import { WalkingPlanner } from '../features/navigation/WalkingPlanner';
 import { SelectedSearchPlace } from '../features/search/SelectedSearchPlace';
-import { coordinateResult, withinHongKong, type SearchResult } from '@hk/contracts';
+import { coordinateResult, withinHongKong, mtrStations, type SearchResult } from '@hk/contracts';
 import { CityViewControl } from '../scene/CityViewControl';
 import { DiscoverySheet } from '../features/mobile/DiscoverySheet';
 import { MapSettings } from '../features/mobile/MapSettings';
@@ -14,7 +23,7 @@ import { BusesPanel } from '../features/buses/BusesPanel';
 import { useCameras } from '../features/cameras/use-cameras';
 import { CamerasPanel } from '../features/cameras/CamerasPanel';
 import { useRainfall } from '../features/live/use-rainfall';
-import { lazy, Suspense, useCallback, useEffect, useState, useMemo } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import {
   ArrowUpRight,
@@ -24,6 +33,7 @@ import {
   TrainFront,
   Settings2,
   LocateFixed,
+  Navigation,
 } from 'lucide-react';
 import type { Category, Place, ViewMode, TrafficCamera, StationSelection } from '@hk/contracts';
 import { ExplorePanel } from '../features/explore/ExplorePanel';
@@ -40,9 +50,11 @@ import { MapControls } from './MapControls';
 import { useMobileLayout } from '../shared/use-mobile';
 import { useFacilities } from '../features/explore/facilities';
 
+const NO_PLACES: Place[] = [];
+const NO_INDOOR_VENUES: IndoorVenue[] = [];
 const MapScene = lazy(() => import('../scene/MapScene'));
 const modes = [
-  { id: 'explore', label: 'Explore', icon: Compass },
+  { id: 'explore', label: 'Navigate', icon: Navigation },
   { id: 'weather', label: 'Weather', icon: CloudSun },
   { id: 'transport', label: 'Transport', icon: TrainFront },
 ] as const;
@@ -50,6 +62,15 @@ const modes = [
 export function AtlasApp() {
   const search = useSearch({ from: '/' });
   const navigate = useNavigate({ from: '/' });
+  const indoorVenues = useQuery({
+    queryKey: ['indoor-venues', 'building'],
+    enabled: search.mode === 'explore',
+    queryFn: async ({ signal }) =>
+      indoorVenuesSchema.parse(await getJson('/api/v1/routes/indoor/buildings', signal)).venues,
+    staleTime: 21600000,
+    retry: 1,
+  });
+  const [buildingPreview, setBuildingPreview] = useState<IndoorVenue | null>(null);
   const facilities = useFacilities(search.mode === 'explore');
   const visibleFacilities = useMemo(
     () =>
@@ -91,6 +112,7 @@ export function AtlasApp() {
     message: 'Bringing Hong Kong into view…',
   });
   const [indoorMap, setIndoorMap] = useState<IndoorMapChoice | null>(null);
+  const [stationPreview, setStationPreview] = useState<StationSelection | null>(null);
   const [indoorCandidate, setIndoorCandidate] = useState<
     import('@hk/contracts').IndoorPoint | null
   >(null);
@@ -99,6 +121,8 @@ export function AtlasApp() {
     setIndoorCandidate(null);
     if (choice) setSheetSnap('peek');
   }, []);
+  const [guiding, setGuiding] = useState(false);
+  const [following, setFollowing] = useState(true);
   const [routePicker, setRoutePicker] = useState<{
     select: (point: import('@hk/contracts').RouteEndpoint) => void;
   } | null>(null);
@@ -107,11 +131,58 @@ export function AtlasApp() {
     point: import('@hk/contracts').RouteEndpoint;
     role: 'start' | 'end';
   } | null>(null);
-  const [plannerOpen, setPlannerOpen] = useState(false);
-  const [routeShowHidden, setRouteShowHidden] = useState(false);
-  const [routeContext, setRouteContext] = useState(false);
+  const [destinationPreview, setDestinationPreview] = useState<
+    import('@hk/contracts').RouteEndpoint | undefined
+  >(
+    selectedPlace
+      ? { lat: selectedPlace.lat, lng: selectedPlace.lng, name: selectedPlace.name }
+      : searchPin?.location
+        ? { ...searchPin.location, name: searchPin.name }
+        : undefined,
+  );
+  const [destinationResult, setDestinationResult] = useState<SearchResult | undefined>();
+  const [plannerOpen, setPlannerOpen] = useState(search.mode === 'explore');
+  const [routeShowHidden, setRouteShowHidden] = useState(true);
+  const [routeContext, setRouteContext] = useState(() => usePreferences.getState().cityView);
   const [walkingRoute, setWalkingRoute] = useState<import('@hk/contracts').WalkingRoute | null>(
     null,
+  );
+  const routeStations = useRouteStations(walkingRoute);
+  const stationFloorSelections = useRef(new Map<string, string>());
+  useEffect(() => {
+    stationFloorSelections.current.clear();
+  }, [walkingRoute]);
+  const [routeStationId, setRouteStationId] = useState<string | null>(null);
+  const activeRouteStation = routeStations.contexts.find(
+    (context) => context.venue.id === routeStationId,
+  );
+  const guidance = useWalkingGuidance(walkingRoute, guiding);
+  const recalculation = useRouteRecalculation(guiding, walkingRoute, setWalkingRoute);
+  const navigationState = useMemo(
+    () => ({
+      planning: plannerOpen,
+      active: guiding,
+      following,
+      fix: guidance.fix,
+      z: guidance.progress && !guidance.progress.offRoute ? guidance.progress.z : null,
+    }),
+    [plannerOpen, guiding, following, guidance.fix, guidance.progress],
+  );
+  const sceneSearchPin = useMemo(
+    () =>
+      search.mode === 'explore'
+        ? plannerOpen
+          ? !walkingRoute && destinationPreview
+            ? {
+                ...(destinationResult ?? coordinateResult(destinationPreview)),
+                name: destinationPreview.name,
+                nameZh: destinationResult?.sharedPlace ? '' : (destinationResult?.nameZh ?? ''),
+                location: { lat: destinationPreview.lat, lng: destinationPreview.lng },
+              }
+            : null
+          : searchPin
+        : null,
+    [search.mode, plannerOpen, walkingRoute, destinationPreview, destinationResult, searchPin],
   );
   const [trainAnimation, setTrainAnimation] = useState(true);
   const [pickedTrain, setPickedTrain] = useState<import('@hk/contracts').Arrival | null>(null);
@@ -141,6 +212,7 @@ export function AtlasApp() {
   const [locationMessage, setLocationMessage] = useState('');
   const [windyControls, setWindyControls] = useState<HTMLDivElement | null>(null);
   const cityView = usePreferences((state) => state.cityView);
+  const cityPresentation = usePreferences((state) => state.cityPresentation);
   const basemap = usePreferences((state) => state.basemap);
   const mapLanguage = usePreferences((state) => state.mapLanguage);
   const setBasemap = usePreferences((state) => state.setBasemap);
@@ -153,6 +225,7 @@ export function AtlasApp() {
   const mobile = useMobileLayout();
   function planFromStation(point: import('@hk/contracts').RouteEndpoint, role: 'start' | 'end') {
     setStationRouteSeed({ point, role });
+    setDestinationPreview(role === 'end' ? point : undefined);
     setWalkingRoute(null);
     setPlannerOpen(true);
     setSheetSnap('full');
@@ -172,7 +245,11 @@ export function AtlasApp() {
           station: place.station?.code,
         }),
       });
-      if (search.mode === 'explore') setPanelExpanded(true);
+      if (search.mode === 'explore') {
+        setPlannerOpen(false);
+        setWalkingRoute(null);
+        setPanelExpanded(true);
+      }
     },
     [navigate, search.mode],
   );
@@ -186,14 +263,21 @@ export function AtlasApp() {
   const motionEnabled = search.mode === 'transport' && transportLayer === 'mtr';
   const motionArrivals = useLineArrivals(transitSelection.line, motionEnabled && trainAnimation);
   function selectStation(selection: StationSelection) {
+    if (search.mode === 'explore') {
+      setStationPreview(selection);
+      return;
+    }
     setPanelExpanded(true);
     const place = places.find((place) => place.station?.code === selection.station);
     void navigate({ search: (previous) => ({ ...previous, ...selection, place: place?.id }) });
   }
-  function setMode(mode: ViewMode) {
+  function setMode(mode: ViewMode, browse = false) {
+    setGuiding(false);
     setRoutePicker(null);
-    setPlannerOpen(false);
-    setRouteContext(false);
+    setPlannerOpen(mode === 'explore' && !browse);
+    setStationRouteSeed(null);
+    setDestinationPreview(undefined);
+    setRouteContext(cityView);
     setWalkingRoute(null);
     haptic();
     void navigate({ search: (previous) => ({ ...previous, mode }) });
@@ -317,33 +401,107 @@ export function AtlasApp() {
             className={savedOnly ? 'is-saved' : ''}
             onClick={() => {
               setSavedOnly((previous) => !previous);
-              setMode('explore');
+              setMode('explore', true);
             }}
           >
             <Bookmark size={19} fill={savedOnly ? 'currentColor' : 'none'} />
           </IconButton>
-          {mobile && (
-            <IconButton
-              label="Map settings"
-              onClick={() => {
-                haptic();
-                setSettingsOpen(true);
-              }}
-            >
-              <Settings2 size={19} />
-            </IconButton>
-          )}
+          <IconButton
+            label="Map settings"
+            onClick={() => {
+              haptic();
+              setSettingsOpen(true);
+            }}
+          >
+            <Settings2 size={19} />
+          </IconButton>
           <AboutDialog />
         </div>
       </header>
       <MapSettings
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
-        command={issueCommand}
         cityView={plannerOpen && search.mode === 'explore' ? routeContext : undefined}
         onCityViewChange={plannerOpen && search.mode === 'explore' ? setRouteContext : undefined}
         status={sceneStatus.message}
+        onRetryCity={
+          sceneStatus.cityUnavailable || sceneStatus.citySlow
+            ? () => issueCommand('retry-city')
+            : undefined
+        }
       />
+      {walkingRoute && plannerOpen && !activeRouteStation && search.mode === 'explore' && (
+        <div className="city-journey-switcher">
+          <RouteMapSwitcher
+            contexts={routeStations.contexts}
+            selected={null}
+            onSelect={(id) => {
+              setRouteStationId(id);
+              if (!id) issueCommand('route-overview');
+            }}
+          />
+        </div>
+      )}
+      {activeRouteStation && walkingRoute && (
+        <StationIndoorDialog
+          key={`route:${activeRouteStation.venue.id}`}
+          venue={{ ...activeRouteStation.venue, kind: activeRouteStation.venue.kind ?? 'station' }}
+          initialLevel={stationFloorSelections.current.get(activeRouteStation.venue.id)}
+          onLevelChange={(id) =>
+            stationFloorSelections.current.set(activeRouteStation.venue.id, id)
+          }
+          journeyViews={
+            <RouteMapSwitcher
+              contexts={routeStations.contexts}
+              selected={activeRouteStation.venue.id}
+              onSelect={(id) => {
+                setRouteStationId(id);
+                if (!id) issueCommand('route-overview');
+              }}
+            />
+          }
+          stationRoute={{ route: walkingRoute, context: activeRouteStation }}
+          onContinueRoute={() => {
+            setRouteStationId(null);
+            issueCommand('route-overview');
+          }}
+          open
+          onClose={() => setRouteStationId(null)}
+        />
+      )}
+      {buildingPreview && (
+        <StationIndoorDialog
+          key={buildingPreview.id}
+          venue={buildingPreview}
+          routeForVenue={walkingRoute ?? undefined}
+          journeyViews={
+            walkingRoute ? (
+              <RouteMapSwitcher
+                contexts={routeStations.contexts}
+                selected={buildingPreview.id}
+                onSelect={(id) => {
+                  setBuildingPreview(null);
+                  setRouteStationId(id);
+                  if (!id) issueCommand('route-overview');
+                }}
+              />
+            ) : undefined
+          }
+          open
+          onClose={() => setBuildingPreview(null)}
+        />
+      )}
+      {stationPreview && (
+        <StationIndoorDialog
+          place={mtrStations[stationPreview.station]}
+          open
+          onClose={() => setStationPreview(null)}
+          onRoutePoint={(point, role) => {
+            setStationPreview(null);
+            planFromStation(point, role);
+          }}
+        />
+      )}
       <main className="atlas-workspace">
         {windyActive ? (
           <WindyWeather
@@ -362,14 +520,17 @@ export function AtlasApp() {
                 }
               >
                 <MapScene
-                  facilities={visibleFacilities}
+                  contextPlaces={places}
+                  navigation={navigationState}
+                  onFollowChange={setFollowing}
+                  facilities={guiding ? undefined : visibleFacilities}
                   indoorLayout={search.mode === 'explore' ? indoorMap?.layout : undefined}
                   indoorFloor={search.mode === 'explore' ? indoorMap?.floor : undefined}
                   indoorPoints={search.mode === 'explore' ? indoorMap?.points : undefined}
                   indoorSelectedId={indoorCandidate?.id}
                   onIndoorPointSelect={setIndoorCandidate}
                   onFacilitySelect={selectSearchResult}
-                  searchPin={search.mode === 'explore' ? searchPin : null}
+                  searchPin={sceneSearchPin}
                   onSearchPinSelect={() => setSheetSnap('half')}
                   trainMotion={
                     motionEnabled
@@ -386,6 +547,7 @@ export function AtlasApp() {
                     setPanelExpanded(true);
                   }}
                   onRotationChange={setRotated}
+                  overlayState={mobile ? `${sheetSnap}:${plannerOpen}` : 'desktop'}
                   frameAbove={
                     mobile ? (indoorMap ? '.indoor-map-card' : '.discovery-panel') : undefined
                   }
@@ -410,10 +572,16 @@ export function AtlasApp() {
                     buses.setSelection({ ...buses.selection, seq: stop.seq });
                     setPanelExpanded(true);
                   }}
+                  indoorVenues={indoorVenues.data ?? NO_INDOOR_VENUES}
+                  onIndoorVenueSelect={setBuildingPreview}
                   onStationSelect={selectStation}
                   onCameraSelect={selectCamera}
-                  places={search.mode === 'explore' && search.facility ? [] : places}
-                  selectedPlace={selectedPlace}
+                  places={
+                    guiding || plannerOpen || (search.mode === 'explore' && search.facility)
+                      ? NO_PLACES
+                      : places
+                  }
+                  selectedPlace={plannerOpen ? null : selectedPlace}
                   mode={search.mode}
                   routePicking={Boolean(routePicker) && search.mode === 'explore'}
                   onRoutePoint={(point) => {
@@ -431,6 +599,7 @@ export function AtlasApp() {
                   }}
                   walkingContext={routeContext && !indoorMap && !routePicker}
                   walkingShowHidden={routeShowHidden}
+                  cityPresentation={cityPresentation}
                   cityView={
                     search.mode === 'explore' && (indoorMap || routePicker)
                       ? false
@@ -438,6 +607,8 @@ export function AtlasApp() {
                         ? routeContext
                         : cityView
                   }
+                  stationRouteView={search.mode === 'explore' ? routeStations.view : undefined}
+                  onRouteStationSelect={setRouteStationId}
                   walkingRoute={search.mode === 'explore' ? walkingRoute : null}
                   basemap={basemap}
                   mapLanguage={mapLanguage}
@@ -458,41 +629,54 @@ export function AtlasApp() {
               onSnap={setSheetSnap}
               mode={search.mode}
               header={
-                <MobileSearch
-                  query={search.q ?? ''}
-                  category={search.category ?? 'all'}
-                  onFocus={() => setSheetSnap('full')}
-                  onQuery={(q) => {
-                    setMode('explore');
-                    void navigate({
-                      replace: true,
-                      search: (previous) => ({
-                        ...previous,
-                        mode: 'explore',
-                        q: q || undefined,
-                        place: undefined,
-                      }),
-                    });
-                  }}
-                  facility={search.facility}
-                  onFacility={selectFacilityCategory}
-                  onCategory={(category: Category | 'all') => {
-                    setSheetSnap('half');
-                    void navigate({
-                      search: (previous) => ({
-                        ...previous,
-                        mode: 'explore',
-                        place: undefined,
-                        category: category === 'all' ? undefined : category,
-                        facility: undefined,
-                      }),
-                    });
-                  }}
-                  onWeather={() => {
-                    setMode('weather');
-                    setSheetSnap('half');
-                  }}
-                />
+                plannerOpen ? (
+                  <button className="planner-sheet-summary" onClick={() => setSheetSnap('full')}>
+                    <Navigation size={18} />
+                    <span>
+                      {guiding
+                        ? 'Walking navigation'
+                        : walkingRoute
+                          ? `${Math.round(walkingRoute.distanceM)} m · Directions`
+                          : 'Where to?'}
+                    </span>
+                  </button>
+                ) : (
+                  <MobileSearch
+                    query={search.q ?? ''}
+                    category={search.category ?? 'all'}
+                    onFocus={() => setSheetSnap('full')}
+                    onQuery={(q) => {
+                      setMode('explore', true);
+                      void navigate({
+                        replace: true,
+                        search: (previous) => ({
+                          ...previous,
+                          mode: 'explore',
+                          q: q || undefined,
+                          place: undefined,
+                        }),
+                      });
+                    }}
+                    facility={search.facility}
+                    onFacility={selectFacilityCategory}
+                    onCategory={(category: Category | 'all') => {
+                      setSheetSnap('half');
+                      void navigate({
+                        search: (previous) => ({
+                          ...previous,
+                          mode: 'explore',
+                          place: undefined,
+                          category: category === 'all' ? undefined : category,
+                          facility: undefined,
+                        }),
+                      });
+                    }}
+                    onWeather={() => {
+                      setMode('weather');
+                      setSheetSnap('half');
+                    }}
+                  />
+                )
               }
             >
               <div
@@ -503,7 +687,25 @@ export function AtlasApp() {
               >
                 {search.mode === 'explore' && (
                   <>
-                    {!plannerOpen ? (
+                    {guiding && walkingRoute ? (
+                      <WalkingGuidance
+                        route={walkingRoute}
+                        progress={guidance.progress}
+                        error={
+                          recalculation.error ||
+                          guidance.error ||
+                          (!guidance.fix ? 'Finding your location…' : '')
+                        }
+                        onRecalculate={() => void recalculation.recalculate(guidance.fix)}
+                        recalculating={recalculation.busy}
+                        following={following}
+                        onFollow={() => setFollowing(true)}
+                        onStop={() => {
+                          setGuiding(false);
+                          setSheetSnap('half');
+                        }}
+                      />
+                    ) : !plannerOpen ? (
                       <button
                         className="walking-submit"
                         onClick={() => {
@@ -517,16 +719,28 @@ export function AtlasApp() {
                       </button>
                     ) : (
                       <WalkingPlanner
+                        key={
+                          stationRouteSeed
+                            ? `${stationRouteSeed.role}:${stationRouteSeed.point.name}:${stationRouteSeed.point.lat}:${stationRouteSeed.point.lng}`
+                            : 'walking'
+                        }
+                        onEndpointPreview={(point, result) => {
+                          setDestinationPreview(point);
+                          setDestinationResult(result);
+                        }}
+                        stationContexts={routeStations.contexts}
+                        onInspectStation={setRouteStationId}
+                        stationLoading={routeStations.loading}
+                        stationUnavailable={routeStations.unavailable}
+                        initialRoute={walkingRoute}
                         origin={
-                          stationRouteSeed?.role === 'start' ? stationRouteSeed.point : undefined
+                          walkingRoute?.request.start ??
+                          (stationRouteSeed?.role === 'start' ? stationRouteSeed.point : undefined)
                         }
                         contextView={routeContext}
                         showHidden={routeShowHidden}
                         onShowHidden={setRouteShowHidden}
-                        onContextView={(enabled) => {
-                          setRouteContext(enabled);
-                          if (mobile) setSheetSnap('peek');
-                        }}
+                        onContextView={setRouteContext}
                         onPickMap={(select) => {
                           setRoutePicker({ select });
                           setRoutePickError('');
@@ -534,7 +748,8 @@ export function AtlasApp() {
                         }}
                         onIndoorMap={showIndoorMap}
                         destination={
-                          stationRouteSeed
+                          walkingRoute?.request.end ??
+                          (stationRouteSeed
                             ? stationRouteSeed.role === 'end'
                               ? stationRouteSeed.point
                               : undefined
@@ -546,11 +761,22 @@ export function AtlasApp() {
                                     lng: selectedPlace.lng,
                                     name: selectedPlace.name,
                                   }
-                                : undefined
+                                : undefined)
                         }
+                        onStart={() => {
+                          const orientation =
+                            window.DeviceOrientationEvent as typeof DeviceOrientationEvent & {
+                              requestPermission?: () => Promise<string>;
+                            };
+                          if (orientation?.requestPermission)
+                            void orientation.requestPermission().catch(() => undefined);
+                          setGuiding(true);
+                          setFollowing(true);
+                          setSheetSnap('half');
+                        }}
                         onRoute={(route) => {
                           setWalkingRoute(route);
-                          if (route && mobile) setSheetSnap('peek');
+                          if (route && mobile) setSheetSnap('half');
                         }}
                         onClose={() => {
                           setRoutePicker(null);
@@ -576,6 +802,9 @@ export function AtlasApp() {
                     key={searchPin.id}
                     result={searchPin}
                     onClose={closeSearchPin}
+                    onDirections={() =>
+                      planFromStation({ ...searchPin.location!, name: searchPin.name }, 'end')
+                    }
                     onNearby={() => {
                       void navigate({
                         search: (previous) => ({
@@ -769,64 +998,83 @@ export function AtlasApp() {
                 </section>
               </>
             )}
-            {walkingRoute && !routePicker && !indoorMap && search.mode === 'explore' && (
-              <button className="search-pin-preview" onClick={() => setSheetSnap('full')}>
-                {routeContext ? '3D route · experimental' : 'Walking preview'} ·{' '}
-                {Math.round(walkingRoute.distanceM)} m ·{' '}
-                {Math.max(1, Math.round(walkingRoute.durationMinutes))} min · Directions ↑
-              </button>
-            )}
+            {walkingRoute &&
+              !guiding &&
+              (!mobile || sheetSnap === 'peek') &&
+              !routePicker &&
+              !indoorMap &&
+              search.mode === 'explore' && (
+                <button className="search-pin-preview" onClick={() => setSheetSnap('full')}>
+                  {guiding
+                    ? 'Walking navigation'
+                    : routeContext
+                      ? '3D walking route'
+                      : 'Walking route'}{' '}
+                  · {Math.round(walkingRoute.distanceM)} m ·{' '}
+                  {Math.max(1, Math.round(walkingRoute.durationMinutes))} min · Directions ↑
+                </button>
+              )}
 
             {searchPin && search.mode === 'explore' && !plannerOpen && (
               <button className="search-pin-preview" onClick={() => setSheetSnap('half')}>
                 {searchPin.name} · Details ↑
               </button>
             )}
-            <div className="map-location">
-              <span className="location-dot" />
-              <span>HONG KONG SAR</span>
-              <span className="coordinate-label">22.28° N · 114.16° E</span>
-            </div>
-            <div className="basemap-controls" aria-label="Map layers">
-              <CityViewControl
-                value={plannerOpen && search.mode === 'explore' ? routeContext : undefined}
-                onChange={plannerOpen && search.mode === 'explore' ? setRouteContext : undefined}
-              />
-              <label>
-                <span>Map style</span>
-                <select
-                  aria-label="Map style"
-                  value={basemap}
-                  onChange={(e) => setBasemap(e.target.value as typeof basemap)}
-                >
-                  <option value="landsd-map">Map</option>
-                  <option value="landsd-aerial">Aerial</option>
-                  <option value="openstreetmap">OSM</option>
-                </select>
-              </label>
-              {basemap !== 'openstreetmap' && (
+            {!plannerOpen && (
+              <div className="map-location">
+                <span className="location-dot" />
+                <span>HONG KONG SAR</span>
+                <span className="coordinate-label">22.28° N · 114.16° E</span>
+              </div>
+            )}
+            {!plannerOpen && (
+              <div className="basemap-controls" aria-label="Map layers">
+                <CityViewControl
+                  value={plannerOpen && search.mode === 'explore' ? routeContext : undefined}
+                  onChange={plannerOpen && search.mode === 'explore' ? setRouteContext : undefined}
+                />
                 <label>
-                  <span>Map labels</span>
+                  <span>Map style</span>
                   <select
-                    aria-label="Map label language"
-                    value={mapLanguage}
-                    onChange={(e) => setMapLanguage(e.target.value as typeof mapLanguage)}
+                    aria-label="Map style"
+                    value={basemap}
+                    onChange={(e) => setBasemap(e.target.value as typeof basemap)}
                   >
-                    <option value="en">English</option>
-                    <option value="tc">繁體中文</option>
+                    <option value="landsd-map">Map</option>
+                    <option value="landsd-aerial">Aerial</option>
+                    <option value="openstreetmap">OSM</option>
                   </select>
                 </label>
-              )}
-            </div>
+                {basemap !== 'openstreetmap' && (
+                  <label>
+                    <span>Map labels</span>
+                    <select
+                      aria-label="Map label language"
+                      value={mapLanguage}
+                      onChange={(e) => setMapLanguage(e.target.value as typeof mapLanguage)}
+                    >
+                      <option value="en">English</option>
+                      <option value="tc">繁體中文</option>
+                    </select>
+                  </label>
+                )}
+              </div>
+            )}
             {!mobile && !windyActive && (
               <MapControls command={issueCommand} quality={quality} onQuality={setQuality} />
             )}
             {mobile && !windyActive && (
               <div className="mobile-map-actions" aria-label="Map actions">
                 <IconButton
-                  label="Locate me"
+                  label={guiding ? 'Recentre navigation' : 'Locate me'}
                   onClick={() => {
                     haptic();
+                    if (guiding) {
+                      // Reuse the walking watcher and camera instead of starting a second fix/flight.
+                      setFollowing(true);
+                      setSheetSnap('peek');
+                      return;
+                    }
                     if (!navigator.geolocation) {
                       setLocationMessage('Location is not available in this browser.');
                       return;
@@ -851,9 +1099,7 @@ export function AtlasApp() {
                           },
                         }));
                         setSheetSnap('peek');
-                        setLocationMessage(
-                          `Location fix · accuracy about ${Math.round(coords.accuracy)} m. Direction appears when compass data is available.`,
-                        );
+                        setLocationMessage('');
                       },
                       () =>
                         setLocationMessage(
