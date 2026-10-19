@@ -73,6 +73,7 @@ export type { BusRouteQuery, BusRoute, BusStop, BusArrival } from './buses';
 export { nearbyBusQuerySchema, nearbyBusStopsSchema, reportedBusRoutesSchema } from './buses';
 export type { NearbyBusStop, ReportedBusRoute } from './buses';
 export * from './search';
+export * from './discovery';
 
 export { places, searchPlaces, getPlace, categoryLabels } from './places';
 export * from './map-links';

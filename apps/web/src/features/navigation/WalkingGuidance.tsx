@@ -1,6 +1,7 @@
 import { LocateFixed, Navigation, X } from 'lucide-react';
 import type { WalkingRoute } from '@hk/contracts';
 import type { routeProgress } from './route-progress';
+import type { ReactNode } from 'react';
 export function WalkingGuidance({
   route,
   progress,
@@ -10,7 +11,9 @@ export function WalkingGuidance({
   onStop,
   onRecalculate,
   recalculating,
+  journeyGuidance,
 }: {
+  journeyGuidance?: ReactNode;
   onRecalculate: () => void;
   recalculating: boolean;
   route: WalkingRoute;
@@ -23,18 +26,26 @@ export function WalkingGuidance({
   const step = progress && !progress.offRoute ? route.steps[progress.stepIndex] : null;
   return (
     <section className="walking-guidance" aria-label="Active walking navigation">
-      <div className="guidance-instruction">
-        <Navigation size={30} />
-        <div>
-          <small>{progress?.arrived ? 'Near your destination' : 'Walking guidance'}</small>
-          <strong>
-            {error ||
-              (progress?.offRoute
-                ? 'You appear away from the route'
-                : step?.text || 'Follow the highlighted route')}
-          </strong>
+      {journeyGuidance}
+      {journeyGuidance && error && (
+        <p role="status" className="journey-note">
+          {error}
+        </p>
+      )}
+      {!journeyGuidance && (
+        <div className="guidance-instruction">
+          <Navigation size={30} />
+          <div>
+            <small>{progress?.arrived ? 'Near your destination' : 'Walking guidance'}</small>
+            <strong>
+              {error ||
+                (progress?.offRoute
+                  ? 'You appear away from the route'
+                  : step?.text || 'Follow the highlighted route')}
+            </strong>
+          </div>
         </div>
-      </div>
+      )}
       <div className="guidance-trip">
         <span>
           <strong>{progress ? `${Math.round(progress.remainingM)} m` : '—'}</strong>
@@ -48,6 +59,11 @@ export function WalkingGuidance({
           <X size={20} />
         </button>
       </div>
+      {progress?.offRoute && (
+        <p className="journey-note">
+          GPS is approximate, especially indoors. Check your position before updating the route.
+        </p>
+      )}
       {progress?.offRoute && (
         <button className="walking-submit" disabled={recalculating} onClick={onRecalculate}>
           {recalculating ? 'Updating route…' : 'Update route from here'}

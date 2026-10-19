@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./map-labels": "./src/map-labels.ts"
+    "./map-labels": "./src/map-labels.ts",
+    "./jev": "./src/jev.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -14,6 +15,7 @@
   "dependencies": {
     "@hk/contracts": "workspace:*",
     "@mapbox/vector-tile": "^3.0.0",
+    "@typesafe-ai/sdk": "0.7.0",
     "fast-xml-parser": "^5.11.1",
     "pbf": "^5.1.2",
     "proj4": "^2.22.0",

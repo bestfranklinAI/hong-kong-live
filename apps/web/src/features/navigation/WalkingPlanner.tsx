@@ -16,14 +16,19 @@ import { endpointStation } from './station-endpoint';
 import { RouteDirections } from './RouteDirections';
 import type { IndoorMapChoice } from './indoor-map';
 import { RouteHeightProfile } from './RouteHeightProfile';
-import { useEffect, useRef, useState } from 'react';
+import { RouteComparison } from './RouteComparison';
+import { useRouteComparison } from './use-route-comparison';
+import { requestWalkingRoute } from './request-walking-route';
+import { walkingProfiles } from './route-comparison';
+import { usePreferences } from '../../app/preferences';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   routeEndpointSchema,
-  walkingRouteSchema,
   type RouteEndpoint,
   type RouteRequest,
   type WalkingRoute,
   type StationRouteContext,
+  type DiscoveryIntent,
 } from '@hk/contracts';
 import { SearchResults } from '../search/SearchResults';
 import './walking.css';
@@ -46,7 +51,11 @@ export function WalkingPlanner({
   onInspectStation,
   stationLoading = false,
   stationUnavailable = false,
+  journeyGuidance,
+  onExpandComparison,
 }: {
+  onExpandComparison?: () => void;
+  journeyGuidance?: ReactNode;
   stationContexts?: StationRouteContext[];
   onInspectStation: (id: string) => void;
   stationLoading?: boolean;
@@ -78,13 +87,15 @@ export function WalkingPlanner({
   const endStation = endpointStation(end);
   const [browseIndoor, setBrowseIndoor] = useState(false);
   const [profile, setProfile] = useState<RouteRequest['profile']>(
-    initialRoute?.request.profile ?? 'recommended',
+    initialRoute?.request.profile ?? usePreferences.getState().walkingProfile,
   );
   const [language, setLanguage] = useState<RouteRequest['language']>(
-    initialRoute?.request.language ?? 'en',
+    initialRoute?.request.language ?? usePreferences.getState().directionsLanguage,
   );
   const [route, setRoute] = useState<WalkingRoute | undefined>(initialRoute ?? undefined);
+  const comparison = useRouteComparison(initialRoute ?? undefined);
   const [destinationInfo, setDestinationInfo] = useState<import('@hk/contracts').SearchResult>();
+  const [discoveryPreference, setDiscoveryPreference] = useState<DiscoveryIntent | null>(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [locating, setLocating] = useState(false);
@@ -97,14 +108,16 @@ export function WalkingPlanner({
     },
     [],
   );
-  function invalidate() {
+  function invalidate(clearDiscovery = true) {
     revision.current++;
     pending.current?.abort();
     setBusy(false);
     setLocating(false);
     setRoute(undefined);
+    comparison.reset();
     onRoute(null);
     setError('');
+    if (clearDiscovery) setDiscoveryPreference(null);
   }
   function choosePoint(point: RouteEndpoint, result?: import('@hk/contracts').SearchResult) {
     const validated = routeEndpointSchema.safeParse(point);
@@ -155,7 +168,7 @@ export function WalkingPlanner({
       setEditing('end');
       return;
     }
-    invalidate();
+    invalidate(false);
     const request = revision.current;
     setBusy(true);
     setEditing(null);
@@ -174,18 +187,13 @@ export function WalkingPlanner({
       if (!currentOrigin && startStation && !from.indoor)
         from = { ...from, assumedConcourse: true };
       setStart(from);
-      const response = await fetch('/api/v1/routes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ start: from, end, profile, language }),
-        signal: controller.signal,
-      });
-      const data = await response.json();
-      if (!response.ok)
-        throw new Error(typeof data.error === 'string' ? data.error : 'Route unavailable.');
-      const result = walkingRouteSchema.parse(data);
+      const result = await requestWalkingRoute(
+        { start: from, end, profile, language },
+        controller.signal,
+      );
       if (request !== revision.current || controller.signal.aborted) return;
       setRoute(result);
+      comparison.reset(result);
       onRoute(result);
     } catch (err) {
       if (request === revision.current && !controller.signal.aborted)
@@ -218,6 +226,21 @@ export function WalkingPlanner({
           <h2>Walking route</h2>
         </div>
       )}
+      {route && (
+        <RouteComparison
+          comparison={comparison}
+          selected={route}
+          onExpand={onExpandComparison}
+          onSelect={(choice) => {
+            if (choice === route) return;
+            setRoute(choice);
+            setProfile(choice.request.profile);
+            usePreferences.getState().setWalkingProfile(choice.request.profile);
+            onRoute(choice);
+          }}
+        />
+      )}
+      {route && journeyGuidance}
       {route && <StationRouteCards contexts={stationContexts} onInspect={onInspectStation} />}
       {route && stationLoading && (
         <p className="search-notice" role="status">
@@ -358,7 +381,11 @@ export function WalkingPlanner({
               key={editing}
               query={query}
               language={language === 'en' ? 'en' : 'tc'}
-              onSelect={(row) => {
+              selectionPurpose={editing}
+              discoveryCenter={
+                !currentOrigin && start ? { lat: start.lat, lng: start.lng } : undefined
+              }
+              onSelect={(row, intent) => {
                 if (!row.location) {
                   setError('Choose a result with a mapped location.');
                   return;
@@ -372,6 +399,7 @@ export function WalkingPlanner({
                   row,
                 );
                 if (editing === 'end') setDestinationInfo(row);
+                if (intent) setDiscoveryPreference(intent);
               }}
             />
           ) : (
@@ -456,27 +484,36 @@ export function WalkingPlanner({
           )}
         </div>
       )}
-      {!editing && (
+      {discoveryPreference && discoveryPreference.mobility !== 'walking' && (
+        <p className="comparison-note">
+          You requested{' '}
+          {discoveryPreference.mobility === 'fewer-stairs' ? 'fewer stairs' : 'barrier-free access'}
+          . Choose and compare the official route profiles; this request does not verify
+          accessibility or lift operation.
+        </p>
+      )}
+      {!editing && !route && (
         <div className="route-preferences" aria-label="Walking preference">
-          {(
-            [
-              ['recommended', 'Recommended'],
-              ['shortest', 'Shortest'],
-              ['barrier-free', 'Step-free'],
-            ] as const
-          ).map(([value, label]) => (
+          {walkingProfiles.map(({ id: value, label }) => (
             <button
               key={value}
               aria-pressed={profile === value}
               onClick={() => {
-                invalidate();
+                invalidate(false);
                 setProfile(value);
+                usePreferences.getState().setWalkingProfile(value);
               }}
             >
               {label}
             </button>
           ))}
         </div>
+      )}
+      {!editing && !route && (
+        <p className="comparison-note">
+          Your profile preference is saved on this device. Barrier-free uses the government profile;
+          current access and lift operation are unverified.
+        </p>
       )}
       <div className="route-toolbar">
         <button className="text-button" onClick={() => onContextView(!contextView)}>
@@ -492,8 +529,11 @@ export function WalkingPlanner({
             <select
               value={language}
               onChange={(e) => {
-                invalidate();
+                invalidate(false);
                 setLanguage(e.target.value as RouteRequest['language']);
+                usePreferences
+                  .getState()
+                  .setDirectionsLanguage(e.target.value as RouteRequest['language']);
               }}
             >
               <option value="en">English</option>
@@ -509,7 +549,7 @@ export function WalkingPlanner({
             Show obscured route
           </label>
           <p>
-            Step-free follows recorded restrictions, without live lift status. 3D uses source
+            Barrier-free follows recorded restrictions, without live lift status. 3D uses source
             heights; indoor positioning is not available.
           </p>
         </details>

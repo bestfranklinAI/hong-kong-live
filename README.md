@@ -83,6 +83,12 @@ Train illustrations use carriages overhead and compact upright badges at oblique
 
 ## Deterministic development
 
+Walking routes now share a continuous, manually advanced source-direction sequence across city and indoor maps. Explicitly matched floors require confirmation in their floor plan; browsing maps preserves the current instruction. GPS does not confirm floors or advance the sequence. See [navigation behavior](docs/design/navigation.md#continuous-journey-guidance).
+
+After finding a route, **Compare routes** loads the other government profiles for the same mapped endpoints. Compare source time/distance estimates, connection-instruction mentions and unrouted gaps, then select a route to update the map. Profile and directions-language preferences are remembered on this device. Barrier-free is a source profile, not a guarantee of current access. See [route comparison](docs/design/navigation.md#route-comparison-and-preferences).
+
+An opt-in smart-search evaluation integrates TypeSafe's Jev through typed Noul, Choice and Score questions. It runs only on the backend with `TYPESAFE_API_KEY` in server secrets; `TYPESAFE_DEFAULT_MODEL` defaults to the SDK's `jev-latest` alias. The `--jev` evaluation command exercises eight cases without enabling the UI. The first live check reached `jev-1.13.0`; after correcting rounded-number validation, seven cases passed and a Cantonese lift-status request was rejected by confidence gating. The UI remains disabled pending that issue and further review. An operator can later set `HK_DISCOVERY_EVALUATION=1` in live mode to expose the explicit interpretation action. It defaults to `0`; fixture mode never calls Jev. See [smart-search setup and evaluation](docs/verification/smart-search.md) for evidence and limitations.
+
 ```sh
 HK_DATA_MODE=fixture pnpm dev
 ```

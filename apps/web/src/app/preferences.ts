@@ -1,11 +1,15 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Basemap, MapLanguage } from '../scene/basemaps';
-import type { Quality } from '@hk/contracts';
+import type { Quality, RouteRequest } from '@hk/contracts';
 import type { CityPresentation } from '../scene/CityLayers';
 import { configuredCitySources, hasCitySource } from '../scene/city-sources';
 
 interface Preferences {
+  walkingProfile: RouteRequest['profile'];
+  directionsLanguage: RouteRequest['language'];
+  setWalkingProfile: (profile: RouteRequest['profile']) => void;
+  setDirectionsLanguage: (language: RouteRequest['language']) => void;
   cityView: boolean;
   cityPresentation: CityPresentation;
   setCityPresentation: (presentation: CityPresentation) => void;
@@ -23,6 +27,10 @@ interface Preferences {
 export const usePreferences = create<Preferences>()(
   persist(
     (set) => ({
+      walkingProfile: 'recommended',
+      directionsLanguage: 'en',
+      setWalkingProfile: (walkingProfile) => set({ walkingProfile }),
+      setDirectionsLanguage: (directionsLanguage) => set({ directionsLanguage }),
       cityView: hasCitySource,
       cityPresentation: configuredCitySources.buildings ? 'buildings' : 'photo',
       setCityPresentation: (cityPresentation) => set({ cityPresentation }),
@@ -44,7 +52,18 @@ export const usePreferences = create<Preferences>()(
     {
       name: 'hk-live-preferences',
       version: 1,
-      partialize: ({ savedIds, quality, basemap, mapLanguage, cityView, cityPresentation }) => ({
+      partialize: ({
+        savedIds,
+        quality,
+        basemap,
+        mapLanguage,
+        cityView,
+        cityPresentation,
+        walkingProfile,
+        directionsLanguage,
+      }) => ({
+        walkingProfile,
+        directionsLanguage,
         cityView,
         cityPresentation,
         savedIds,
@@ -56,6 +75,11 @@ export const usePreferences = create<Preferences>()(
         const saved = persisted as Partial<Preferences> | null;
         return {
           ...current,
+          walkingProfile:
+            saved?.walkingProfile === 'shortest' || saved?.walkingProfile === 'barrier-free'
+              ? saved.walkingProfile
+              : 'recommended',
+          directionsLanguage: saved?.directionsLanguage === 'zh-HK' ? 'zh-HK' : 'en',
           cityView: typeof saved?.cityView === 'boolean' ? saved.cityView : current.cityView,
           cityPresentation:
             saved?.cityPresentation === 'buildings' && configuredCitySources.buildings

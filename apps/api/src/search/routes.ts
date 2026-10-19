@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
 import {
-  places,
   mtrStations,
   mtrLines,
   mtrStationLocations,
@@ -24,24 +23,12 @@ import {
 } from '@hk/providers';
 import { emptyRepository, rankResult, type SearchRepository } from './repository';
 import type { LandsdSearch } from './landsd';
+import { curatedPlaces } from './curated';
+import { discoveryRoutes } from './discovery-routes';
+import type { DiscoverySearch } from './discovery';
 
 const localResults: SearchResult[] = [
-  ...places
-    .filter((p) => !p.station)
-    .map((p) => ({
-      id: `curated:${p.id}`,
-      placeId: p.id,
-      kind: 'place' as const,
-      name: p.name,
-      nameZh: p.nameZh,
-      address: '',
-      addressZh: '',
-      district: p.district,
-      location: { lat: p.lat, lng: p.lng },
-      locationPrecision: 'reference' as const,
-      source: 'curated' as const,
-      sourceDate: null,
-    })),
+  ...curatedPlaces.map(({ result }) => result),
   ...Object.entries(mtrStations).map(([code, station]) => ({
     id: `mtr:${code}`,
     kind: 'station' as const,
@@ -63,6 +50,7 @@ export function searchRoutes(
   now = Date.now,
   fetcher: Fetcher = fetch,
   facilities?: import('@hk/providers').FacilityCatalogue,
+  discovery?: DiscoverySearch,
 ) {
   const app = new Hono();
   let windowAt = now(),
@@ -79,6 +67,7 @@ export function searchRoutes(
     }
     await next();
   });
+  app.route('/discovery', discoveryRoutes(discovery, now));
   app.get('/', async (c) => {
     const q = (c.req.query('q') ?? '').trim();
     const rawLimit = c.req.query('limit') ?? '10';

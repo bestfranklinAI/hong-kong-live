@@ -28,7 +28,9 @@ export function StationIndoorDialog({
   routeForVenue,
   initialLevel,
   onLevelChange,
+  journeyGuidance,
 }: {
+  journeyGuidance?: (floorId: string) => ReactNode;
   routeForVenue?: WalkingRoute;
   initialLevel?: string;
   onLevelChange?: (id: string) => void;
@@ -167,6 +169,7 @@ export function StationIndoorDialog({
                     routeForVenue={routeForVenue}
                     initialLevel={initialLevel}
                     onLevelChange={onLevelChange}
+                    journeyGuidance={station?.id === venue?.id ? journeyGuidance : undefined}
                     station={station}
                     kind={station.kind}
                     onDismiss={onClose}

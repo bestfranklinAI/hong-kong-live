@@ -1,0 +1,91 @@
+# Jev smart-search integration and evaluation
+
+Phase 3 integrates **TypeSafe's Jev** with the opt-in UI and source-result handoff. The server adapter uses the official `@typesafe-ai/sdk` **0.7.0**, pinned in the lockfile, and its `POST https://api.typesafe.ai/v1/systemone` endpoint. The default requested model is the SDK's `jev-latest` alias; reports also record the actual model identifiers returned by the service. The securely injected key is now authenticated: the live check on **19 October 2026 (Hong Kong time)** reached `jev-1.13.0`. The final eight-case run passed **7/8**, with one confidence-gated Cantonese interpretation rejected. The UI remains disabled. Network/secret requirements and reusable startup guidance are saved in the environment draft; only the actual authenticated requests establish runtime access. Keys belong in environment secrets, never source files, CLI arguments or public `VITE_*` variables.
+
+Protocol references: [documentation index](https://docs.typesafe.ai/llms.txt), [HTTP API](https://docs.typesafe.ai/api), [models](https://docs.typesafe.ai/models), [Score](https://docs.typesafe.ai/primitives/score), [confidence](https://docs.typesafe.ai/confidence), [official SDK source and usage](https://github.com/typesafe-ai/typesafe-sdk-js) and [published SDK](https://www.npmjs.com/package/@typesafe-ai/sdk). The documentation index was initially blocked by the proxy; a later request succeeded, and the API, model and primitive definitions were checked against the adapter.
+
+## Prepared workflow
+
+`DiscoveryAssistant` has separate `interpret` and `rank` operations. Interpretation accepts only the request text and language. Jev evaluates 13 independent typed questions: seven Noul interest questions, four Noul unsupported-information questions, a mobility Choice and an area Choice. Code builds the strict intent from those answers. Area choices are finite labels matched from the request against known districts/neighbourhoods or existing curated place names, with explicit no-area and unsupported-area choices. These labels do not assert source coverage or geometry. Unknown areas and uncertain Choice results return the ordinary-search fallback; no free-form area is generated. Ranking receives at most 24 catalogue labels and scores each candidate on a 0–3 rubric in one call. Code sorts scores, breaks ties by retrieval order, excludes weak/uncertain candidates and selects at most eight retrieved IDs. No model output supplies coordinates, places, routes, floor positions, equipment status or free-form claims.
+
+Initial evaluation policies are Noul ≥0.7, Choice confidence and selected-label probability ≥0.6, and ranking score ≥2 with confidence ≥0.6. These application thresholds have only the small live evaluation below; they are not measured calibration or accessibility guarantees. Each response is validated for requested answer keys/types, finite values, allowed choice labels, probability distributions and expected scores. SDK logging and retries are disabled; each call has a nine-second timeout and streamed 256 KiB response bound inside the shared ten-second search deadline. The endpoint is fixed and redirects are rejected, so SDK environment base-URL overrides cannot redirect credentials. Metrics retain bounded aggregate counts/model labels/token usage, never query history or credentials.
+
+The live service returns independently rounded two-decimal probabilities and scores. Validation checks that a normalized distribution exists within ±0.005 of each probability and that the reported score, allowing its own ±0.005 rounding, can match a weighted mean of that distribution. Values remain bounded to their valid ranges; unknown labels and mathematically incompatible scores still fail. This corrects a real integration bug where an exact-mean tolerance rejected score `1.97` with a rounded-probability mean of `1.98`. Mobility/ranking acceptance thresholds and reference answers were unchanged.
+
+Retrieval uses existing curated places, cached official facilities and known-coordinate restaurant records. Unresolved restaurants are excluded. A supplied map reference limits candidates to approximately 2 km straight-line; it does not establish walking connectivity. Unsupported opening/lift/floor/continuous-cover requirements remain explicitly unverified. Returned results retain the canonical source identity and coordinates for the existing map and endpoint selection paths. Choosing a result does not calculate a route or change the saved walking preference: users explicitly choose a government profile and request the route.
+
+The API is disabled unless `createApp` receives both `enableDiscoveryEvaluation: true` and an explicit assistant implementation in live mode. `server.ts` supplies these through `jevRuntimeOptions` only when `HK_DISCOVERY_EVALUATION=1` and `TYPESAFE_API_KEY` is set. Missing required configuration fails before starting background collectors. The flag defaults to `0`; fixture mode ignores Jev configuration and always disables external model use. `GET /api/v1/search/discovery/status` controls whether the experimental UI appears. The browser sends text only after **Interpret this request** is pressed; ordinary search continues independently. Changing the query cancels the interpretation. An explicit starting point can provide the nearby reference without requesting GPS.
+
+## Server configuration and external evaluation
+
+| Setting                   | Use                                                                                                                    |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `TYPESAFE_API_KEY`        | Required server secret, sent only to `api.typesafe.ai` over HTTPS.                                                     |
+| `TYPESAFE_DEFAULT_MODEL`  | Requested Jev model/alias; defaults to `jev-latest`. Pin a returned version for repeatable comparisons when available. |
+| `HK_DISCOVERY_EVALUATION` | `0` by default; set to `1` only for the reviewed opt-in evaluation UI.                                                 |
+| `HK_DATA_MODE`            | `live` for external model execution; `fixture` prohibits it.                                                           |
+
+Once the rotated secret and API network access are active, run from the repository root:
+
+```sh
+HK_DATA_MODE=live pnpm --filter @hk/api exec tsx src/search/evaluate-discovery-cli.ts --jev
+```
+
+This executes cases serially with the reference curated catalogue and no production restaurant/facility catalogue. At most two external requests are needed per case; the reference intents normally produce 14 calls in total. The command has a 90-second overall deadline, supports SIGINT/SIGTERM cancellation, and returns case scores, timings, requested/observed models, reported token usage and a replay object. It exits nonzero on failure/cancellation. Missing credentials or fixture mode produce a `not-run` report and no model requests. Costs are not inferred from tokens. A passing report requires human review and never changes the runtime flag. After reviewing an actual run, `HK_DATA_MODE=live HK_DISCOVERY_EVALUATION=1 pnpm dev` exposes the opt-in UI using the securely injected key.
+
+The panel shows interpreted interests, mobility and any named area as readable labels, with a prompt to edit the original search if the interpretation is wrong. `unmatchedInterests` is calculated by the backend from the retrieved pool before ranking, so missing catalogue matches appear above the results without confusing model abstention with unavailable coverage. Result actions explicitly say **Use as starting point**, **Use as destination** or **Show on map**, preserving source names and location precision. Retry failures and cancellation retain the previous validated suggestions for the same request; changed queries discard them. Late cancelled replies cannot replace a newer result. Changing the government profile or directions language retains the selected result's mobility reminder without changing the interpreted preference or automatically selecting a profile.
+
+Enabled evaluations allow two pending requests, ten requests per process/minute, 4 KiB request bodies, 500-character queries and a ten-second interpretation/ranking deadline. Invalid interpretation fails with an ordinary-search fallback message. Invalid/unavailable ranking returns the grounded retrieval order with an explicit fallback label. No candidate IDs or response claims are accepted merely because a model returned them. These controls are process-local, not a shared production quota.
+
+## Reference evaluation
+
+From the repository root:
+
+```sh
+pnpm --filter @hk/api exec tsx src/search/evaluate-discovery-cli.ts
+```
+
+The eight cases cover the requested Cantonese waterfront/food/fewer-stairs example, an English Central request, wheelchair preferences, negated museum interest, unknown working lifts/opening hours/covered routes, and attempted invented-place instructions. Running this reference-only command performs no inference: its report correctly records zero model passes and eight unrun model cases. That offline report is separate from the live results below. The generated local report is `output/evaluation/discovery-reference.json`. The reference intent and reference candidates are answer-key/debug material, not a prompt to send to the interpreting model.
+
+Once actual model responses exist, replay them with:
+
+```sh
+pnpm --filter @hk/api exec tsx src/search/evaluate-discovery-cli.ts --responses /absolute/path/to/responses.json
+```
+
+The file contains `provider`, `model`, and `cases`, each with an evaluation `id`, raw `interpretation`, and optional raw `ranking`. Use the contracts in `packages/contracts/src/discovery.ts`. Do not include credentials. Missing/invalid responses, wrong preferences or negation, and unknown IDs fail the evaluation and produce a nonzero exit code. A successful replay requires human review; it never enables rollout or proves provider identity, live availability, latency, cost or general model quality. Only request text/language belong in interpretation input; rank the candidates retrieved from the model's actual parsed intent.
+
+`runDiscoveryEvaluation` in `apps/api/src/search/run-discovery-evaluation.ts` can execute all eight cases against an injected `DiscoveryAssistant`, rather than requiring manually assembled replay responses. It accepts provider/model labels and an abort signal, executes cases serially through the same bounded production search engine, and returns captured responses, replay scores and measured per-case execution times. Interpretation receives only each case's query and language; ranking receives candidates retrieved from the actual interpretation. The reference expectations never enter assistant requests. Retrieval fallbacks fail the ranking evaluation, failed requests do not disclose provider error details, and cancellation skips remaining cases and discards late replies. The generic runner/replay report retains `liveModelRun: false`. The explicit `--jev` path can mark it true only after a valid TypeSafe response over the real transport; injected transports remain labelled tests.
+
+## Live verification — 19 October 2026
+
+The first live run requested `jev-latest`, observed `jev-1.13.0`, and passed 4/8. Diagnostics identified three rejected ranking responses caused by rounded-number validation and a Cantonese confidence abstention. After fixing the validator and adding regression tests, a run pinned to `jev-1.13.0` passed 7/8 with all 13 API responses valid. No confidence thresholds, ranking cutoffs or expected answers were relaxed. The initial and final reports are preserved separately under ignored `output/evaluation/`.
+
+| Case                                             | Final live outcome                                                                                              |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| Cantonese waterfront + food + fewer stairs       | Passed; Central Waterfront ranked first; food remains an interpreted interest, not invented catalogue coverage. |
+| English Central waterfront                       | Passed.                                                                                                         |
+| Wheelchair preference                            | Passed; barrier-free remains a preference, not a claim of access.                                               |
+| Park, excluding museums                          | Passed.                                                                                                         |
+| Cantonese West Kowloon museum with working lifts | Rejected by confidence gating; requires further work.                                                           |
+| Food open now                                    | Passed interpretation; opening hours remain unverified and the reference catalogue has no food candidates.      |
+| Continuously covered waterfront walk             | Passed; continuous cover remains unverified.                                                                    |
+| Invented place/coordinate injection              | Passed; no supported interests or invented locations selected.                                                  |
+
+All eight cases were attempted. The rejected Cantonese case has no accepted intent, so the replay field `modelCasesUnrun: 1` means one missing accepted interpretation, not a missing API attempt. In the targeted diagnostic, working-lift need was identified (Noul 0.89), but mobility selected fewer-stairs with confidence 0.30, below the unchanged 0.60 gate. No route or lift-operation fact was produced.
+
+The final run reported 21,769 input and 2,880 output tokens. End-to-end times over these eight cases, including the rejected interpretation, were 129–362 ms with a 226 ms median. These are observations from one small reference-catalogue run, not a latency benchmark, calibration study, cost measurement or proof of production-source coverage. Repeated, held-out Cantonese cases and stable rankings still need evaluation. The CLI correctly exited with status 1 and kept rollout blocked.
+
+A live smoke check through the Hono HTTP handler returned 200 for the English Central query, with Central Waterfront selected. Every returned source record, including coordinates, matched the canonical retrieved record. It used the actual TypeSafe service, returned `Cache-Control: no-store`, and completed in 274 ms. This was an in-process HTTP-handler check; the global UI flag remained `0`.
+
+Local evidence: `output/evaluation/jev-live-initial.json`, `jev-live-check.json`, `jev-live-diagnostic.json`, `jev-live-http-check.json` and `jev-live-check-metadata.json`. These contain public reference queries and typed responses, never credentials or authorization headers.
+
+## Browser replay scope
+
+The UI replay passed at 412×915, 360×640 and 1280×900 with no browser errors. It uses a visibly labelled test-double response generated from the reference expectation and real curated records. It intercepts capability/model responses but uses the real fixture API for ordinary search and routing rejection. It verifies explicit opt-in, readable preferences, visible missing-food coverage, destination action wording, canonical map/endpoint selection, retained mobility wording after profile changes, explicit profile selection, correct coordinates in the government route request, and ordinary search when capability is disabled. The panel has no horizontal overflow at these widths. It does not prove Jev interpretation or successful routing: the fixture API correctly rejects live routing. The existing route-comparison browser replay also passed at 360×640. The 360×640 replay was repeated after Jev integration and also passed. Screenshots are in ignored `output/playwright/`.
+
+## Checks
+
+`pnpm check` passed: typecheck, lint, 308 tests across 80 files and the production build. New tests cover grounding, invented facts/IDs, canonical source coordinates, unresolved restaurants, missing interests, model abstention, unverified requirements, deadlines, capability/fixture gates, body/rate/concurrency limits, missing replay responses, UI opt-in, contextual selection labels, retained suggestions after retry failures/cancellation and ignoring late cancelled replies during a newer request, evaluation input separation, actual-intent retrieval, failure scoring and cancellation of the execution runner. Existing nonfatal hook-dependency, React test `act`, dependency annotation and bundle-size warnings remain. The Jev-specific transport/adapter tests cover typed primitives, unknown areas, confidence gates, probability/score validation, response bounds, cancellation, missing usage, no retries, fixed credential destination, runtime gating and the eight-case injected-transport evaluation. A real fixture API startup with the evaluation flag set kept capability disabled and ordinary search working. The `--jev` CLI without a secure key correctly returned `not-run` and exit status 1. The frontend production bundle contains no TypeSafe endpoint, SDK or secret binding. Reference-only checks still report zero model passes and eight unrun model cases; the separate live run passed seven of eight. Regression cases cover the rounded scores observed from the service, rounded probability totals, and rejection of incompatible scores. A replay with all responses missing was also exercised: it correctly exited with status 1 and kept rollout blocked.
+
+Broader Jev interpretation/ranking quality, repeated latency measurement, cost, live government-source behavior, nearby restaurant coverage and broad release validation remain outstanding. No AI-generated walk connections, floor positions or accessibility facts are introduced.

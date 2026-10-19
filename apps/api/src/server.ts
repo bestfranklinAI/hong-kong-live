@@ -8,6 +8,7 @@ import { serve } from '@hono/node-server';
 import { createApp } from './app';
 import { persistentFacilities } from './search/facility-storage';
 import { FacilityCatalogue } from '@hk/providers';
+import { jevRuntimeOptions } from './search/jev-config';
 
 // Some HK providers fail with Node's short address-family connection window.
 // Keep TLS verification and request deadlines; allow a viable address to connect.
@@ -19,6 +20,7 @@ if (mode !== 'fixture' && mode !== 'live') throw new Error('HK_DATA_MODE must be
 const port = Number(process.env.PORT ?? 8787);
 if (!Number.isInteger(port) || port < 1 || port > 65535)
   throw new Error('PORT must be a valid TCP port.');
+const discovery = jevRuntimeOptions(process.env, mode);
 
 const store = new RestaurantStore(
   mode === 'fixture'
@@ -40,7 +42,7 @@ if (mode === 'live') void facilities.refresh();
 const facilityTimer =
   mode === 'live' ? setInterval(() => void facilities.refresh(), 3600000) : undefined;
 facilityTimer?.unref();
-const app = createApp({ mode, searchRepository: store, landsd, facilities });
+const app = createApp({ mode, searchRepository: store, landsd, facilities, ...discovery });
 const server = serve({ fetch: app.fetch, port, hostname: '127.0.0.1' });
 console.info(`HK Live API listening on http://127.0.0.1:${port} (${mode} data)`);
 if (mode === 'fixture')

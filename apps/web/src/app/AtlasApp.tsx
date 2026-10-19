@@ -1,4 +1,7 @@
 import { RouteMapSwitcher } from '../features/navigation/RouteMapSwitcher';
+import { JourneyGuide } from '../features/navigation/JourneyGuide';
+import { useJourneyGuidance } from '../features/navigation/use-journey-guidance';
+import type { JourneyStep } from '../features/navigation/journey-steps';
 import { useRouteStations } from '../features/navigation/use-route-stations';
 import { useQuery } from '@tanstack/react-query';
 import { indoorVenuesSchema, type IndoorVenue } from '@hk/contracts';
@@ -148,14 +151,54 @@ export function AtlasApp() {
     null,
   );
   const routeStations = useRouteStations(walkingRoute);
+  const journey = useJourneyGuidance(walkingRoute, routeStations.contexts, routeStations.loading);
+  const [routeMapRevision, setRouteMapRevision] = useState(0);
   const stationFloorSelections = useRef(new Map<string, string>());
   useEffect(() => {
     stationFloorSelections.current.clear();
   }, [walkingRoute]);
-  const [routeStationId, setRouteStationId] = useState<string | null>(null);
+  const [routeStationSelection, setRouteStationSelection] = useState<{
+    route: typeof walkingRoute;
+    id: string | null;
+  }>({ route: null, id: null });
+  const routeStationId =
+    routeStationSelection.route === walkingRoute ? routeStationSelection.id : null;
+  function setRouteStationId(id: string | null) {
+    setRouteStationSelection({ route: walkingRoute, id });
+  }
   const activeRouteStation = routeStations.contexts.find(
     (context) => context.venue.id === routeStationId,
   );
+  function viewJourneyStep(step: JourneyStep) {
+    setFollowing(false);
+    setBuildingPreview(null);
+    if (step.map) {
+      if (
+        step.map.levelId &&
+        stationFloorSelections.current.get(step.map.venueId) !== step.map.levelId
+      ) {
+        stationFloorSelections.current.set(step.map.venueId, step.map.levelId);
+        setRouteMapRevision((value) => value + 1);
+      }
+      setRouteStationId(step.map.venueId);
+    } else {
+      setRouteStationId(null);
+      issueCommand('route-overview');
+    }
+  }
+  function journeyGuide(viewedFloor?: { venueId: string; levelId: string }) {
+    return journey.step ? (
+      <JourneyGuide
+        journey={journey}
+        viewedFloor={viewedFloor}
+        onView={() => viewJourneyStep(journey.step!)}
+        onMove={(delta) => {
+          const step = journey.move(delta);
+          if (step) viewJourneyStep(step);
+        }}
+      />
+    ) : undefined;
+  }
   const guidance = useWalkingGuidance(walkingRoute, guiding);
   const recalculation = useRouteRecalculation(guiding, walkingRoute, setWalkingRoute);
   const navigationState = useMemo(
@@ -444,11 +487,16 @@ export function AtlasApp() {
       )}
       {activeRouteStation && walkingRoute && (
         <StationIndoorDialog
-          key={`route:${activeRouteStation.venue.id}`}
+          key={`route:${activeRouteStation.venue.id}:${walkingRoute.fetchedAt}:${routeMapRevision}`}
           venue={{ ...activeRouteStation.venue, kind: activeRouteStation.venue.kind ?? 'station' }}
           initialLevel={stationFloorSelections.current.get(activeRouteStation.venue.id)}
           onLevelChange={(id) =>
             stationFloorSelections.current.set(activeRouteStation.venue.id, id)
+          }
+          journeyGuidance={
+            journey.step
+              ? (levelId) => journeyGuide({ venueId: activeRouteStation.venue.id, levelId })
+              : undefined
           }
           journeyViews={
             <RouteMapSwitcher
@@ -474,6 +522,11 @@ export function AtlasApp() {
           key={buildingPreview.id}
           venue={buildingPreview}
           routeForVenue={walkingRoute ?? undefined}
+          journeyGuidance={
+            journey.step
+              ? (levelId) => journeyGuide({ venueId: buildingPreview.id, levelId })
+              : undefined
+          }
           journeyViews={
             walkingRoute ? (
               <RouteMapSwitcher
@@ -689,6 +742,7 @@ export function AtlasApp() {
                   <>
                     {guiding && walkingRoute ? (
                       <WalkingGuidance
+                        journeyGuidance={journeyGuide()}
                         route={walkingRoute}
                         progress={guidance.progress}
                         error={
@@ -719,6 +773,10 @@ export function AtlasApp() {
                       </button>
                     ) : (
                       <WalkingPlanner
+                        onExpandComparison={() => {
+                          if (mobile) setSheetSnap('full');
+                        }}
+                        journeyGuidance={journeyGuide()}
                         key={
                           stationRouteSeed
                             ? `${stationRouteSeed.role}:${stationRouteSeed.point.name}:${stationRouteSeed.point.lat}:${stationRouteSeed.point.lng}`
