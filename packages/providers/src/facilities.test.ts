@@ -56,6 +56,32 @@ it('normalizes refill instructions without inventing source timestamps or workin
   expect(row.facility?.locationNote).toBe('Near office');
   expect(row.facility?.hours).toContain('Closed during maintenance');
 });
+
+it('normalizes official parks and museums, preserving source hours as schedules', () => {
+  const park = normalizeFacility(
+    FACILITY_SOURCES[4],
+    {
+      ...feature(),
+      properties: {
+        OBJECTID: 1,
+        NameEN: 'Ngau Tau Kok Park',
+        NameTC: '牛頭角公園',
+        OpeningHoursEN: '7 am to 11 pm<br/>24 hours (jogging tracks)',
+        FacilityDetailsEN: 'Soccer pitches<br/>Jogging tracks',
+      },
+    },
+    fetchedAt,
+  );
+  expect(park.facility).toMatchObject({
+    category: 'park',
+    hours: '7 am to 11 pm 24 hours (jogging tracks)',
+    details: 'Soccer pitches Jogging tracks',
+  });
+  expect(park.sourceDate).toBeNull();
+  expect(normalizeFacility(FACILITY_SOURCES[5], feature(), fetchedAt).facility?.category).toBe(
+    'culture',
+  );
+});
 it('uses AFCD stable facility identifiers and distinguishes same-venue facilities', () => {
   const row = normalizeFacility(
     FACILITY_SOURCES[3],
@@ -116,11 +142,11 @@ it('coalesces refreshes and retains last-good data after upstream failure', asyn
     () => time + 3 * 86400000,
   );
   await Promise.all([catalogue.refresh(), catalogue.refresh()]);
-  expect(fetcher).toHaveBeenCalledTimes(4);
+  expect(fetcher).toHaveBeenCalledTimes(6);
   expect(catalogue.data().records).toEqual([record]);
   expect(catalogue.data().sources[1].status).toBe('stale');
   expect(catalogue.data().sources[0].status).toBe('unavailable');
   catalogue.dispose();
   await catalogue.refresh();
-  expect(fetcher).toHaveBeenCalledTimes(4);
+  expect(fetcher).toHaveBeenCalledTimes(6);
 });

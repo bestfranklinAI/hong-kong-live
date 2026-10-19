@@ -67,6 +67,7 @@ export function createApp(options: AppOptions = {}) {
                 options.facilities?.data().records ?? [],
               ),
             mode,
+            options.searchRepository ? (now) => options.searchRepository!.status(now) : undefined,
           )
         : undefined,
     ),

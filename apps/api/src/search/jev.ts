@@ -98,25 +98,27 @@ export class JevDiscoveryAssistant implements DiscoveryAssistant {
       throw new Error('Invalid source candidate pool');
     const intent: DiscoveryIntent = discoveryIntentSchema.parse(request.intent);
     const candidates = request.candidates.map(
-      ({ id, name, nameZh, district, source, interests }) => ({
+      ({ id, name, nameZh, district, source, interests, description, distanceM }) => ({
         id,
         name,
         nameZh,
         district,
         source,
         interests,
+        description,
+        ...(distanceM !== undefined ? { distanceM } : {}),
       }),
     );
     const questions = Object.fromEntries(
       candidates.map((row, index) => [
         `candidate_${index}`,
         score(
-          `${RULES} How relevant is candidate ${row.id} to the requested place interests and named area, using only supplied catalogue labels? Do not reward or infer unverified access, lifts, opening, indoor positioning or covered routes.`,
+          `${RULES} How well does candidate ${row.id} support AT LEAST ONE requested place interest, using only its supplied category labels and description? A request for several activities can use several different places: a park does not need to serve food, and a restaurant does not need to be a park. An explicit match to one requested category is relevant even when the other activities need other places. Respect explicit exclusions and the named area. Straight-line distance is not walking time. Do not reward or infer unverified access, lifts, opening, indoor positioning or covered routes.`,
           [
             'Unrelated or contradicts a requested place interest or named area.',
             'Weak or uncertain place-interest match.',
-            'Relevant supported place-interest match.',
-            'Strong direct match to the requested place interests and named area.',
+            'Explicitly supports at least one requested place activity, with no supported contradiction.',
+            'Strong direct match to at least one requested activity, supported by the supplied labels or description, and compatible with any named area.',
           ],
         ),
       ]),
@@ -133,12 +135,16 @@ export class JevDiscoveryAssistant implements DiscoveryAssistant {
       if (answer.type !== 'score') throw new Error('Missing candidate score');
       return { id: row.id, index, score: answer.score, confidence: answer.confidence };
     });
-    return discoveryRankingSchema.parse({
-      candidateIds: ranked
-        .filter((row) => row.score >= 2 && row.confidence >= CONFIDENCE_THRESHOLD)
-        .sort((a, b) => b.score - a.score || a.index - b.index)
-        .slice(0, 8)
-        .map((row) => row.id),
-    });
+    const accepted = ranked
+      .filter((row) => row.score >= 2 && row.confidence >= CONFIDENCE_THRESHOLD)
+      .sort((a, b) => b.score - a.score || a.index - b.index);
+    const selected = new Set<string>();
+    // Separate source places can fulfil separate activities in a mixed request.
+    for (const interest of intent.interests) {
+      const match = accepted.find((row) => candidates[row.index].interests.includes(interest));
+      if (match) selected.add(match.id);
+    }
+    for (const row of accepted) if (selected.size < 8) selected.add(row.id);
+    return discoveryRankingSchema.parse({ candidateIds: [...selected] });
   }
 }

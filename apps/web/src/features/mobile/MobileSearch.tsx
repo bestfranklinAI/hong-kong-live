@@ -59,7 +59,7 @@ export function MobileSearch({
             {label}
           </button>
         ))}
-        {(['sports', 'library', 'refill'] as const).map((value) => (
+        {(['park', 'culture', 'sports', 'library', 'refill'] as const).map((value) => (
           <button
             key={value}
             aria-pressed={facility === value}

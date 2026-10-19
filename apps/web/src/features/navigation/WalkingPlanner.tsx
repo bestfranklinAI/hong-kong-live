@@ -375,6 +375,29 @@ export function WalkingPlanner({
       </div>
       {editing && (
         <div className="endpoint-search-panel">
+          {query && editing === 'end' && currentOrigin && !start && (
+            <button
+              className="text-button"
+              disabled={locating}
+              onClick={() => {
+                invalidate();
+                const request = revision.current;
+                setLocating(true);
+                void getLocation()
+                  .then((point) => {
+                    if (request === revision.current) setStart(point);
+                  })
+                  .catch((err: Error) => {
+                    if (request === revision.current) setError(err.message);
+                  })
+                  .finally(() => {
+                    if (request === revision.current) setLocating(false);
+                  });
+              }}
+            >
+              {locating ? 'Finding your location…' : 'Use current location for nearby search'}
+            </button>
+          )}
           {query ? (
             <SearchResults
               compact
@@ -382,9 +405,7 @@ export function WalkingPlanner({
               query={query}
               language={language === 'en' ? 'en' : 'tc'}
               selectionPurpose={editing}
-              discoveryCenter={
-                !currentOrigin && start ? { lat: start.lat, lng: start.lng } : undefined
-              }
+              discoveryCenter={start ? { lat: start.lat, lng: start.lng } : undefined}
               onSelect={(row, intent) => {
                 if (!row.location) {
                   setError('Choose a result with a mapped location.');

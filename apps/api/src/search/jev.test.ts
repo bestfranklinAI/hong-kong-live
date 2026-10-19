@@ -183,6 +183,38 @@ it('scores source candidates and composes a deterministic ranking without sendin
   expect(Object.values(sent.questions).every((question) => question.type === 'score')).toBe(true);
 });
 
+it('keeps an accepted park alongside higher-scoring restaurants for a mixed request', async () => {
+  const preference: DiscoveryIntent = {
+    interests: ['park', 'food'],
+    area: '',
+    mobility: 'walking',
+    unverifiedNeeds: [],
+  };
+  const candidates = Array.from({ length: 10 }, (_, index) => ({
+    id: `candidate:${index}`,
+    name: index === 0 ? 'Park' : `Restaurant ${index}`,
+    nameZh: '',
+    district: 'Central',
+    source: index === 0 ? ('LCSD' as const) : ('FEHD' as const),
+    interests: [index === 0 ? ('park' as const) : ('food' as const)],
+    description: '',
+  }));
+  const client = new JevClient({
+    apiKey: 'unit-test-key',
+    fetcher: async (_url, options) => {
+      const body: Body = JSON.parse(options!.body as string);
+      return Response.json(typedResponse(body, preference, [2, 3, 3, 3, 3, 3, 3, 3, 3, 3]));
+    },
+  });
+  const result = await new JevDiscoveryAssistant(client).rank(
+    { query: 'Find a park and food nearby', language: 'en', intent: preference, candidates },
+    new AbortController().signal,
+  );
+  expect(result.candidateIds).toHaveLength(8);
+  expect(result.candidateIds[0]).toBe('candidate:0');
+  expect(result.candidateIds).toContain('candidate:1');
+});
+
 it('uses the explicit runtime gate and keeps fixture mode isolated even with a configured key', async () => {
   const fetcher = vi.fn<Fetcher>();
   expect(jevRuntimeOptions({}, 'live', fetcher)).toEqual({});

@@ -57,3 +57,44 @@ it('rejects district-only and ambiguous address matches', () => {
   ).toBeUndefined();
   expect(restaurantAddressQuery(restaurant.address)).toBe('14 TAI WONG STREET EAST, HONG KONG');
 });
+
+it('matches a numbered street inside a building range and a multi-street address', () => {
+  const restaurant = {
+    ...mergeFehd(xml('A'), xml('甲')).records[0],
+    address: 'G/F, 4 MONG LUNG STREET, SHAU KEI WAN, HONG KONG',
+  };
+  const building = {
+    ...coordinateResult({ lat: 22.28, lng: 114.22 }),
+    address: '12-18 KAM WA STREET|4-6 MONG LUNG STREET',
+  };
+  expect(matchRestaurantAddress(restaurant, [building])).toBe(building);
+  expect(
+    matchRestaurantAddress({ ...restaurant, district: 'Eastern 東區' }, [
+      { ...building, district: 'Eastern District' },
+    ])?.location,
+  ).toEqual(building.location);
+  for (const address of [
+    '5 MONG LUNG STREET',
+    '4 MONG LUNG ROAD',
+    '4 MONG LUNG STREET EAST',
+    '4A MONG LUNG STREET',
+  ])
+    expect(matchRestaurantAddress({ ...restaurant, address }, [building])).toBeUndefined();
+  expect(
+    matchRestaurantAddress(restaurant, [
+      building,
+      { ...building, location: { lat: 22.3, lng: 114.2 } },
+    ]),
+  ).toBeUndefined();
+  expect(
+    matchRestaurantAddress({ ...restaurant, district: 'Eastern 東區' }, [
+      { ...building, district: 'Wan Chai' },
+    ]),
+  ).toBeUndefined();
+});
+
+it('normalizes building abbreviations and strips shop/floor prefixes for reuse', () => {
+  expect(restaurantAddressQuery('SHOP 2, 1/F, TAI ON BLDG, 57-87 SHAU KEI WAN RD, HONG KONG')).toBe(
+    'TAI ON BUILDING, 57-87 SHAU KEI WAN ROAD, HONG KONG',
+  );
+});

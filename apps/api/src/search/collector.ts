@@ -5,6 +5,7 @@ import {
   mergeFehd,
   matchRestaurantAddress,
   restaurantAddressQuery,
+  fetchRestaurantLocations,
   type Fetcher,
 } from '@hk/providers';
 import type { RestaurantStore } from './store';
@@ -40,42 +41,63 @@ export function startRestaurantCollector(
   landsd: LandsdSearch,
   fetcher: Fetcher,
 ) {
+  const lifetime = new AbortController();
+  const collectorFetch: Fetcher = (url, init) =>
+    fetcher(url, {
+      ...init,
+      signal: AbortSignal.any([lifetime.signal, ...(init?.signal ? [init.signal] : [])]),
+    });
   let stopped = false,
     running = false,
-    lastAttempt = 0,
-    enrichedDay = '';
+    lastImport = 0,
+    lastPointImport = 0,
+    lastEnrichment = 0;
   const run = async () => {
     if (stopped || running) return;
     const now = Date.now(),
       status = store.status(now),
       due = expectedCatalogueDate(now);
     const refreshDue = (status.sourceDate ?? '') < due;
-    if ((!refreshDue && enrichedDay === due) || now - lastAttempt < 3600000) return;
     running = true;
-    lastAttempt = now;
     try {
-      if (refreshDue) {
-        const count = await importRestaurants(store, fetcher);
-        console.info(
-          `Restaurant catalogue ready: ${count} licences, source ${store.status(Date.now()).sourceDate}.`,
-        );
-      }
-      if (enrichedDay !== due) {
-        enrichedDay = due;
-        for (const row of store.pending(Date.now(), 100)) {
-          if (stopped) break;
-          try {
-            const results = await landsd.search(restaurantAddressQuery(row.address));
-            store.locate(row.id, row.address, matchRestaurantAddress(row, results), Date.now());
-          } catch {
-            break;
-          }
+      if (refreshDue && now - lastImport >= 3600000) {
+        lastImport = now;
+        try {
+          const count = await importRestaurants(store, collectorFetch);
+          console.info(
+            `Restaurant catalogue ready: ${count} licences, source ${store.status(Date.now()).sourceDate}.`,
+          );
+        } catch {
+          console.warn(
+            'Restaurant refresh unavailable; retaining the last catalogue and retrying in one hour.',
+          );
         }
       }
-    } catch {
-      console.warn(
-        'Restaurant refresh unavailable; keeping the last validated catalogue. Retrying in one hour.',
-      );
+      if (
+        !stopped &&
+        now - store.pointSnapshotTime() >= 24 * 3600000 &&
+        now - lastPointImport >= 3600000
+      ) {
+        lastPointImport = now;
+        try {
+          const snapshot = await fetchRestaurantLocations(collectorFetch);
+          if (!stopped) {
+            const matched = store.applyOfficialLocations(snapshot.records, snapshot.fetchedAt);
+            console.info(
+              `Restaurant map ready: ${matched} licence/address joins from official FEHD reference points.`,
+            );
+          }
+        } catch {
+          if (!stopped)
+            console.warn(
+              'Restaurant point refresh unavailable; retaining known locations and retrying in one hour.',
+            );
+        }
+      }
+      if (!stopped && now - lastEnrichment >= 5 * 60000) {
+        lastEnrichment = now;
+        await enrichRestaurantLocations(store, landsd, Date.now, () => stopped);
+      }
     } finally {
       running = false;
     }
@@ -85,6 +107,37 @@ export function startRestaurantCollector(
   interval.unref();
   return () => {
     stopped = true;
+    lifetime.abort();
     clearInterval(interval);
   };
+}
+
+/** Small resumable batches share the interactive lookup queue and its daily budget. */
+export async function enrichRestaurantLocations(
+  store: RestaurantStore,
+  landsd: Pick<LandsdSearch, 'search'>,
+  now = Date.now,
+  stopped = () => false,
+  limit = 20,
+) {
+  let failures = 0,
+    resolved = 0;
+  for (const row of store.pending(now(), limit)) {
+    if (stopped()) break;
+    try {
+      const cached = store.cachedLocation(row.address, now());
+      const results = cached ? [cached] : await landsd.search(restaurantAddressQuery(row.address));
+      if (stopped()) break;
+      const match = matchRestaurantAddress(row, results);
+      store.locate(row.id, row.address, match, now());
+      if (match) resolved++;
+      failures = 0;
+    } catch {
+      if (stopped()) break;
+      store.defer(row.id, now());
+      // Back off on a provider outage without treating one failed address as a full-day run.
+      if (++failures >= 3) break;
+    }
+  }
+  return resolved;
 }

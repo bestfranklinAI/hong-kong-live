@@ -49,6 +49,14 @@ export const searchResultSchema = z.object({
   locationPrecision: z.enum(['reference', 'address', 'user-supplied', 'unresolved']),
   source: z.enum(['curated', 'MTR', 'FEHD', 'LandsD', 'user', 'LCSD', 'AFCD']),
   sourceDate: z.string().nullable().default(null),
+  locationSource: z
+    .object({
+      provider: z.enum(['FEHD', 'LandsD']),
+      sourceUrl: z.url(),
+      sourceDate: z.string().nullable(),
+      fetchedAt: z.iso.datetime(),
+    })
+    .optional(),
   station: z.object({ line: z.string(), station: z.string() }).optional(),
   placeId: z.string().optional(),
   sharedPlace: z
@@ -58,7 +66,7 @@ export const searchResultSchema = z.object({
   expiryDate: z.string().optional(),
   facility: z
     .object({
-      category: z.enum(['sports', 'library', 'refill']),
+      category: z.enum(['sports', 'library', 'refill', 'park', 'culture']),
       dataset: z.string(),
       sourceUrl: z.url(),
       website: z.url().optional(),

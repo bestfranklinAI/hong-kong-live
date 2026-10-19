@@ -15,6 +15,10 @@ pnpm dev
 
 Open **http://localhost:5173**. Vite proxies `/api` to the local API on port **8787**. Both servers bind to loopback by default. API responses come from live sources; an upstream failure stays an explicitly unavailable response.
 
+For optional backend secrets, copy `apps/api/.env.example` to `apps/api/.env.local` and fill in the required values. API dev, start and preview commands load this ignored file automatically; existing terminal environment variables take precedence. Restart the API after editing it. Frontend public settings stay in `apps/web/.env.local`. See [local API configuration](apps/api/README.md#local-environment).
+
+Smart search now offers explicit 2/5/10 km search radii, restaurant map coverage, labelled alternatives when the model abstains, and shortlist refinements **Closest first** and **Pick for me**. Official FEHD restaurant points join the licence catalogue by ID and unchanged address; LCSD parks/gardens and museums add source-backed choices. Routes still require an explicit destination and a separate government route request.
+
 The Node API uses IPv4-first DNS ordering and a 5-second address-family connection window for provider compatibility. For other Node commands on networks where requests time out while `curl` works:
 
 ```sh

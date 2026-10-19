@@ -49,3 +49,12 @@ export function jevAreaCandidates(query: string) {
     ),
   ].slice(0, 12);
 }
+
+export function discoveryAreaAliases(area: string) {
+  const normalized = normalizeSearchText(area);
+  return (
+    areas.find((aliases) => aliases.some((alias) => normalizeSearchText(alias) === normalized)) ?? [
+      area,
+    ]
+  ).map(normalizeSearchText);
+}

@@ -213,6 +213,87 @@ it('retains source suggestions on a failed retry without exposing raw network er
   expect(selected).toHaveBeenCalledExactlyOnceWith(row, response.intent);
 });
 
+it('shows model abstention alternatives and widens the radius only on an explicit action', async () => {
+  const requests: Record<string, unknown>[] = [];
+  vi.stubGlobal('fetch', async (url: string, options: RequestInit = {}) => {
+    if (url.endsWith('/status')) return Response.json({ enabled: true, experimental: true });
+    if (url.endsWith('/discovery')) {
+      const body = JSON.parse(options.body as string);
+      requests.push(body);
+      return Response.json({
+        ...response,
+        results: [],
+        alternatives: [row],
+        coverage: {
+          radiusM: body.radiusM,
+          referenceProvided: true,
+          candidateCount: 1,
+          restaurantsTotal: 100,
+          restaurantsMapped: 0,
+        },
+      });
+    }
+    return Response.json(standard);
+  });
+  await render();
+  await settleCapability();
+  await act(async () => container.querySelector<HTMLButtonElement>('.discovery-submit')!.click());
+  expect(container.textContent).toContain('not selected by Jev');
+  expect(container.textContent).toContain('Jev selected no candidates');
+  expect(container.textContent).toContain('0 of 100');
+  expect(requests[0].radiusM).toBe(2000);
+  expect(selected).not.toHaveBeenCalled();
+  await act(async () =>
+    Array.from(container.querySelectorAll('button'))
+      .find((button) => button.textContent === 'Search within 5 km instead')!
+      .click(),
+  );
+  expect(requests[1].radiusM).toBe(5000);
+  expect(requests[1].query).toBe(requests[0].query);
+  expect(selected).not.toHaveBeenCalled();
+});
+
+it('sorts and picks source suggestions without further model calls or automatic selection', async () => {
+  const farther = {
+    ...row,
+    id: 'farther',
+    name: 'Farther place',
+    location: { lat: 22.29, lng: 114.17 },
+  };
+  const nearer = {
+    ...row,
+    id: 'nearer',
+    name: 'Nearer place',
+    location: { lat: 22.28, lng: 114.16 },
+  };
+  let calls = 0;
+  vi.stubGlobal('fetch', async (url: string) => {
+    if (url.endsWith('/status')) return Response.json({ enabled: true, experimental: true });
+    if (url.endsWith('/discovery')) {
+      calls++;
+      return Response.json({ ...response, results: [farther, nearer] });
+    }
+    return Response.json(standard);
+  });
+  await render();
+  await settleCapability();
+  await act(async () => container.querySelector<HTMLButtonElement>('.discovery-submit')!.click());
+  await act(async () =>
+    Array.from(container.querySelectorAll('button'))
+      .find((button) => button.textContent === 'Closest first')!
+      .click(),
+  );
+  expect(container.querySelector('.discovery-card strong')?.textContent).toBe(nearer.nameZh);
+  await act(async () =>
+    Array.from(container.querySelectorAll('button'))
+      .find((button) => button.textContent?.includes('Pick for me'))!
+      .click(),
+  );
+  expect(container.textContent).toContain('Select it below to use it');
+  expect(calls).toBe(1);
+  expect(selected).not.toHaveBeenCalled();
+});
+
 it('retains suggestions on cancellation and ignores a late cancelled retry during a newer request', async () => {
   const pending: { resolve: (response: Response) => void; signal: AbortSignal }[] = [];
   let attempts = 0;

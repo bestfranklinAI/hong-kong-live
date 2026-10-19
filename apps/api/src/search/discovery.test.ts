@@ -85,9 +85,121 @@ it('distinguishes model abstention from missing source coverage', async () => {
     new AbortController().signal,
   );
   expect(result.results).toEqual([]);
+  expect(result.alternatives?.map((row) => row.id)).toEqual(
+    pool()
+      .slice(0, 3)
+      .map((row) => row.result.id),
+  );
+  expect(result.coverage?.candidateCount).toBe(pool().length);
   expect(result.unmatchedInterests).toEqual(['food']);
   expect(result.notices.join(' ')).toContain('assistant did not select a source candidate');
   expect(result.notices.join(' ')).not.toContain('No grounded candidates matched');
+});
+
+it('requires an explicit wider radius and accepts bilingual area aliases', () => {
+  const row = {
+    ...coordinateResult({ lat: 22.32, lng: request.center.lng }),
+    name: 'Central test park',
+    district: 'Central & Western',
+    facility: {
+      category: 'park' as const,
+      dataset: 'test',
+      sourceUrl: 'https://www.lcsd.gov.hk',
+      fetchedAt: new Date().toISOString(),
+      hours: '',
+      hoursZh: '',
+      details: '',
+      detailsZh: '',
+      locationNote: '',
+      locationNoteZh: '',
+      phone: '',
+    },
+  };
+  const preference = { ...intent, interests: ['park' as const], area: '中環' };
+  expect(
+    retrieveDiscoveryCandidates(preference, request, emptyRepository, [row]).some(
+      (candidate) => candidate.result.id === row.id,
+    ),
+  ).toBe(false);
+  expect(
+    retrieveDiscoveryCandidates(preference, { ...request, radiusM: 5000 }, emptyRepository, [
+      row,
+    ]).some((candidate) => candidate.result.id === row.id),
+  ).toBe(true);
+  expect(discoveryRequestSchema.safeParse({ ...request, radiusM: 999999 }).success).toBe(false);
+});
+
+it('reserves candidates for different interests when one nearby layer is dense', () => {
+  const facilities = Array.from({ length: 30 }, (_, i) => ({
+    ...coordinateResult(request.center),
+    id: `refill:${i}`,
+    facility: {
+      category: 'refill' as const,
+      dataset: 'test',
+      sourceUrl: 'https://www.lcsd.gov.hk',
+      fetchedAt: new Date().toISOString(),
+      hours: '',
+      hoursZh: '',
+      details: '',
+      detailsZh: '',
+      locationNote: '',
+      locationNoteZh: '',
+      phone: '',
+    },
+  }));
+  const rows = retrieveDiscoveryCandidates(
+    { ...intent, interests: ['refill', 'waterfront'] },
+    request,
+    emptyRepository,
+    facilities,
+  );
+  expect(rows).toHaveLength(24);
+  expect(rows.some((candidate) => candidate.interests.includes('waterfront'))).toBe(true);
+});
+
+it('prefers an official facility over the same curated place while retaining distinct installations', () => {
+  const preference = { ...intent, interests: ['park' as const] };
+  const original = retrieveDiscoveryCandidates(preference, request).find(
+    (row) => row.result.name === 'Tamar Park',
+  )!.result;
+  const official = {
+    ...original,
+    id: 'facility:tamar',
+    source: 'LCSD' as const,
+    facility: {
+      category: 'park' as const,
+      dataset: 'test',
+      sourceUrl: 'https://www.lcsd.gov.hk',
+      fetchedAt: new Date().toISOString(),
+      hours: '',
+      hoursZh: '',
+      details: '',
+      detailsZh: '',
+      locationNote: '',
+      locationNoteZh: '',
+      phone: '',
+    },
+  };
+  const rows = retrieveDiscoveryCandidates(preference, request, emptyRepository, [official]);
+  expect(rows.some((row) => row.result.id === official.id)).toBe(true);
+  expect(rows.some((row) => row.result.id === original.id)).toBe(false);
+});
+
+it('reports restaurant map coverage independently from model confidence', async () => {
+  const result = await new DiscoverySearch(assistant(), pool, 'live', () => ({
+    count: 17270,
+    resolved: 2,
+    sourceDate: null,
+    fetchedAt: null,
+    importedAt: null,
+    stale: true,
+  })).search(request, new AbortController().signal);
+  expect(result.coverage).toMatchObject({
+    restaurantsTotal: 17270,
+    restaurantsMapped: 2,
+    radiusM: 2000,
+    referenceProvided: true,
+  });
 });
 
 it('rejects invented facts in interpretation before retrieval or ranking', async () => {

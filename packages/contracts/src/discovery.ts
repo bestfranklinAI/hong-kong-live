@@ -29,6 +29,7 @@ export const discoveryRequestSchema = z
     query: z.string().trim().min(1).max(500),
     language: z.enum(['en', 'tc']),
     center: coordinatesSchema.refine(withinHongKong).optional(),
+    radiusM: z.union([z.literal(2000), z.literal(5000), z.literal(10000)]).optional(),
   })
   .strict();
 /** A model can order retrieved IDs; it cannot supply a place, coordinate or route. */
@@ -52,6 +53,16 @@ export const discoveryResponseSchema = z
       .max(4)
       .refine((values) => new Set(values).size === values.length),
     results: z.array(searchResultSchema).max(8),
+    alternatives: z.array(searchResultSchema).max(3).optional(),
+    coverage: z
+      .object({
+        radiusM: z.number(),
+        referenceProvided: z.boolean(),
+        candidateCount: z.number().int().nonnegative(),
+        restaurantsTotal: z.number().int().nonnegative(),
+        restaurantsMapped: z.number().int().nonnegative(),
+      })
+      .optional(),
     notices: z.array(z.string()),
   })
   .strict();

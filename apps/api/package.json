@@ -4,11 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "start": "tsx src/server.ts",
+    "dev": "tsx watch --env-file-if-exists=.env.local src/server.ts",
+    "start": "tsx --env-file-if-exists=.env.local src/server.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "preview": "tsx src/server.ts",
+    "preview": "tsx --env-file-if-exists=.env.local src/server.ts",
     "import:restaurants": "tsx src/search/import-cli.ts"
   },
   "dependencies": {

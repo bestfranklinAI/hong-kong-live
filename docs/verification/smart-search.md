@@ -18,6 +18,8 @@ The API is disabled unless `createApp` receives both `enableDiscoveryEvaluation:
 
 ## Server configuration and external evaluation
 
+For local development, copy `apps/api/.env.example` to the Git-ignored `apps/api/.env.local` and set `TYPESAFE_API_KEY` there. API dev, start and preview scripts load this file automatically; exported terminal variables take precedence. Set `HK_DISCOVERY_EVALUATION=1` in the file to opt into the experimental UI with plain `pnpm dev`, and restart the API after changes. Keep backend secrets separate from `apps/web/.env.local` and never use a `VITE_` prefix. Hosted deployments can continue injecting secrets directly into the server environment.
+
 | Setting                   | Use                                                                                                                    |
 | ------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | `TYPESAFE_API_KEY`        | Required server secret, sent only to `api.typesafe.ai` over HTTPS.                                                     |
@@ -28,7 +30,7 @@ The API is disabled unless `createApp` receives both `enableDiscoveryEvaluation:
 Once the rotated secret and API network access are active, run from the repository root:
 
 ```sh
-HK_DATA_MODE=live pnpm --filter @hk/api exec tsx src/search/evaluate-discovery-cli.ts --jev
+HK_DATA_MODE=live pnpm --filter @hk/api exec tsx --env-file-if-exists=.env.local src/search/evaluate-discovery-cli.ts --jev
 ```
 
 This executes cases serially with the reference curated catalogue and no production restaurant/facility catalogue. At most two external requests are needed per case; the reference intents normally produce 14 calls in total. The command has a 90-second overall deadline, supports SIGINT/SIGTERM cancellation, and returns case scores, timings, requested/observed models, reported token usage and a replay object. It exits nonzero on failure/cancellation. Missing credentials or fixture mode produce a `not-run` report and no model requests. Costs are not inferred from tokens. A passing report requires human review and never changes the runtime flag. After reviewing an actual run, `HK_DATA_MODE=live HK_DISCOVERY_EVALUATION=1 pnpm dev` exposes the opt-in UI using the securely injected key.
@@ -38,6 +40,22 @@ The panel shows interpreted interests, mobility and any named area as readable l
 Enabled evaluations allow two pending requests, ten requests per process/minute, 4 KiB request bodies, 500-character queries and a ten-second interpretation/ranking deadline. Invalid interpretation fails with an ordinary-search fallback message. Invalid/unavailable ranking returns the grounded retrieval order with an explicit fallback label. No candidate IDs or response claims are accepted merely because a model returned them. These controls are process-local, not a shared production quota.
 
 ## Reference evaluation
+
+### Coverage and shortlist improvements — 19 October 2026
+
+Discovery now reads the licence/address-joined FEHD reference points plus the refreshing LCSD park/garden and museum catalogues. See [restaurant provenance](../data/search.md) and [facility coverage](../data/facilities.md). Existing curated references remain available; an official park/museum with the same name within 100 m takes precedence over its duplicate curated entry. The candidate budget reserves space for each requested interest instead of letting a dense single category fill all 24 slots. Bilingual area aliases are accepted; matching still uses source labels rather than administrative polygons.
+
+With a resolved From point, users explicitly select a 2, 5 or 10 km straight-line radius. Changing the selection does not silently replace prior suggestions: Interpret again requests the new area. Empty results offer an explicit wider search. Current location can be resolved through a separate user action; there is no automatic GPS request while typing. Radius and any named area are both filters. Walking times and connectivity are not inferred from straight-line distance.
+
+Responses include candidate counts and overall restaurant coordinate coverage. A valid empty Jev ranking remains empty in `results`, preserving model abstention; up to three retrieved `alternatives` are separately labelled as **not selected by Jev** and require explicit user selection. The relevance/confidence thresholds are unchanged. Model failure still uses the existing labelled retrieval fallback. Unsupported opening/access/lift requirements remain unverified in every case.
+
+Ranking now receives bounded source descriptions and optional computed straight-line distance, alongside existing labels. It receives no raw coordinates, user GPS position or inferred access facts. Each place is judged on supporting **at least one** requested activity; separate places can fulfil a mixed request. Code retains the best accepted match per requested interest before filling the remaining slots by score. This preserves the existing score/confidence gates. **Closest first** sorts the returned shortlist locally. **Pick for me** highlights a random returned option without selecting an endpoint or requesting a route; repeated picks exclude the previous highlighted option. Neither makes additional Jev calls or learns a hidden preference history.
+
+The updated checks include 326 tests across 82 files. The live FEHD point join and the two new refreshing facility sources were checked separately. The earlier eight-case Jev results below predate the richer ranking context; they do not establish the quality or latency of this revision. Browser UI checks use a labelled fixture response and actual retrieved source records, not live Jev output.
+
+Two live HTTP checks used a Central reference. **Find food near Central** returned eight source restaurants; each returned restaurant identity and coordinate matched the SQLite catalogue. **Find a park and food nearby** initially produced a valid empty ranking. After clarifying that one place only needs to support one requested activity and preserving accepted category diversity, the repeated request returned eight model-selected source places, including parks and restaurants. Thresholds were unchanged. These are small smoke checks, not held-out quality or speed benchmarks. Initial and revised results are retained in ignored `output/verification/jev-discovery-live.json`.
+
+The browser replay checked explicit GPS resolution, radius changes with retained previous results, Closest first, Pick for me and the separate abstention alternatives at 1280×900, 390×844 and 360×640. The final phone-width overflow check returned false. Jev was intercepted with a labelled fixture response: the normal shortlist used actual retrieved records, and a separate synthetic **Test park alternative** exercised abstention and explicit widening. The final replay had zero console errors and one renderer warning. Screenshots are in ignored `output/playwright/discovery-*.png`. This does not establish physical Android performance.
 
 From the repository root:
 

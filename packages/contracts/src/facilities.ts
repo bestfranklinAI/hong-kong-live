@@ -1,12 +1,14 @@
 import { z } from 'zod';
 import { searchResultSchema } from './search';
 
-export const facilityCategorySchema = z.enum(['sports', 'library', 'refill']);
+export const facilityCategorySchema = z.enum(['sports', 'library', 'refill', 'park', 'culture']);
 export type FacilityCategory = z.infer<typeof facilityCategorySchema>;
 export const facilityLabels: Record<FacilityCategory, string> = {
   sports: 'Sports centres',
   library: 'Libraries',
   refill: 'Water refill',
+  park: 'Parks & gardens',
+  culture: 'Museums',
 };
 export const facilitySnapshotSchema = z.object({
   dataset: z.string(),

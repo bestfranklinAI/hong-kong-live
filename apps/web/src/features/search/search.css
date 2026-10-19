@@ -85,6 +85,54 @@
 .discovery-submit:disabled {
   opacity: 0.6;
 }
+.discovery-radius {
+  border: 0;
+  padding: 0;
+  margin: 12px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.discovery-radius legend {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.discovery-radius button,
+.discovery-refinements button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.discovery-radius button[aria-pressed='true'],
+.discovery-refinements button[aria-pressed='true'] {
+  background: var(--surface);
+  border-color: currentColor;
+  font-weight: 600;
+}
+.discovery-refinements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.discovery-evaluation .discovery-picked {
+  border: 2px solid currentColor;
+  border-radius: 12px;
+  padding: 12px;
+}
+.discovery-card > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.discovery-description {
+  color: var(--muted);
+  font-size: 12px;
+}
 .search-result {
   width: 100%;
   display: flex;

@@ -34,6 +34,18 @@ export const FACILITY_SOURCES = [
     category: 'refill',
     provider: 'AFCD',
   },
+  {
+    id: 'lcsd_rcd_1629267205215_19292',
+    title: 'LCSD parks, zoos and gardens',
+    category: 'park',
+    provider: 'LCSD',
+  },
+  {
+    id: 'lcsd_rcd_1629267205214_78787',
+    title: 'LCSD museums',
+    category: 'culture',
+    provider: 'LCSD',
+  },
 ] as const;
 type Source = (typeof FACILITY_SOURCES)[number];
 const featureSchema = z.object({
@@ -50,7 +62,8 @@ function text(value: unknown) {
   if (typeof value !== 'string' && typeof value !== 'number') return '';
   const result = String(value)
     .trim()
-    .replace(/<[^>]*>/g, '');
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ');
   return /^(?:N\.?A\.?|NIL|NULL|-)$/i.test(result) ? '' : result;
 }
 function officialWebsite(value: unknown) {
@@ -111,6 +124,7 @@ export function normalizeFacility(source: Source, raw: unknown, fetchedAt: strin
         .join(' · '),
       details: [
         'FacilityTypeEN',
+        'FacilityDetailsEN',
         'LibraryTypeEN',
         'Type_of_Water_Dispenser_EN',
         'TYPE_OF_WATER_DISPENSER_EN',
@@ -125,6 +139,7 @@ export function normalizeFacility(source: Source, raw: unknown, fetchedAt: strin
         .join(' · '),
       detailsZh: [
         'FacilityTypeTC',
+        'FacilityDetailsTC',
         'LibraryTypeTC',
         'Type_of_Water_Dispenser_TC',
         'TYPE_OF_WATER_DISPENSER_TC',
@@ -150,13 +165,11 @@ export async function fetchFacilities(
   now = Date.now,
 ): Promise<FacilitySnapshot> {
   const base = `https://portal.csdi.gov.hk/server/rest/services/common/${source.id}/MapServer/0/query`;
-  const count = z
-    .object({ count: z.number().int().min(1).max(10000) })
-    .parse(
-      await fetchJson(`${base}?where=1%3D1&returnCountOnly=true&f=json`, fetcher, {
-        timeoutMs: 25000,
-      }),
-    ).count;
+  const count = z.object({ count: z.number().int().min(1).max(10000) }).parse(
+    await fetchJson(`${base}?where=1%3D1&returnCountOnly=true&f=json`, fetcher, {
+      timeoutMs: 25000,
+    }),
+  ).count;
   const fetchedAt = new Date(now()).toISOString();
   const records: SearchResult[] = [];
   for (let offset = 0; offset < count; offset += 100) {

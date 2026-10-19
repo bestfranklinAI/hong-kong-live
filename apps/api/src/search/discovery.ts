@@ -8,6 +8,7 @@ import {
   type DiscoveryResponse,
   type DataMode,
 } from '@hk/contracts';
+import type { SearchRepository } from './repository';
 import { modelCandidates, type DiscoveryCandidate } from './discovery-retrieval';
 
 /** Provider protocol stays outside the grounded search engine. Inputs/outputs are untrusted. */
@@ -71,7 +72,7 @@ function notices(intent: DiscoveryIntent, request: DiscoveryRequest) {
   if (intent.interests.includes('food'))
     values.push(
       request.center
-        ? 'Nearby means within about 2 km straight-line of the selected map reference, not a walking connection. Only restaurants with known coordinates are included.'
+        ? `Nearby means within about ${(request.radiusM ?? 2000) / 1000} km straight-line of the selected map reference, not a walking connection. Only restaurants with known coordinates are included.`
         : 'Nearby food needs a map reference or named area. No restaurant location is invented.',
     );
   const needs: Record<DiscoveryIntent['unverifiedNeeds'][number], string> = {
@@ -89,6 +90,7 @@ export class DiscoverySearch {
     private assistant: DiscoveryAssistant,
     private retrieve: (intent: DiscoveryIntent, request: DiscoveryRequest) => DiscoveryCandidate[],
     private mode: DataMode = 'live',
+    private catalogueStatus?: SearchRepository['status'],
   ) {}
 
   async search(input: unknown, cancellation: AbortSignal): Promise<DiscoveryResponse> {
@@ -107,6 +109,7 @@ export class DiscoverySearch {
     let results = candidates.slice(0, 8).map((candidate) => candidate.result);
     let ranking: DiscoveryResponse['ranking'] = candidates.length ? 'model' : 'not-run';
     const warnings = notices(intent, request);
+    const catalogue = this.catalogueStatus?.(Date.now());
     const unmatchedInterests = intent.interests.filter(
       (interest) => !candidates.some((candidate) => candidate.interests.includes(interest)),
     );
@@ -144,6 +147,14 @@ export class DiscoverySearch {
           ? 'The assistant did not select a source candidate. Try standard place search.'
           : 'No grounded candidates matched the available catalogue and area.',
       );
+    const alternatives =
+      candidates.length && !results.length
+        ? candidates.slice(0, 3).map((candidate) => candidate.result)
+        : [];
+    if (alternatives.length)
+      warnings.push(
+        'These retrieved alternatives were not selected by Jev. Check them yourself; they do not verify the requested access or opening requirements.',
+      );
     return discoveryResponseSchema.parse({
       experimental: true,
       mode: this.mode,
@@ -151,6 +162,14 @@ export class DiscoverySearch {
       ranking,
       unmatchedInterests,
       results,
+      alternatives,
+      coverage: {
+        radiusM: request.radiusM ?? 2000,
+        referenceProvided: !!request.center,
+        candidateCount: candidates.length,
+        restaurantsTotal: catalogue?.count ?? 0,
+        restaurantsMapped: catalogue?.resolved ?? 0,
+      },
       notices: warnings,
     });
   }

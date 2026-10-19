@@ -15,7 +15,7 @@ export function FacilityFilters({
 }) {
   return (
     <div className="category-scroll facility-filters" aria-label="Public facility layers">
-      {(['sports', 'library', 'refill'] as const).map((category) => (
+      {(['park', 'culture', 'sports', 'library', 'refill'] as const).map((category) => (
         <button
           key={category}
           className={`filter-chip ${selected === category ? 'active' : ''}`}
@@ -58,7 +58,11 @@ export function FacilityPanel({
           ? 'Includes mobile-library stops; check their service schedule.'
           : category === 'sports'
             ? 'Sports centres only. Court bookings and live availability are not included.'
-            : 'Public refill points at LCSD venues and AFCD country parks. Working status is not reported.'}
+            : category === 'park'
+              ? 'Official LCSD parks, zoos and gardens. Source hours are schedules, not live opening status.'
+              : category === 'culture'
+                ? 'Official LCSD museums. Check the source for exhibitions, admission and opening arrangements.'
+                : 'Public refill points at LCSD venues and AFCD country parks. Working status is not reported.'}
       </p>
       {loading && <p role="status">Loading official facilities…</p>}
       {(failed || (!loading && !sources.length)) && (

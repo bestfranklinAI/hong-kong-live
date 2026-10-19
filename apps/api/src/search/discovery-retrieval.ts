@@ -9,13 +9,15 @@ import {
 } from '@hk/contracts';
 import { curatedPlaces } from './curated';
 import { emptyRepository, type SearchRepository } from './repository';
+import { discoveryAreaAliases } from './jev-areas';
 
 export interface DiscoveryCandidate {
   result: SearchResult;
   interests: DiscoveryInterest[];
   searchText?: string;
+  distanceM?: number;
 }
-const distance = (
+export const discoveryDistance = (
   a: NonNullable<SearchResult['location']>,
   b: NonNullable<SearchResult['location']>,
 ) => Math.hypot((a.lng - b.lng) * Math.cos((a.lat * Math.PI) / 180), a.lat - b.lat) * 111195;
@@ -40,12 +42,16 @@ export function retrieveDiscoveryCandidates(
   });
   rows.push(
     ...facilities.flatMap((result): DiscoveryCandidate[] =>
-      result.facility ? [{ result, interests: [result.facility.category] }] : [],
+      result.facility
+        ? [{ result, interests: [result.facility.category], searchText: result.facility.details }]
+        : [],
     ),
   );
   if (intent.interests.includes('food')) {
     const restaurants = request.center
-      ? repository.nearby(request.center.lat, request.center.lng, 100)
+      ? request.radiusM && request.radiusM !== 2000
+        ? repository.nearby(request.center.lat, request.center.lng, 100, request.radiusM)
+        : repository.nearby(request.center.lat, request.center.lng, 100)
       : intent.area
         ? repository.search(intent.area, 100)
         : [];
@@ -56,8 +62,9 @@ export function retrieveDiscoveryCandidates(
     );
   }
   const area = normalizeSearchText(intent.area);
+  const aliases = discoveryAreaAliases(intent.area);
   const seen = new Set<string>();
-  return rows
+  const filtered = rows
     .filter(({ result, interests, searchText }) => {
       const parsed = searchResultSchema.safeParse(result);
       if (
@@ -67,8 +74,28 @@ export function retrieveDiscoveryCandidates(
         seen.has(result.id)
       )
         return false;
+      if (
+        result.source === 'curated' &&
+        facilities.some(
+          (official) =>
+            official.location &&
+            interests
+              .filter((interest) => intent.interests.includes(interest))
+              .every((interest) => interest === official.facility?.category) &&
+            discoveryDistance(result.location!, official.location) < 100 &&
+            ((official.name &&
+              normalizeSearchText(official.name) === normalizeSearchText(result.name)) ||
+              (official.nameZh &&
+                normalizeSearchText(official.nameZh) === normalizeSearchText(result.nameZh))),
+        )
+      )
+        return false;
       if (!interests.some((interest) => intent.interests.includes(interest))) return false;
-      if (request.center && distance(request.center, result.location) > 2000) return false;
+      if (
+        request.center &&
+        discoveryDistance(request.center, result.location) > (request.radiusM ?? 2000)
+      )
+        return false;
       const text = normalizeSearchText(
         [
           result.name,
@@ -79,29 +106,59 @@ export function retrieveDiscoveryCandidates(
           searchText,
         ].join(' '),
       );
-      if (area && !text.includes(area)) return false;
+      const areaText = text.replace(/\band\b/g, ' ').replace(/\s+/g, ' ');
+      if (
+        area &&
+        !aliases.some((alias) =>
+          areaText.includes(alias.replace(/\band\b/g, ' ').replace(/\s+/g, ' ')),
+        )
+      )
+        return false;
       seen.add(result.id);
       return true;
     })
     .sort((a, b) => {
       if (request.center)
         return (
-          distance(request.center, a.result.location!) -
-          distance(request.center, b.result.location!)
+          discoveryDistance(request.center, a.result.location!) -
+          discoveryDistance(request.center, b.result.location!)
         );
       return a.result.id.localeCompare(b.result.id);
-    })
-    .slice(0, 24);
+    });
+  // Reserve space for each requested interest so dense refill/restaurant layers cannot crowd out parks.
+  const selected: DiscoveryCandidate[] = [];
+  const groups = intent.interests.map((interest) =>
+    filtered.filter((row) => row.interests.includes(interest)),
+  );
+  const depth = Math.max(0, ...groups.map((group) => group.length));
+  for (let offset = 0; offset < depth && selected.length < 24; offset++) {
+    for (const group of groups) {
+      const candidate = group[offset];
+      if (candidate && !selected.includes(candidate) && selected.length < 24) {
+        selected.push(candidate);
+      }
+    }
+  }
+  return selected.map((candidate) => ({
+    ...candidate,
+    ...(request.center
+      ? {
+          distanceM: Math.round(discoveryDistance(request.center, candidate.result.location!)),
+        }
+      : {}),
+  }));
 }
 
 /** Ranking receives bounded catalogue labels, without coordinates or inferred access facts. */
 export function modelCandidates(candidates: DiscoveryCandidate[]) {
-  return candidates.map(({ result, interests }) => ({
+  return candidates.map(({ result, interests, searchText, distanceM }) => ({
     id: result.id,
     name: result.name.slice(0, 120),
     nameZh: result.nameZh.slice(0, 120),
     district: result.district.slice(0, 80),
     source: result.source,
     interests,
+    description: (searchText ?? '').slice(0, 500),
+    ...(distanceM !== undefined ? { distanceM } : {}),
   }));
 }

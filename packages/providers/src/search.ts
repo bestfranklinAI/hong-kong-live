@@ -1,7 +1,7 @@
 import { XMLParser, XMLValidator } from 'fast-xml-parser';
 import proj4 from 'proj4';
 import { z } from 'zod';
-import { normalizeSearchText, withinHongKong, type SearchResult } from '@hk/contracts';
+import { withinHongKong, type SearchResult } from '@hk/contracts';
 import { fetchJson, type Fetcher } from './http';
 
 export const FEHD_URLS = {
@@ -146,35 +146,8 @@ export async function fetchLandsd(query: string, fetcher: Fetcher): Promise<Sear
     ];
   });
 }
-/** Only a unique, explicitly matching numbered address can automatically locate a licence. */
-export function matchRestaurantAddress(
-  restaurant: SearchResult,
-  candidates: SearchResult[],
-): SearchResult | undefined {
-  const address = normalizeSearchText(restaurant.address);
-  const matches = candidates.filter((row) => {
-    const candidate = normalizeSearchText(row.address);
-    return (
-      row.location &&
-      /\d/.test(candidate) &&
-      candidate.length >= 12 &&
-      ` ${address} `.includes(` ${candidate} `)
-    );
-  });
-  const locations = new Map(
-    matches.map((row) => [`${row.location!.lat.toFixed(5)},${row.location!.lng.toFixed(5)}`, row]),
-  );
-  return locations.size === 1 ? [...locations.values()][0] : undefined;
-}
-/** Discard shop/floor prefixes for lookup, but preserve the original address for matching and display. */
-export function restaurantAddressQuery(address: string) {
-  const parts = address.split(',').map((s) => s.trim());
-  while (
-    parts.length > 1 &&
-    /^(?:SHOP|UNIT|STALL|ROOM|FLAT|GROUND FLOOR|G\/F|[\d\s-]+(?:ST|ND|RD|TH)? FLOOR|LEVEL|BASEMENT)/i.test(
-      parts[0],
-    )
-  )
-    parts.shift();
-  return parts.join(', ').slice(0, 200);
-}
+export {
+  matchRestaurantAddress,
+  restaurantAddressQuery,
+  restaurantAddressKey,
+} from './restaurant-address';
