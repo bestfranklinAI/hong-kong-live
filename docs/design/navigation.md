@@ -137,3 +137,9 @@ A generic station start no longer blocks planning on exit selection. The client 
 A route's last uniquely matched station floor can identify a recommended mapped exit only when an entry on that floor lies within 12 m of same-height route vertices. The exit is labelled on the city map and indoor plan. This is the route's recommendation, not proof of the globally closest exit, fare-gate access or current opening status.
 
 Named intermediate buildings now use the same floor matching as stations. Opening any available building while a route exists also attempts local matching against its floor polygons and source Z, selecting a matched route floor by default. Missing/ambiguous matches remain explicitly unavailable; no route is projected onto an unrelated floor. City overview framing points from the route's start toward its destination rather than resetting north.
+
+## 19 October mobile journey revision
+
+See [mobile interface and user journeys](mobile-experience.md) for the current implemented presentation. The route preview focuses on destination, estimated time/distance and Start walking; directions, edits and source details are disclosed. Active walking replaces the discovery sheet with a fixed instruction dock. GPS diagnostics and all directions move into Journey details; the correct open floor no longer repeats a view-floor action. The shared manual cursor and explicit floor confirmation remain authoritative.
+
+The follow camera uses a 260 m range. Location-based planning waits for a fresh fix meeting the existing 60 m reported-accuracy gate and supports cancellation. Continuous walking updates, poor-fix gating, stale-fix expiry and manual rerouting remain; Refresh location restarts acquisition without replacing the route. This is not a measurement of real-device location accuracy.

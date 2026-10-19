@@ -8,6 +8,7 @@ import { canGuideFrom } from '../../shared/location-quality';
 export function useWalkingGuidance(route: WalkingRoute | null, active: boolean) {
   const [fix, setFix] = useState<LocationFix | null>(null);
   const [error, setError] = useState('');
+  const [locationAttempt, setLocationAttempt] = useState(0);
   const [progress, setProgress] = useState<ReturnType<typeof routeProgress>>(null);
   const previous = useRef<{ route: WalkingRoute | null; alongM?: number }>({ route: null });
   const hasRoute = route !== null;
@@ -63,8 +64,9 @@ export function useWalkingGuidance(route: WalkingRoute | null, active: boolean) 
       void lock?.release();
     };
     // Route replacement must not restart GPS, heading follow or the screen wake lock.
-  }, [active, hasRoute]);
+  }, [active, hasRoute, locationAttempt]);
   return {
+    refreshLocation: () => setLocationAttempt((attempt) => attempt + 1),
     fix: active ? fix : null,
     progress: active ? progress : null,
     error: active

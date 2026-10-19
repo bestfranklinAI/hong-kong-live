@@ -14,7 +14,6 @@ import { indoorCategoryLabels, type IndoorMapChoice } from '../features/navigati
 import { WalkingPlanner } from '../features/navigation/WalkingPlanner';
 import { SelectedSearchPlace } from '../features/search/SelectedSearchPlace';
 import { coordinateResult, withinHongKong, mtrStations, type SearchResult } from '@hk/contracts';
-import { CityViewControl } from '../scene/CityViewControl';
 import { DiscoverySheet } from '../features/mobile/DiscoverySheet';
 import { MapSettings } from '../features/mobile/MapSettings';
 import { MobileSearch } from '../features/mobile/MobileSearch';
@@ -30,13 +29,14 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState, useMemo } fro
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import {
   ArrowUpRight,
-  Bookmark,
+  ArrowLeft,
   CloudSun,
   Compass,
   TrainFront,
   Settings2,
   LocateFixed,
   Navigation,
+  ChevronUp,
 } from 'lucide-react';
 import type { Category, Place, ViewMode, TrafficCamera, StationSelection } from '@hk/contracts';
 import { ExplorePanel } from '../features/explore/ExplorePanel';
@@ -44,7 +44,7 @@ import { getPlace, places } from '../features/explore/places';
 import { PlaceDetail } from '../features/explore/PlaceDetail';
 import { WeatherPanel } from '../features/live/WeatherPanel';
 import { TransportPanel } from '../features/live/TransportPanel';
-import { useWeather, useLineArrivals } from '../features/live/queries';
+import { useLineArrivals } from '../features/live/queries';
 import type { SceneCommand, SceneStatus } from '../scene/types';
 import { HongKongMark, IconButton } from '../shared/ui';
 import { usePreferences } from './preferences';
@@ -144,7 +144,9 @@ export function AtlasApp() {
         : undefined,
   );
   const [destinationResult, setDestinationResult] = useState<SearchResult | undefined>();
-  const [plannerOpen, setPlannerOpen] = useState(search.mode === 'explore');
+  const [plannerOpen, setPlannerOpen] = useState(
+    search.mode === 'explore' && !selectedPlace && !searchPin,
+  );
   const [routeShowHidden, setRouteShowHidden] = useState(true);
   const [routeContext, setRouteContext] = useState(() => usePreferences.getState().cityView);
   const [walkingRoute, setWalkingRoute] = useState<import('@hk/contracts').WalkingRoute | null>(
@@ -169,8 +171,8 @@ export function AtlasApp() {
   const activeRouteStation = routeStations.contexts.find(
     (context) => context.venue.id === routeStationId,
   );
-  function viewJourneyStep(step: JourneyStep) {
-    setFollowing(false);
+  function viewJourneyStep(step: JourneyStep, continueWalking = false) {
+    setFollowing(continueWalking);
     setBuildingPreview(null);
     if (step.map) {
       if (
@@ -183,18 +185,19 @@ export function AtlasApp() {
       setRouteStationId(step.map.venueId);
     } else {
       setRouteStationId(null);
-      issueCommand('route-overview');
+      if (!continueWalking) issueCommand('route-overview');
     }
   }
   function journeyGuide(viewedFloor?: { venueId: string; levelId: string }) {
     return journey.step ? (
       <JourneyGuide
         journey={journey}
+        compact={guiding}
         viewedFloor={viewedFloor}
         onView={() => viewJourneyStep(journey.step!)}
         onMove={(delta) => {
           const step = journey.move(delta);
-          if (step) viewJourneyStep(step);
+          if (step) viewJourneyStep(step, guiding);
         }}
       />
     ) : undefined;
@@ -245,7 +248,9 @@ export function AtlasApp() {
   }, []);
   const [command, setCommand] = useState<SceneCommand>();
   const [savedOnly, setSavedOnly] = useState(false);
-  const [sheetSnap, setSheetSnap] = useState<SheetSnap>('peek');
+  const [sheetSnap, setSheetSnap] = useState<SheetSnap>(
+    selectedPlace || searchPin ? 'half' : 'peek',
+  );
   const panelExpanded = sheetSnap !== 'peek';
   function setPanelExpanded(expanded: boolean) {
     setSheetSnap(expanded ? 'half' : 'peek');
@@ -258,12 +263,7 @@ export function AtlasApp() {
   const cityPresentation = usePreferences((state) => state.cityPresentation);
   const basemap = usePreferences((state) => state.basemap);
   const mapLanguage = usePreferences((state) => state.mapLanguage);
-  const setBasemap = usePreferences((state) => state.setBasemap);
-  const setMapLanguage = usePreferences((state) => state.setMapLanguage);
   const quality = usePreferences((state) => state.quality);
-  const setQuality = usePreferences((state) => state.setQuality);
-  const savedCount = usePreferences((state) => state.savedIds.length);
-  const weather = useWeather();
   const rain = useRainfall(search.mode === 'weather' && !windyActive);
   const mobile = useMobileLayout();
   function planFromStation(point: import('@hk/contracts').RouteEndpoint, role: 'start' | 'end') {
@@ -275,6 +275,10 @@ export function AtlasApp() {
     document.querySelector('.panel-scroll')?.scrollTo({ top: 0 });
   }
   const showPlaceDetail = Boolean(selectedPlace && search.mode === 'explore' && !plannerOpen);
+  const selectedDetailId = !plannerOpen ? (selectedPlace?.id ?? searchPin?.id) : undefined;
+  useEffect(() => {
+    if (mobile && selectedDetailId) document.querySelector('.panel-scroll')?.scrollTo({ top: 0 });
+  }, [mobile, selectedDetailId]);
 
   const selectPlace = useCallback(
     (place: Place) => {
@@ -321,7 +325,7 @@ export function AtlasApp() {
     setStationRouteSeed(null);
     setDestinationPreview(undefined);
     setRouteContext(cityView);
-    setWalkingRoute(null);
+    if (mode === 'explore' && browse) setWalkingRoute(null);
     haptic();
     void navigate({ search: (previous) => ({ ...previous, mode }) });
   }
@@ -362,7 +366,7 @@ export function AtlasApp() {
         q: undefined,
       }),
     });
-    setSheetSnap('peek');
+    setSheetSnap('half');
   }
   function closeSearchPin() {
     setSearchSelection(null);
@@ -392,7 +396,7 @@ export function AtlasApp() {
       onClickCapture={(event) => {
         if (mobile && (event.target as Element).closest('button')) haptic();
       }}
-      className={`atlas-app ${mobile ? 'mobile-map-app' : ''} ${panelExpanded ? 'panel-expanded' : ''} ${showPlaceDetail ? 'has-selection' : ''}`}
+      className={`atlas-app ${mobile ? 'mobile-map-app' : ''} ${panelExpanded ? 'panel-expanded' : ''} ${showPlaceDetail ? 'has-selection' : ''} ${guiding ? 'is-guiding' : ''}`}
     >
       <a className="skip-link" href="#discovery">
         Skip to places and information
@@ -414,7 +418,12 @@ export function AtlasApp() {
               key={id}
               className={search.mode === id ? 'active' : ''}
               aria-current={search.mode === id ? 'page' : undefined}
-              onClick={() => setMode(id)}
+              onClick={() => {
+                if (search.mode !== id) {
+                  setMode(id);
+                  setSheetSnap('half');
+                } else if (!guiding) setSheetSnap('full');
+              }}
             >
               <Icon size={17} />
               <span>{label}</span>
@@ -422,33 +431,6 @@ export function AtlasApp() {
           ))}
         </nav>
         <div className="header-actions">
-          <button
-            className="header-weather"
-            onClick={() => setMode('weather')}
-            aria-label="Open weather"
-          >
-            <CloudSun size={21} />
-            <strong>
-              {weather.data?.data?.temperature != null ? `${weather.data.data.temperature}°` : '—'}
-            </strong>
-            <span>
-              {weather.data?.mode === 'fixture'
-                ? 'Test snapshot'
-                : weather.data?.status === 'stale'
-                  ? 'Last report'
-                  : 'Hong Kong'}
-            </span>
-          </button>
-          <IconButton
-            label={`Saved places (${savedCount})`}
-            className={savedOnly ? 'is-saved' : ''}
-            onClick={() => {
-              setSavedOnly((previous) => !previous);
-              setMode('explore', true);
-            }}
-          >
-            <Bookmark size={19} fill={savedOnly ? 'currentColor' : 'none'} />
-          </IconButton>
           <IconButton
             label="Map settings"
             onClick={() => {
@@ -479,6 +461,7 @@ export function AtlasApp() {
             contexts={routeStations.contexts}
             selected={null}
             onSelect={(id) => {
+              setFollowing(false);
               setRouteStationId(id);
               if (!id) issueCommand('route-overview');
             }}
@@ -600,9 +583,15 @@ export function AtlasApp() {
                     setPanelExpanded(true);
                   }}
                   onRotationChange={setRotated}
-                  overlayState={mobile ? `${sheetSnap}:${plannerOpen}` : 'desktop'}
+                  overlayState={mobile ? `${sheetSnap}:${plannerOpen}:${guiding}` : 'desktop'}
                   frameAbove={
-                    mobile ? (indoorMap ? '.indoor-map-card' : '.discovery-panel') : undefined
+                    mobile
+                      ? indoorMap
+                        ? '.indoor-map-card'
+                        : guiding
+                          ? '.navigation-dock'
+                          : '.discovery-panel'
+                      : undefined
                   }
                   rainfall={
                     rain.publication
@@ -676,281 +665,331 @@ export function AtlasApp() {
         )}
         {(!windyActive || mobile) && (
           <>
-            <DiscoverySheet
-              mobile={mobile}
-              snap={sheetSnap}
-              onSnap={setSheetSnap}
-              mode={search.mode}
-              header={
-                plannerOpen ? (
-                  <button className="planner-sheet-summary" onClick={() => setSheetSnap('full')}>
-                    <Navigation size={18} />
-                    <span>
-                      {guiding
-                        ? 'Walking navigation'
-                        : walkingRoute
-                          ? `${Math.round(walkingRoute.distanceM)} m · Directions`
-                          : 'Where to?'}
-                    </span>
-                  </button>
-                ) : (
-                  <MobileSearch
-                    query={search.q ?? ''}
-                    category={search.category ?? 'all'}
-                    onFocus={() => setSheetSnap('full')}
-                    onQuery={(q) => {
-                      setMode('explore', true);
-                      void navigate({
-                        replace: true,
-                        search: (previous) => ({
-                          ...previous,
-                          mode: 'explore',
-                          q: q || undefined,
-                          place: undefined,
-                        }),
-                      });
-                    }}
-                    facility={search.facility}
-                    onFacility={selectFacilityCategory}
-                    onCategory={(category: Category | 'all') => {
-                      setSheetSnap('half');
-                      void navigate({
-                        search: (previous) => ({
-                          ...previous,
-                          mode: 'explore',
-                          place: undefined,
-                          category: category === 'all' ? undefined : category,
-                          facility: undefined,
-                        }),
-                      });
-                    }}
-                    onWeather={() => {
-                      setMode('weather');
-                      setSheetSnap('half');
-                    }}
-                  />
-                )
-              }
-            >
-              <div
-                className="panel-scroll"
-                onFocusCapture={(event) => {
-                  if (mobile && event.target.matches(':focus-visible')) setSheetSnap('full');
+            {guiding && walkingRoute && search.mode === 'explore' ? (
+              <WalkingGuidance
+                journeyGuidance={journeyGuide()}
+                fix={guidance.fix}
+                onRefreshLocation={guidance.refreshLocation}
+                route={walkingRoute}
+                progress={guidance.progress}
+                error={
+                  recalculation.error ||
+                  guidance.error ||
+                  (!guidance.fix ? 'Finding your location…' : '')
+                }
+                onRecalculate={() => void recalculation.recalculate(guidance.fix)}
+                recalculating={recalculation.busy}
+                following={following}
+                onFollow={() => setFollowing(true)}
+                onStop={() => {
+                  setGuiding(false);
+                  setSheetSnap('half');
                 }}
+              />
+            ) : (
+              <DiscoverySheet
+                mobile={mobile}
+                snap={sheetSnap}
+                onSnap={setSheetSnap}
+                mode={search.mode}
+                header={
+                  search.mode === 'explore' && !plannerOpen && (showPlaceDetail || searchPin) ? (
+                    <button
+                      className="planner-sheet-summary selection-sheet-summary"
+                      onClick={showPlaceDetail ? clearSelection : closeSearchPin}
+                    >
+                      <ArrowLeft size={20} />
+                      <span>Back to places</span>
+                    </button>
+                  ) : search.mode === 'explore' && plannerOpen ? (
+                    <button
+                      className="planner-sheet-summary"
+                      onClick={() => setSheetSnap(sheetSnap === 'full' ? 'peek' : 'full')}
+                    >
+                      <Navigation size={18} />
+                      <span>
+                        {guiding
+                          ? 'Walking navigation'
+                          : walkingRoute
+                            ? 'Your walking route'
+                            : 'Where to?'}
+                      </span>
+                      <ChevronUp size={18} />
+                    </button>
+                  ) : search.mode !== 'explore' ? (
+                    <button
+                      className="planner-sheet-summary"
+                      onClick={() => setSheetSnap(sheetSnap === 'full' ? 'peek' : 'full')}
+                    >
+                      {search.mode === 'weather' ? (
+                        <CloudSun size={20} />
+                      ) : (
+                        <TrainFront size={20} />
+                      )}
+                      <span>
+                        {search.mode === 'weather'
+                          ? windyActive
+                            ? 'Weather layers'
+                            : 'Local observations'
+                          : transportLayer === 'mtr'
+                            ? 'Train arrivals'
+                            : transportLayer === 'buses'
+                              ? 'Bus arrivals'
+                              : 'Traffic cameras'}
+                      </span>
+                      <ChevronUp size={18} />
+                    </button>
+                  ) : (
+                    <MobileSearch
+                      query={search.q ?? ''}
+                      category={search.category ?? 'all'}
+                      onFocus={() => setSheetSnap('full')}
+                      onQuery={(q) => {
+                        setMode('explore', true);
+                        void navigate({
+                          replace: true,
+                          search: (previous) => ({
+                            ...previous,
+                            mode: 'explore',
+                            q: q || undefined,
+                            place: undefined,
+                          }),
+                        });
+                      }}
+                      facility={search.facility}
+                      onFacility={selectFacilityCategory}
+                      onCategory={(category: Category | 'all') => {
+                        setSheetSnap('half');
+                        void navigate({
+                          search: (previous) => ({
+                            ...previous,
+                            mode: 'explore',
+                            place: undefined,
+                            category: category === 'all' ? undefined : category,
+                            facility: undefined,
+                          }),
+                        });
+                      }}
+                    />
+                  )
+                }
               >
-                {search.mode === 'explore' && (
-                  <>
-                    {guiding && walkingRoute ? (
-                      <WalkingGuidance
-                        journeyGuidance={journeyGuide()}
-                        route={walkingRoute}
-                        progress={guidance.progress}
-                        error={
-                          recalculation.error ||
-                          guidance.error ||
-                          (!guidance.fix ? 'Finding your location…' : '')
-                        }
-                        onRecalculate={() => void recalculation.recalculate(guidance.fix)}
-                        recalculating={recalculation.busy}
-                        following={following}
-                        onFollow={() => setFollowing(true)}
-                        onStop={() => {
-                          setGuiding(false);
-                          setSheetSnap('half');
-                        }}
-                      />
-                    ) : !plannerOpen ? (
-                      <button
-                        className="walking-submit"
-                        onClick={() => {
-                          setStationRouteSeed(null);
-                          setPlannerOpen(true);
-                          setSheetSnap('full');
-                          document.querySelector('.panel-scroll')?.scrollTo({ top: 0 });
-                        }}
-                      >
-                        Plan a walk
-                      </button>
-                    ) : (
-                      <WalkingPlanner
-                        onExpandComparison={() => {
-                          if (mobile) setSheetSnap('full');
-                        }}
-                        journeyGuidance={journeyGuide()}
-                        key={
-                          stationRouteSeed
-                            ? `${stationRouteSeed.role}:${stationRouteSeed.point.name}:${stationRouteSeed.point.lat}:${stationRouteSeed.point.lng}`
-                            : 'walking'
-                        }
-                        onEndpointPreview={(point, result) => {
-                          setDestinationPreview(point);
-                          setDestinationResult(result);
-                        }}
-                        stationContexts={routeStations.contexts}
-                        onInspectStation={setRouteStationId}
-                        stationLoading={routeStations.loading}
-                        stationUnavailable={routeStations.unavailable}
-                        initialRoute={walkingRoute}
-                        origin={
-                          walkingRoute?.request.start ??
-                          (stationRouteSeed?.role === 'start' ? stationRouteSeed.point : undefined)
-                        }
-                        contextView={routeContext}
-                        showHidden={routeShowHidden}
-                        onShowHidden={setRouteShowHidden}
-                        onContextView={setRouteContext}
-                        onPickMap={(select) => {
-                          setRoutePicker({ select });
-                          setRoutePickError('');
-                          setSheetSnap('peek');
-                        }}
-                        onIndoorMap={showIndoorMap}
-                        destination={
-                          walkingRoute?.request.end ??
-                          (stationRouteSeed
-                            ? stationRouteSeed.role === 'end'
-                              ? stationRouteSeed.point
-                              : undefined
-                            : searchPin?.location
-                              ? { ...searchPin.location, name: searchPin.name }
-                              : selectedPlace
-                                ? {
-                                    lat: selectedPlace.lat,
-                                    lng: selectedPlace.lng,
-                                    name: selectedPlace.name,
-                                  }
-                                : undefined)
-                        }
-                        onStart={() => {
-                          const orientation =
-                            window.DeviceOrientationEvent as typeof DeviceOrientationEvent & {
-                              requestPermission?: () => Promise<string>;
-                            };
-                          if (orientation?.requestPermission)
-                            void orientation.requestPermission().catch(() => undefined);
-                          setGuiding(true);
-                          setFollowing(true);
-                          setSheetSnap('half');
-                        }}
-                        onRoute={(route) => {
-                          setWalkingRoute(route);
-                          if (route && mobile) setSheetSnap('half');
-                        }}
-                        onClose={() => {
-                          setRoutePicker(null);
-                          setPlannerOpen(false);
-                          setWalkingRoute(null);
-                        }}
-                      />
-                    )}
-                  </>
-                )}
-                {mobile && windyActive && <div ref={setWindyControls} />}
-                {mobile && showPlaceDetail && selectedPlace && (
-                  <PlaceDetail
-                    key={selectedPlace.id}
-                    place={selectedPlace}
-                    onClose={clearSelection}
-                    onRoutePoint={planFromStation}
-                    onTransit={() => setMode('transport')}
-                  />
-                )}
-                {searchPin && search.mode === 'explore' && !plannerOpen && (
-                  <SelectedSearchPlace
-                    key={searchPin.id}
-                    result={searchPin}
-                    onClose={closeSearchPin}
-                    onDirections={() =>
-                      planFromStation({ ...searchPin.location!, name: searchPin.name }, 'end')
-                    }
-                    onNearby={() => {
-                      void navigate({
-                        search: (previous) => ({
-                          ...previous,
-                          q: `nearby: ${searchPin.location!.lat}, ${searchPin.location!.lng}`,
-                        }),
-                      });
+                <div
+                  className="panel-scroll"
+                  onFocusCapture={(event) => {
+                    if (
+                      mobile &&
+                      event.target.matches(
+                        'input:focus-visible, button:focus-visible, select:focus-visible, a:focus-visible, summary:focus-visible',
+                      )
+                    )
                       setSheetSnap('full');
-                    }}
-                  />
-                )}
-                {search.mode === 'transport' && (
-                  <div className="transport-tabs" role="group" aria-label="Transport layer">
-                    <button
-                      aria-pressed={transportLayer === 'mtr'}
-                      onClick={() => setTransportLayer('mtr')}
-                    >
-                      MTR trains
-                    </button>
-                    <button
-                      aria-pressed={transportLayer === 'buses'}
-                      onClick={() => setTransportLayer('buses')}
-                    >
-                      Buses
-                    </button>
-                    <button
-                      aria-pressed={transportLayer === 'cameras'}
-                      onClick={() => setTransportLayer('cameras')}
-                    >
-                      Traffic cameras
-                    </button>
-                  </div>
-                )}
-                {windyActive || (plannerOpen && search.mode === 'explore') ? null : search.mode ===
-                  'explore' ? (
-                  <ExplorePanel
-                    facility={search.facility}
-                    facilities={facilities}
-                    onFacility={selectFacilityCategory}
-                    onSearchSelect={selectSearchResult}
-                    selectedId={search.place}
-                    onSelect={selectPlace}
-                    savedOnly={savedOnly}
-                    onToggleSavedOnly={() => setSavedOnly((previous) => !previous)}
-                    query={search.q ?? ''}
-                    category={search.category ?? 'all'}
-                    onQuery={(q) => {
-                      void navigate({
-                        replace: true,
-                        search: (previous) => ({ ...previous, q: q || undefined }),
-                      });
-                    }}
-                    onCategory={(category) => {
-                      void navigate({
-                        search: (previous) => ({
-                          ...previous,
-                          category: category === 'all' ? undefined : category,
-                          facility: undefined,
-                        }),
-                      });
-                    }}
-                  />
-                ) : search.mode === 'weather' ? (
-                  <>
-                    <button className="windy-hko" onClick={() => setWeatherView('windy')}>
-                      Windy forecast map <ArrowUpRight size={16} />
-                    </button>
-                    <WeatherPanel rain={rain} />
-                  </>
-                ) : transportLayer === 'buses' ? (
-                  <BusesPanel
-                    bus={buses}
-                    area={busArea}
-                    onSearchArea={() => issueCommand('search-bus-area')}
-                  />
-                ) : transportLayer === 'cameras' ? (
-                  <CamerasPanel query={cameras} selected={selectedCamera} onSelect={selectCamera} />
-                ) : (
-                  <TransportPanel
-                    selection={transitSelection}
-                    onSelect={selectStation}
-                    animation={trainAnimation}
-                    onAnimation={setTrainAnimation}
-                    pickedTrain={pickedTrain}
-                  />
-                )}
-              </div>
-            </DiscoverySheet>
+                  }}
+                >
+                  {search.mode === 'explore' && (
+                    <>
+                      {!plannerOpen && !showPlaceDetail && !searchPin ? (
+                        <button
+                          className="walking-submit"
+                          onClick={() => {
+                            setStationRouteSeed(null);
+                            setPlannerOpen(true);
+                            setSheetSnap('full');
+                            document.querySelector('.panel-scroll')?.scrollTo({ top: 0 });
+                          }}
+                        >
+                          Plan a walk
+                        </button>
+                      ) : plannerOpen ? (
+                        <WalkingPlanner
+                          onExpandComparison={() => {
+                            if (mobile) setSheetSnap('full');
+                          }}
+                          key={
+                            stationRouteSeed
+                              ? `${stationRouteSeed.role}:${stationRouteSeed.point.name}:${stationRouteSeed.point.lat}:${stationRouteSeed.point.lng}`
+                              : 'walking'
+                          }
+                          onEndpointPreview={(point, result) => {
+                            setDestinationPreview(point);
+                            setDestinationResult(result);
+                          }}
+                          stationContexts={routeStations.contexts}
+                          onInspectStation={setRouteStationId}
+                          stationLoading={routeStations.loading}
+                          stationUnavailable={routeStations.unavailable}
+                          initialRoute={walkingRoute}
+                          origin={
+                            walkingRoute?.request.start ??
+                            (stationRouteSeed?.role === 'start'
+                              ? stationRouteSeed.point
+                              : undefined)
+                          }
+                          showHidden={routeShowHidden}
+                          onShowHidden={setRouteShowHidden}
+                          onPickMap={(select) => {
+                            setRoutePicker({ select });
+                            setRoutePickError('');
+                            setSheetSnap('peek');
+                          }}
+                          onIndoorMap={showIndoorMap}
+                          destination={
+                            walkingRoute?.request.end ??
+                            (stationRouteSeed
+                              ? stationRouteSeed.role === 'end'
+                                ? stationRouteSeed.point
+                                : undefined
+                              : searchPin?.location
+                                ? { ...searchPin.location, name: searchPin.name }
+                                : selectedPlace
+                                  ? {
+                                      lat: selectedPlace.lat,
+                                      lng: selectedPlace.lng,
+                                      name: selectedPlace.name,
+                                    }
+                                  : undefined)
+                          }
+                          onStart={() => {
+                            const orientation =
+                              window.DeviceOrientationEvent as typeof DeviceOrientationEvent & {
+                                requestPermission?: () => Promise<string>;
+                              };
+                            if (orientation?.requestPermission)
+                              void orientation.requestPermission().catch(() => undefined);
+                            setGuiding(true);
+                            setFollowing(true);
+                            setSheetSnap('half');
+                          }}
+                          onRoute={(route) => {
+                            setWalkingRoute(route);
+                            if (route && mobile) setSheetSnap('half');
+                          }}
+                          onClose={() => {
+                            setRoutePicker(null);
+                            setPlannerOpen(false);
+                            setWalkingRoute(null);
+                          }}
+                        />
+                      ) : null}
+                    </>
+                  )}
+                  {mobile && windyActive && <div ref={setWindyControls} />}
+                  {mobile && showPlaceDetail && selectedPlace && (
+                    <PlaceDetail
+                      key={selectedPlace.id}
+                      place={selectedPlace}
+                      onClose={clearSelection}
+                      onRoutePoint={planFromStation}
+                      onTransit={() => setMode('transport')}
+                    />
+                  )}
+                  {searchPin && search.mode === 'explore' && !plannerOpen && (
+                    <SelectedSearchPlace
+                      key={searchPin.id}
+                      result={searchPin}
+                      onClose={closeSearchPin}
+                      onDirections={() =>
+                        planFromStation({ ...searchPin.location!, name: searchPin.name }, 'end')
+                      }
+                      onNearby={() => {
+                        void navigate({
+                          search: (previous) => ({
+                            ...previous,
+                            q: `nearby: ${searchPin.location!.lat}, ${searchPin.location!.lng}`,
+                            pinLat: undefined,
+                            pinLng: undefined,
+                            place: undefined,
+                          }),
+                        });
+                        setSheetSnap('full');
+                      }}
+                    />
+                  )}
+                  {search.mode === 'transport' && (
+                    <div className="transport-tabs" role="group" aria-label="Transport layer">
+                      <button
+                        aria-pressed={transportLayer === 'mtr'}
+                        onClick={() => setTransportLayer('mtr')}
+                      >
+                        MTR trains
+                      </button>
+                      <button
+                        aria-pressed={transportLayer === 'buses'}
+                        onClick={() => setTransportLayer('buses')}
+                      >
+                        Buses
+                      </button>
+                      <button
+                        aria-pressed={transportLayer === 'cameras'}
+                        onClick={() => setTransportLayer('cameras')}
+                      >
+                        Traffic cameras
+                      </button>
+                    </div>
+                  )}
+                  {windyActive ||
+                  (search.mode === 'explore' &&
+                    (plannerOpen ||
+                      (mobile && (showPlaceDetail || searchPin)))) ? null : search.mode ===
+                    'explore' ? (
+                    <ExplorePanel
+                      facility={search.facility}
+                      facilities={facilities}
+                      onFacility={selectFacilityCategory}
+                      onSearchSelect={selectSearchResult}
+                      selectedId={search.place}
+                      onSelect={selectPlace}
+                      savedOnly={savedOnly}
+                      onToggleSavedOnly={() => setSavedOnly((previous) => !previous)}
+                      query={search.q ?? ''}
+                      category={search.category ?? 'all'}
+                      onQuery={(q) => {
+                        void navigate({
+                          replace: true,
+                          search: (previous) => ({ ...previous, q: q || undefined }),
+                        });
+                      }}
+                      onCategory={(category) => {
+                        void navigate({
+                          search: (previous) => ({
+                            ...previous,
+                            category: category === 'all' ? undefined : category,
+                            facility: undefined,
+                          }),
+                        });
+                      }}
+                    />
+                  ) : search.mode === 'weather' ? (
+                    <>
+                      <button className="windy-hko" onClick={() => setWeatherView('windy')}>
+                        Windy forecast map <ArrowUpRight size={16} />
+                      </button>
+                      <WeatherPanel rain={rain} />
+                    </>
+                  ) : transportLayer === 'buses' ? (
+                    <BusesPanel
+                      bus={buses}
+                      area={busArea}
+                      onSearchArea={() => issueCommand('search-bus-area')}
+                    />
+                  ) : transportLayer === 'cameras' ? (
+                    <CamerasPanel
+                      query={cameras}
+                      selected={selectedCamera}
+                      onSelect={selectCamera}
+                    />
+                  ) : (
+                    <TransportPanel
+                      selection={transitSelection}
+                      onSelect={selectStation}
+                      animation={trainAnimation}
+                      onAnimation={setTrainAnimation}
+                      pickedTrain={pickedTrain}
+                    />
+                  )}
+                </div>
+              </DiscoverySheet>
+            )}
             {indoorMap && search.mode === 'explore' && (
               <section className="indoor-map-card" aria-label="Choose indoor point on map">
                 <strong>
@@ -1056,23 +1095,6 @@ export function AtlasApp() {
                 </section>
               </>
             )}
-            {walkingRoute &&
-              !guiding &&
-              (!mobile || sheetSnap === 'peek') &&
-              !routePicker &&
-              !indoorMap &&
-              search.mode === 'explore' && (
-                <button className="search-pin-preview" onClick={() => setSheetSnap('full')}>
-                  {guiding
-                    ? 'Walking navigation'
-                    : routeContext
-                      ? '3D walking route'
-                      : 'Walking route'}{' '}
-                  · {Math.round(walkingRoute.distanceM)} m ·{' '}
-                  {Math.max(1, Math.round(walkingRoute.durationMinutes))} min · Directions ↑
-                </button>
-              )}
-
             {searchPin && search.mode === 'explore' && !plannerOpen && (
               <button className="search-pin-preview" onClick={() => setSheetSnap('half')}>
                 {searchPin.name} · Details ↑
@@ -1085,54 +1107,13 @@ export function AtlasApp() {
                 <span className="coordinate-label">22.28° N · 114.16° E</span>
               </div>
             )}
-            {!plannerOpen && (
-              <div className="basemap-controls" aria-label="Map layers">
-                <CityViewControl
-                  value={plannerOpen && search.mode === 'explore' ? routeContext : undefined}
-                  onChange={plannerOpen && search.mode === 'explore' ? setRouteContext : undefined}
-                />
-                <label>
-                  <span>Map style</span>
-                  <select
-                    aria-label="Map style"
-                    value={basemap}
-                    onChange={(e) => setBasemap(e.target.value as typeof basemap)}
-                  >
-                    <option value="landsd-map">Map</option>
-                    <option value="landsd-aerial">Aerial</option>
-                    <option value="openstreetmap">OSM</option>
-                  </select>
-                </label>
-                {basemap !== 'openstreetmap' && (
-                  <label>
-                    <span>Map labels</span>
-                    <select
-                      aria-label="Map label language"
-                      value={mapLanguage}
-                      onChange={(e) => setMapLanguage(e.target.value as typeof mapLanguage)}
-                    >
-                      <option value="en">English</option>
-                      <option value="tc">繁體中文</option>
-                    </select>
-                  </label>
-                )}
-              </div>
-            )}
-            {!mobile && !windyActive && (
-              <MapControls command={issueCommand} quality={quality} onQuality={setQuality} />
-            )}
-            {mobile && !windyActive && (
+            {!mobile && !windyActive && <MapControls command={issueCommand} />}
+            {mobile && !windyActive && !guiding && (
               <div className="mobile-map-actions" aria-label="Map actions">
                 <IconButton
-                  label={guiding ? 'Recentre navigation' : 'Locate me'}
+                  label="Locate me"
                   onClick={() => {
                     haptic();
-                    if (guiding) {
-                      // Reuse the walking watcher and camera instead of starting a second fix/flight.
-                      setFollowing(true);
-                      setSheetSnap('peek');
-                      return;
-                    }
                     if (!navigator.geolocation) {
                       setLocationMessage('Location is not available in this browser.');
                       return;

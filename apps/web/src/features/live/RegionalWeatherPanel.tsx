@@ -10,12 +10,8 @@ export function RegionalWeatherPanel() {
   const selected = observations?.find((item) => item.station === station);
   return (
     <section className="regional-weather" aria-label="Regional weather observations">
-      <span className="eyebrow">MEASURED AROUND HONG KONG</span>
-      <h2>Weather near you.</h2>
-      <p>
-        Choose an observation station. Readings describe that site, not every street in its
-        district.
-      </p>
+      <h2>Station observations</h2>
+      <p>Measured at the selected station.</p>
       <label className="field-label" htmlFor="weather-station">
         Observation station
       </label>
@@ -72,10 +68,13 @@ export function RegionalWeatherPanel() {
                   ? 'Latest regional observations'
                   : 'Source update delayed'}
         </span>
-        <p>
-          Fetched: {hkSourceTime(query.data?.fetchedAt)}. Temperature and humidity retain their own
-          observation times.
-        </p>
+        <details>
+          <summary>Source details</summary>
+          <p>
+            Fetched: {hkSourceTime(query.data?.fetchedAt)}. Temperature and humidity retain their
+            own observation times. Readings describe this station, not every street nearby.
+          </p>
+        </details>
         <button
           className="text-button"
           onClick={() => void query.refetch()}

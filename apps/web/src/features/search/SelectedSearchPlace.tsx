@@ -1,7 +1,9 @@
+import { Bookmark, Check, X } from 'lucide-react';
 import { BuildingIndoorButton } from '../navigation/BuildingIndoorButton';
 import { useState } from 'react';
 import type { SearchResult } from '@hk/contracts';
 import { savePin } from './SavedPins';
+
 export function SelectedSearchPlace({
   result,
   onClose,
@@ -14,29 +16,44 @@ export function SelectedSearchPlace({
   onDirections: () => void;
 }) {
   const [message, setMessage] = useState('');
+  const [saved, setSaved] = useState(false);
   if (!result.location) return null;
   const coordinates = `${result.location.lat}, ${result.location.lng}`;
   return (
     <article className="search-detail selected-search-place" aria-label="Selected search place">
-      <button className="text-button" onClick={onClose}>
-        Close pin ×
-      </button>
-      <h2>{result.sharedPlace?.name ?? result.name}</h2>
-      {result.sharedPlace && (
-        <a href={result.sharedPlace.url} target="_blank" rel="noreferrer">
-          View shared place in Google Maps ↗
-        </a>
-      )}
+      <div className="selected-place-heading">
+        <h2>{result.sharedPlace?.name ?? result.name}</h2>
+        <button className="icon-button" aria-label="Close selected place" onClick={onClose}>
+          <X size={20} />
+        </button>
+      </div>
       {result.nameZh && <p>{result.nameZh}</p>}
-      <p>{result.address}</p>
-      <small>
-        {result.source === 'user'
-          ? 'User-supplied pin'
-          : `${result.source} · approximate reference location, not an entrance`}
-      </small>
-      <p>{coordinates}</p>
+      {result.address && <p>{result.address}</p>}
+      <small>Reference location · confirm the entrance</small>
+      <button className="walking-submit" onClick={onDirections}>
+        Directions
+      </button>
+      <div className="pin-actions">
+        <button
+          onClick={() => {
+            const success = savePin(result);
+            setSaved(success);
+            setMessage(success ? 'Pin saved on this device.' : 'Could not save on this device.');
+          }}
+        >
+          {saved ? <Check size={16} /> : <Bookmark size={16} />}
+          {saved ? 'Saved' : 'Save pin'}
+        </button>
+        <button onClick={onNearby}>Search nearby</button>
+      </div>
+      <BuildingIndoorButton
+        key={result.id}
+        name={result.sharedPlace?.name ?? result.name}
+        nameZh={result.nameZh}
+      />
       {result.facility && (
-        <>
+        <details>
+          <summary>Venue details</summary>
           <p>{result.facility.details}</p>
           {result.facility.detailsZh && <p>{result.facility.detailsZh}</p>}
           {result.facility.locationNote && (
@@ -49,45 +66,26 @@ export function SelectedSearchPlace({
             {result.facility.hours || 'Not supplied — check the official venue page.'}
           </p>
           {result.facility.phone && <p>Telephone: {result.facility.phone}</p>}
-          <p className="search-provenance">
-            Source updated: {result.sourceDate?.slice(0, 10) ?? 'Not supplied'} · downloaded{' '}
-            {result.facility.fetchedAt.slice(0, 10)}. Reference coordinates, not a confirmed
-            entrance or floor. No live availability.
-          </p>
-          <p>
-            <a
-              href={result.facility.website ?? result.facility.sourceUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Official venue information ↗
-            </a>
-            {' · '}
-            <a href={result.facility.sourceUrl} target="_blank" rel="noreferrer">
-              Source dataset ↗
-            </a>
-          </p>
-        </>
+          <a
+            className="text-button"
+            href={result.facility.website ?? result.facility.sourceUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Official venue information ↗
+          </a>
+        </details>
       )}
-      <button className="walking-submit" onClick={onDirections}>
-        Directions
-      </button>
-      <BuildingIndoorButton
-        key={result.id}
-        name={result.sharedPlace?.name ?? result.name}
-        nameZh={result.nameZh}
-      />
-      <div className="pin-actions">
+      <details>
+        <summary>Location & source</summary>
+        <p>
+          {result.source === 'user'
+            ? 'User-supplied pin'
+            : `${result.source} · approximate reference location, not an entrance`}
+        </p>
+        <p>{coordinates}</p>
         <button
-          onClick={() =>
-            setMessage(
-              savePin(result) ? 'Pin saved on this device.' : 'Could not save on this device.',
-            )
-          }
-        >
-          Save pin
-        </button>
-        <button
+          className="text-button"
           onClick={() => {
             if (!navigator.clipboard) {
               setMessage('Copy unavailable. Select the coordinates above.');
@@ -101,9 +99,37 @@ export function SelectedSearchPlace({
         >
           Copy coordinates
         </button>
-        <button onClick={onNearby}>Search nearby</button>
-      </div>
-      <p role="status">{message}</p>
+        {result.facility && (
+          <>
+            <p>
+              Source updated: {result.sourceDate?.slice(0, 10) ?? 'Not supplied'} · downloaded{' '}
+              {result.facility.fetchedAt.slice(0, 10)}. No live availability.
+            </p>
+            <a
+              className="text-button"
+              href={result.facility.sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Source dataset ↗
+            </a>
+          </>
+        )}
+        {result.sharedPlace && (
+          <>
+            <p>{result.sharedPlace.address}</p>
+            <a
+              className="text-button"
+              href={result.sharedPlace.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              View shared place in Google Maps ↗
+            </a>
+          </>
+        )}
+      </details>
+      {message && <p role="status">{message}</p>}
     </article>
   );
 }

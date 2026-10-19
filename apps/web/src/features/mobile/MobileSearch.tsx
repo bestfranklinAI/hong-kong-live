@@ -10,7 +10,6 @@ export function MobileSearch({
   category,
   onQuery,
   onCategory,
-  onWeather,
   onFocus,
 }: {
   facility?: FacilityCategory;
@@ -19,7 +18,6 @@ export function MobileSearch({
   category: string;
   onQuery: (query: string) => void;
   onCategory: (category: Category | 'all') => void;
-  onWeather: () => void;
   onFocus: () => void;
 }) {
   return (
@@ -27,8 +25,8 @@ export function MobileSearch({
       <div className="mobile-search" data-no-drag>
         <Search size={18} aria-hidden="true" />
         <input
-          aria-label="Search places, transport, sensors"
-          placeholder="Place, coordinates or Google Maps link…"
+          aria-label="Search places"
+          placeholder="Search places or paste a map link"
           value={query}
           onFocus={onFocus}
           onChange={(e) => onQuery(e.target.value)}
@@ -40,25 +38,9 @@ export function MobileSearch({
         )}
       </div>
       <div className="mobile-categories" aria-label="Quick categories" data-no-drag>
-        {(
-          [
-            ['all', 'All'],
-            ['culture', 'Arts'],
-            ['waterfront', 'Waterfront'],
-            ['park', 'Parks'],
-          ] as const
-        ).map(([id, label]) => (
-          <button
-            key={id}
-            aria-pressed={!facility && category === id}
-            onClick={() => {
-              haptic();
-              onCategory(id);
-            }}
-          >
-            {label}
-          </button>
-        ))}
+        <button aria-pressed={!facility && category === 'all'} onClick={() => onCategory('all')}>
+          Places
+        </button>
         {(['park', 'culture', 'sports', 'library', 'refill'] as const).map((value) => (
           <button
             key={value}
@@ -71,14 +53,6 @@ export function MobileSearch({
             {facilityLabels[value]}
           </button>
         ))}
-        <button
-          onClick={() => {
-            haptic();
-            onWeather();
-          }}
-        >
-          Weather
-        </button>
       </div>
     </>
   );

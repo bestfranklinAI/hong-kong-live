@@ -49,21 +49,7 @@ export function FacilityPanel({
   return (
     <section className="unified-search" aria-label={facilityLabels[category]}>
       <h2>{facilityLabels[category]}</h2>
-      <p className="search-notice">
-        {rows.length} location records · select a marker or a place below. Zoom in to separate
-        grouped markers.
-      </p>
-      <p className="search-notice">
-        {category === 'library'
-          ? 'Includes mobile-library stops; check their service schedule.'
-          : category === 'sports'
-            ? 'Sports centres only. Court bookings and live availability are not included.'
-            : category === 'park'
-              ? 'Official LCSD parks, zoos and gardens. Source hours are schedules, not live opening status.'
-              : category === 'culture'
-                ? 'Official LCSD museums. Check the source for exhibitions, admission and opening arrangements.'
-                : 'Public refill points at LCSD venues and AFCD country parks. Working status is not reported.'}
-      </p>
+      <p className="search-notice">{rows.length} locations</p>
       {loading && <p role="status">Loading official facilities…</p>}
       {(failed || (!loading && !sources.length)) && (
         <p role="status">
@@ -73,14 +59,33 @@ export function FacilityPanel({
           </button>
         </p>
       )}
-      {sources.map((source) => (
-        <p className="search-provenance" key={source.dataset}>
-          {source.title}: {source.count} ·{' '}
-          {source.status === 'unavailable'
-            ? 'Preparing or unavailable'
-            : `${source.status === 'stale' ? 'Last available snapshot · ' : ''}checked ${source.fetchedAt?.slice(0, 10)}`}
+      {!loading && sources.some((source) => source.status !== 'ready') && (
+        <p className="search-notice" role="status">
+          Some facility sources are delayed or unavailable. Check coverage details.
         </p>
-      ))}
+      )}
+      <details>
+        <summary>Coverage & source</summary>
+        <p className="search-notice">
+          {category === 'library'
+            ? 'Includes mobile-library stops; check their service schedule.'
+            : category === 'sports'
+              ? 'Sports centres only. Court bookings and live availability are not included.'
+              : category === 'park'
+                ? 'Official LCSD parks, zoos and gardens. Source hours are schedules, not live opening status.'
+                : category === 'culture'
+                  ? 'Official LCSD museums. Check the source for exhibitions, admission and opening arrangements.'
+                  : 'Public refill points at LCSD venues and AFCD country parks. Working status is not reported.'}
+        </p>
+        {sources.map((source) => (
+          <p className="search-provenance" key={source.dataset}>
+            {source.title}: {source.count} ·{' '}
+            {source.status === 'unavailable'
+              ? 'Preparing or unavailable'
+              : `${source.status === 'stale' ? 'Last available snapshot · ' : ''}checked ${source.fetchedAt?.slice(0, 10)}`}
+          </p>
+        ))}
+      </details>
       {rows.slice(0, limit).map((row) => (
         <button className="search-result" key={row.id} onClick={() => onSelect(row)}>
           <span>

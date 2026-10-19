@@ -90,10 +90,7 @@ export function NearbyStops({
       >
         Search this map area
       </button>
-      <p className="catalog-note">
-        Move the map first. Up to 20 stops within 800 m of its centre. Distances are straight-line,
-        not walking routes. Search again after moving the map to update results.
-      </p>
+      <p className="catalog-note">Stops within 800 m of the map centre · straight-line distance.</p>
       {citybus && feed && (
         <p className="catalog-note">
           Discovery snapshot: {new Date(feed.fetchedAt).toLocaleDateString('en-HK')}. Routes and

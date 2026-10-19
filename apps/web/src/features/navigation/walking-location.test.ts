@@ -91,3 +91,55 @@ it('keeps fixes chronological, clears a denied fix, and recovers on a new positi
   expect(fix).toHaveBeenLastCalledWith(expect.objectContaining({ timestamp: Date.now() }));
   stop();
 });
+
+it('waits for a precise fresh origin and releases the watch after acquisition or cancellation', async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2026-10-19T08:00:00Z'));
+  const { requestWalkingLocation } = await import('./walking-location');
+  let success: PositionCallback = () => {};
+  const geo = {
+    watchPosition: vi.fn((ok: PositionCallback) => {
+      success = ok;
+      return 9;
+    }),
+    clearWatch: vi.fn(),
+  };
+  const position = (accuracy: number, age = 0) =>
+    ({
+      timestamp: Date.now() - age,
+      coords: { latitude: 22.28, longitude: 114.16, accuracy, speed: 0, heading: null },
+    }) as GeolocationPosition;
+  const result = requestWalkingLocation(geo as unknown as Geolocation);
+  let acquired = false;
+  void result.then(() => {
+    acquired = true;
+  });
+  success(position(800));
+  success(position(10, 20000));
+  await Promise.resolve();
+  expect(acquired).toBe(false);
+  success(position(15));
+  await expect(result).resolves.toMatchObject({ accuracy: 15 });
+  expect(geo.clearWatch).toHaveBeenCalledExactlyOnceWith(9);
+  const controller = new AbortController();
+  const cancelled = requestWalkingLocation(geo as unknown as Geolocation, controller.signal);
+  const rejected = expect(cancelled).rejects.toMatchObject({ name: 'AbortError' });
+  controller.abort();
+  await rejected;
+  expect(geo.clearWatch).toHaveBeenCalledTimes(2);
+});
+
+it('ends an imprecise origin acquisition with an actionable error instead of routing from it', async () => {
+  vi.useFakeTimers();
+  const { requestWalkingLocation } = await import('./walking-location');
+  const clearWatch = vi.fn();
+  const result = requestWalkingLocation({
+    watchPosition: () => 3,
+    clearWatch,
+  } as unknown as Geolocation);
+  const rejected = expect(result).rejects.toThrow('choose a starting point');
+  await vi.advanceTimersByTimeAsync(20000);
+  await rejected;
+  expect(clearWatch).toHaveBeenCalledExactlyOnceWith(3);
+  expect(vi.getTimerCount()).toBe(0);
+});

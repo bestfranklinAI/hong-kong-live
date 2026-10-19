@@ -1,6 +1,6 @@
 import { ArrowLeft, ArrowRight, Check, Map } from 'lucide-react';
 import { NavigationIcon } from './NavigationIcon';
-import { instructionTransition } from './navigation-symbols';
+import { instructionSymbol } from './navigation-symbols';
 import type { useJourneyGuidance } from './use-journey-guidance';
 
 /** One manual cursor is shared by the planner, walking card and indoor plans. */
@@ -9,10 +9,12 @@ export function JourneyGuide({
   onView,
   onMove,
   viewedFloor,
+  compact = false,
 }: {
   journey: ReturnType<typeof useJourneyGuidance>;
   onView: () => void;
   onMove: (delta: -1 | 1) => void;
+  compact?: boolean;
   viewedFloor?: { venueId: string; levelId: string };
 }) {
   const { step, steps, index, confirmed, complete, canContinue } = journey;
@@ -21,24 +23,29 @@ export function JourneyGuide({
   const viewingFloor =
     !!map?.levelId && map.venueId === viewedFloor?.venueId && map.levelId === viewedFloor?.levelId;
   return (
-    <section className="journey-guide" aria-label="Continuous journey guidance">
+    <section
+      className={`journey-guide ${compact ? 'journey-guide-compact' : ''}`}
+      aria-label="Continuous journey guidance"
+    >
       <div className="journey-instruction" aria-live="polite" aria-atomic="true">
-        <NavigationIcon kind={instructionTransition(step.instruction.text) ?? 'walk'} />
+        <NavigationIcon kind={instructionSymbol(step.instruction.text)} />
         <div>
           <small>
             {complete
               ? 'Journey marked complete · manually'
-              : `Step ${index + 1} of ${steps.length} · manual progress`}
+              : `Step ${index + 1} of ${steps.length}${compact ? '' : ' · manual progress'}`}
           </small>
           <strong>{step.instruction.text}</strong>
         </div>
       </div>
-      <button className="journey-map-action" onClick={onView}>
-        <Map size={18} />
-        {map
-          ? `View ${map.venueName}${map.levelName ? ` · ${map.levelName}` : ''}`
-          : 'View city map'}
-      </button>
+      {(!compact || (map && !viewingFloor)) && (
+        <button className="journey-map-action" onClick={onView}>
+          <Map size={18} />
+          {map
+            ? `View ${map.venueName}${map.levelName ? ` · ${map.levelName}` : ''}`
+            : 'View city map'}
+        </button>
+      )}
       {journey.loading && (
         <p className="journey-note" role="status">
           Preparing indoor sections…
@@ -81,19 +88,21 @@ export function JourneyGuide({
           {index === steps.length - 1 ? 'Finish journey' : 'Continue'} <ArrowRight size={18} />
         </button>
       </div>
-      {steps[index + 1] && (
+      {!compact && steps[index + 1] && (
         <p className="journey-next">Next: {steps[index + 1].instruction.text}</p>
       )}
-      <details className="journey-sequence">
-        <summary>Whole journey · source directions</summary>
-        <ol>
-          {steps.map((item, i) => (
-            <li key={i} aria-current={i === index ? 'step' : undefined}>
-              {item.instruction.text}
-            </li>
-          ))}
-        </ol>
-      </details>
+      {!compact && (
+        <details className="journey-sequence">
+          <summary>Whole journey · source directions</summary>
+          <ol>
+            {steps.map((item, i) => (
+              <li key={i} aria-current={i === index ? 'step' : undefined}>
+                {item.instruction.text}
+              </li>
+            ))}
+          </ol>
+        </details>
+      )}
     </section>
   );
 }

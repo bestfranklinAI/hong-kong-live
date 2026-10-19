@@ -11,3 +11,13 @@ it('recognizes explicit transition instructions without inferring equipment from
   expect(instructionTransition('Finish at Lift Museum')).toBeNull();
   expect(instructionTransition('Continue forward')).toBeNull();
 });
+
+it('uses directional symbols only for explicit source manoeuvres', async () => {
+  const { instructionSymbol } = await import('./navigation-symbols');
+  expect(instructionSymbol('Turn left onto Queen’s Road')).toBe('left');
+  expect(instructionSymbol('Keep right on the footbridge')).toBe('right');
+  expect(instructionSymbol('Go forward on the pavement')).toBe('straight');
+  expect(instructionSymbol('向左轉')).toBe('left');
+  expect(instructionSymbol('Take the elevator to Level 2')).toBe('elevator');
+  expect(instructionSymbol('Arrive at Right House')).toBe('walk');
+});

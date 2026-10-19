@@ -105,6 +105,18 @@ export function DiscoverySheet({ mobile, snap, onSnap, header, children, mode }:
     };
   }, [mobile, snap]);
 
+  useLayoutEffect(() => {
+    const element = host.current;
+    const header = element?.querySelector<HTMLElement>('.sheet-header');
+    if (!mobile || !element || !header) return;
+    const measure = () =>
+      element.style.setProperty('--sheet-header-height', `${header.offsetHeight}px`);
+    const observer = new ResizeObserver(measure);
+    observer.observe(header);
+    measure();
+    return () => observer.disconnect();
+  }, [mobile]);
+
   function down(event: PointerEvent<HTMLElement>) {
     if (
       !mobile ||
@@ -263,6 +275,7 @@ export function DiscoverySheet({ mobile, snap, onSnap, header, children, mode }:
       ref={host}
       className={`discovery-panel ${mobile ? 'mobile-sheet' : ''}`}
       data-snap={snap}
+      data-mode={mode}
       id="discovery"
       aria-label={`${mode} panel`}
     >
@@ -299,15 +312,9 @@ export function DiscoverySheet({ mobile, snap, onSnap, header, children, mode }:
             <span />
           </button>
           {header}
-          {snap === 'peek' && <span className="sheet-swipe-hint">Swipe up to explore</span>}
         </div>
       )}
       {children}
-      {mobile && snap === 'half' && (
-        <button className="sheet-expand" onClick={() => onSnap('full')}>
-          See full details ↑
-        </button>
-      )}
     </aside>
   );
 }

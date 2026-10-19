@@ -118,3 +118,16 @@ it('coalesces pending wake requests and releases a lock granted after the trip e
   await act(async () => grant({ released: false, release }));
   expect(release).toHaveBeenCalledOnce();
 });
+
+it('refreshes the GPS subscription on request and keeps the current route', async () => {
+  const trip = route();
+  await render(trip);
+  await act(async () => success(position(trip)));
+  expect(value.fix).not.toBeNull();
+  await act(async () => value.refreshLocation());
+  expect(clearWatch).toHaveBeenCalledExactlyOnceWith(42);
+  expect(watchPosition).toHaveBeenCalledTimes(2);
+  expect(value.fix).toBeNull();
+  await act(async () => success(position(trip)));
+  expect(value.progress).not.toBeNull();
+});

@@ -49,6 +49,8 @@ tailscale serve --https=443 http://127.0.0.1:4173
 
 Keep this foreground process running and open the HTTPS address printed by Tailscale on your connected phone. This serves the preview within your tailnet; it does not enable public Funnel access.
 
+The mobile interface uses a fixed walking instruction card and progressive disclosure for route, location and source details. See the [interface and journey design](docs/design/mobile-experience.md) and [verification limits](docs/verification/mobile-experience.md).
+
 ## Available in the first slice
 
 - Interactive Cesium map with public LandsD topographic/aerial layers, English/Traditional Chinese labels and an OpenStreetMap option. No required paid service.

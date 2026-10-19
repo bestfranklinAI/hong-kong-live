@@ -1,3 +1,4 @@
+import { canGuideFrom } from '../../shared/location-quality';
 import type { LocationFix } from '../../scene/UserLocation';
 
 /** One cancellable GPS subscription. Expired fixes never keep the camera moving. */
@@ -76,4 +77,46 @@ export function watchWalkingLocation(
     geolocation.clearWatch(watch);
     clearInterval(timer);
   };
+}
+
+/** Wait for a fresh, usable origin instead of routing from the first coarse estimate. */
+export function requestWalkingLocation(geolocation: Geolocation, signal?: AbortSignal) {
+  return new Promise<LocationFix>((resolve, reject) => {
+    let stop = () => {};
+    let settled = false;
+    const finish = (fix?: LocationFix, error?: Error) => {
+      if (settled) return;
+      settled = true;
+      stop();
+      clearTimeout(timer);
+      signal?.removeEventListener('abort', abort);
+      if (fix) resolve(fix);
+      else reject(error);
+    };
+    const abort = () => finish(undefined, new DOMException('Location cancelled', 'AbortError'));
+    const timer = setTimeout(
+      () =>
+        finish(
+          undefined,
+          new Error('Location is still imprecise. Try outdoors or choose a starting point.'),
+        ),
+      20000,
+    );
+    if (signal?.aborted) {
+      abort();
+      return;
+    }
+    signal?.addEventListener('abort', abort, { once: true });
+    stop = watchWalkingLocation(
+      geolocation,
+      (fix) => {
+        if (canGuideFrom(fix) && fix && Date.now() - (fix.timestamp ?? 0) <= 10000) finish(fix);
+      },
+      (message) => {
+        if (/permission denied|unavailable/i.test(message)) finish(undefined, new Error(message));
+      },
+    );
+    // Some implementations can deliver an immediate cached position.
+    if (settled) stop();
+  });
 }

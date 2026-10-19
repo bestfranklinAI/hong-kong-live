@@ -20,3 +20,7 @@ The mobile layout (up to 700px wide) uses a fixed, edge-to-edge 100dvh canvas, a
 Browser checks at 390 × 844 verified full-size canvas bounds, no horizontal overflow, half/expanded snapping, settings, search-to-station navigation and Windy controls. Chromium native touch emulation verified Peek → Half → Expanded → Half → Peek using pointer gestures. A live resize to 1280 × 900 verified that mobile transforms are removed and the desktop sidebar remains intact.
 
 Screenshots are in ignored `output/playwright/` (`mobile-peek.png`, `mobile-half.png`, `desktop-preserved.png`, `mobile-windy.png`). These checks do not establish physical Android haptic behaviour, OS keyboard behaviour or measured device performance; those still need a real-phone check.
+
+## 19 October interface revision
+
+The [current mobile experience specification](mobile-experience.md) supersedes earlier visual treatments here where they differ. Mobile layout is consolidated in `mobile.css`, with measured sheet-header height, 16 px content margins and no floating expand button. Active walking uses a persistent navigation dock instead of the discovery sheet; the map measures that dock for camera framing.

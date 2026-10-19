@@ -5,6 +5,7 @@ import { RouterProvider } from '@tanstack/react-router';
 import { router } from './app/router';
 import './styles.css';
 import './features/mobile/mobile.css';
+import './interface.css';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: true, gcTime: 300_000 } },

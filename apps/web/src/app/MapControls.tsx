@@ -1,17 +1,8 @@
 import { Compass, LocateFixed, Minus, Plus, Rotate3d } from 'lucide-react';
-import type { Quality } from '@hk/contracts';
 import type { SceneCommand } from '../scene/types';
 import { IconButton } from '../shared/ui';
 
-export function MapControls({
-  command,
-  quality,
-  onQuality,
-}: {
-  command: (type: SceneCommand['type']) => void;
-  quality: Quality;
-  onQuality: (quality: Quality) => void;
-}) {
+export function MapControls({ command }: { command: (type: SceneCommand['type']) => void }) {
   return (
     <div className="map-controls" aria-label="Map controls">
       <div className="control-group">
@@ -34,14 +25,6 @@ export function MapControls({
           <Minus size={21} />
         </IconButton>
       </div>
-      <label className="quality-control">
-        <span className="sr-only">Map graphics quality</span>
-        <select value={quality} onChange={(event) => onQuality(event.target.value as Quality)}>
-          <option value="efficient">Eco</option>
-          <option value="balanced">Std</option>
-          <option value="detailed">High</option>
-        </select>
-      </label>
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { SearchResults } from '../search/SearchResults';
 import { SavedPins } from '../search/SavedPins';
 import type { SearchResult } from '@hk/contracts';
 import { useMemo } from 'react';
-import { Bookmark, Search, SlidersHorizontal, X } from 'lucide-react';
+import { Bookmark, Search, X } from 'lucide-react';
 import type { Category, Place } from '@hk/contracts';
 import { categoryLabels, searchPlaces } from './places';
 import { IconButton, PlaceIcon } from '../../shared/ui';
@@ -93,27 +93,30 @@ export function ExplorePanel({
       {!facility && (!query.trim() || savedOnly) && (
         <>
           <SavedPins onSelect={onSearchSelect} />
-          <div className="category-scroll" aria-label="Filter places by category">
-            <button
-              className={`filter-chip ${category === 'all' ? 'active' : ''}`}
-              aria-pressed={category === 'all'}
-              onClick={() => setCategory('all')}
-            >
-              All places
-            </button>
-            {(['culture', 'waterfront', 'park', 'landmark', 'station'] as Category[]).map(
-              (value) => (
-                <button
-                  key={value}
-                  className={`filter-chip ${category === value ? 'active' : ''}`}
-                  aria-pressed={category === value}
-                  onClick={() => setCategory(value)}
-                >
-                  {categoryLabels[value]}
-                </button>
-              ),
-            )}
-          </div>
+          <details className="place-category-options">
+            <summary>Filter selected places</summary>
+            <div className="category-scroll" aria-label="Filter places by category">
+              <button
+                className={`filter-chip ${category === 'all' ? 'active' : ''}`}
+                aria-pressed={category === 'all'}
+                onClick={() => setCategory('all')}
+              >
+                All places
+              </button>
+              {(['culture', 'waterfront', 'park', 'landmark', 'station'] as Category[]).map(
+                (value) => (
+                  <button
+                    key={value}
+                    className={`filter-chip ${category === value ? 'active' : ''}`}
+                    aria-pressed={category === value}
+                    onClick={() => setCategory(value)}
+                  >
+                    {categoryLabels[value]}
+                  </button>
+                ),
+              )}
+            </div>
+          </details>
           <div className="results-heading">
             <h2>{savedOnly ? 'Your saved places' : 'Places'}</h2>
             <span aria-live="polite">
@@ -125,8 +128,8 @@ export function ExplorePanel({
               onClick={onToggleSavedOnly}
               title="Show saved places"
             >
-              <SlidersHorizontal size={16} />
-              <span className="sr-only">Show saved places</span>
+              <Bookmark size={16} />
+              <span>Saved</span>
             </button>
           </div>
           <div className="place-list">
