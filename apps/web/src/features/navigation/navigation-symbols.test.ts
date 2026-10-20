@@ -20,4 +20,7 @@ it('uses directional symbols only for explicit source manoeuvres', async () => {
   expect(instructionSymbol('向左轉')).toBe('left');
   expect(instructionSymbol('Take the elevator to Level 2')).toBe('elevator');
   expect(instructionSymbol('Arrive at Right House')).toBe('walk');
+  expect(instructionSymbol('沿行人路前行', 'esriDMTTurnLeft')).toBe('left');
+  expect(instructionSymbol('Take the elevator', 'esriDMTStraight')).toBe('elevator');
+  expect(instructionSymbol('Continue', 'unknown')).toBe('walk');
 });

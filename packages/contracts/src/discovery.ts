@@ -18,6 +18,10 @@ export const discoveryIntentSchema = z
       .refine((values) => new Set(values).size === values.length),
     area: z.string().trim().max(80),
     mobility: z.enum(['walking', 'fewer-stairs', 'barrier-free']),
+    routePreferences: z
+      .object({ preferCover: z.literal(true) })
+      .strict()
+      .optional(),
     unverifiedNeeds: z
       .array(z.enum(['open-now', 'working-lifts', 'indoor-position', 'covered-walk']))
       .max(4)

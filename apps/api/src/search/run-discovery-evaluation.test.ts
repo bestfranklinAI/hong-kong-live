@@ -23,15 +23,15 @@ const assistant = (): DiscoveryAssistant => ({
 it('executes all cases without passing answer keys or coordinates to interpretation or ranking', async () => {
   const model = assistant();
   const result = await runDiscoveryEvaluation(model, identity, new AbortController().signal);
-  expect(result.execution).toHaveLength(8);
+  expect(result.execution).toHaveLength(12);
   expect(result.execution.every((row) => row.status === 'completed' && row.elapsedMs >= 0)).toBe(
     true,
   );
-  expect(result.report.passed).toBe(8);
+  expect(result.report.passed).toBe(12);
   expect(result.report.liveModelRun).toBe(false);
   expect(result.report.rollout).toBe('human-review-required');
-  expect(model.interpret).toHaveBeenCalledTimes(8);
-  expect(model.rank).toHaveBeenCalledTimes(6);
+  expect(model.interpret).toHaveBeenCalledTimes(12);
+  expect(model.rank).toHaveBeenCalledTimes(10);
   for (const test of discoveryEvaluationCases) {
     expect(model.interpret).toHaveBeenCalledWith(
       { query: test.request.query, language: test.request.language },
@@ -61,7 +61,7 @@ it('uses the actual interpretation for retrieval even when it disagrees with the
   };
   model.interpret = vi.fn(async () => intent);
   const result = await runDiscoveryEvaluation(model, identity, new AbortController().signal);
-  expect(result.report.failed).toBe(7);
+  expect(result.report.failed).toBe(11);
   expect(result.report.rollout).toBe('blocked');
   expect(model.rank).toHaveBeenCalledWith(
     {
@@ -85,8 +85,8 @@ it('does not score retrieval fallbacks as successful model rankings or expose pr
     throw new Error('Private provider request details');
   });
   const result = await runDiscoveryEvaluation(model, identity, new AbortController().signal);
-  expect(result.execution.filter((row) => row.status === 'ranking-failed')).toHaveLength(6);
-  expect(result.report.failed).toBe(6);
+  expect(result.execution.filter((row) => row.status === 'ranking-failed')).toHaveLength(10);
+  expect(result.report.failed).toBe(10);
   expect(result.report.passed).toBe(2);
   expect(result.report.rollout).toBe('blocked');
   expect(JSON.stringify(result)).not.toContain('Private provider');
@@ -98,10 +98,10 @@ it('continues after interpretation failure and counts missing responses as unrun
     throw new Error('Private failure');
   });
   const result = await runDiscoveryEvaluation(model, identity, new AbortController().signal);
-  expect(model.interpret).toHaveBeenCalledTimes(8);
+  expect(model.interpret).toHaveBeenCalledTimes(12);
   expect(model.rank).not.toHaveBeenCalled();
-  expect(result.report.failed).toBe(8);
-  expect(result.report.modelCasesUnrun).toBe(8);
+  expect(result.report.failed).toBe(12);
+  expect(result.report.modelCasesUnrun).toBe(12);
   expect(JSON.stringify(result)).not.toContain('Private failure');
 });
 
@@ -127,5 +127,5 @@ it('cancels an unresponsive assistant and skips remaining cases without capturin
   expect(result.execution).toHaveLength(1);
   expect(result.execution[0].status).toBe('cancelled');
   expect(result.replay.cases).toEqual([]);
-  expect(result.report.modelCasesUnrun).toBe(8);
+  expect(result.report.modelCasesUnrun).toBe(12);
 });

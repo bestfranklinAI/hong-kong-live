@@ -1,0 +1,3121 @@
+{
+  "scope": "Public bounded samples and solver experiments; no physical access, sensor accuracy or performance validation.",
+  "areasWgs84": {
+    "central": [114.153, 22.279, 114.165, 22.286],
+    "admiralty": [114.16, 22.275, 114.172, 22.282],
+    "kowloon": [114.157, 22.3, 114.171, 22.308],
+    "admiralty-core": [114.163, 22.278, 114.166, 22.281],
+    "central-core": [114.158, 22.282, 114.161, 22.285]
+  },
+  "sampleLimit": 1200,
+  "sampleDefinition": "Features intersecting each box, not clipped; outdoor and indoor services can overlap. Do not sum them as a unique graph.",
+  "schemas": {
+    "outdoor": {
+      "hasZ": true,
+      "sourceHeightModelInfo": {
+        "heightModel": "gravity_related_height",
+        "vertCRS": "Hong_Kong_Principal_Datum",
+        "heightUnit": "meter"
+      },
+      "sourceSpatialReference": {
+        "wkid": 102140,
+        "latestWkid": 2326,
+        "vcsWkid": 5738,
+        "latestVcsWkid": 5738,
+        "xyTolerance": 0.001,
+        "zTolerance": 0.001,
+        "mTolerance": 0.001,
+        "falseX": -4786700,
+        "falseY": -11651800,
+        "xyUnits": 10000,
+        "falseZ": -100000,
+        "zUnits": 10000,
+        "falseM": -100000,
+        "mUnits": 10000
+      },
+      "fields": [
+        "OBJECTID",
+        "Shape",
+        "PedestrianRouteID",
+        "Location",
+        "FeatureType",
+        "AliasNameEN",
+        "AliasNameTC",
+        "CrossingFeature",
+        "WeatherProof",
+        "WheelchairBarrier",
+        "WheelchairAccess",
+        "ObstaclesType",
+        "Gradient",
+        "Direction",
+        "PositionCertainty",
+        "Enabled",
+        "DataSource",
+        "LevelSource",
+        "StreetNameEN",
+        "StreetNameTC",
+        "ST_CODE",
+        "FloorID",
+        "BuildingID_1",
+        "BuildingID_2",
+        "SiteID",
+        "TerminalID",
+        "AccessTimeID",
+        "CreationDate",
+        "ModifiedBy",
+        "LastAmendmentDate",
+        "Shape_Length"
+      ]
+    },
+    "indoor": {
+      "hasZ": true,
+      "sourceHeightModelInfo": {
+        "heightModel": "gravity_related_height",
+        "vertCRS": "Hong_Kong_Principal_Datum",
+        "heightUnit": "meter"
+      },
+      "sourceSpatialReference": {
+        "wkid": 102140,
+        "latestWkid": 2326,
+        "vcsWkid": 5738,
+        "latestVcsWkid": 5738,
+        "xyTolerance": 0.001,
+        "zTolerance": 0.001,
+        "mTolerance": 0.001,
+        "falseX": -4786700,
+        "falseY": -11651800,
+        "xyUnits": 10000,
+        "falseZ": -100000,
+        "zUnits": 10000,
+        "falseM": -100000,
+        "mUnits": 10000
+      },
+      "fields": [
+        "OBJECTID",
+        "Shape",
+        "PedestrianRouteID",
+        "Location",
+        "FeatureType",
+        "AliasNameEN",
+        "AliasNameTC",
+        "CrossingFeature",
+        "WeatherProof",
+        "WheelchairBarrier",
+        "WheelchairAccess",
+        "ObstaclesType",
+        "Gradient",
+        "Direction",
+        "PositionCertainty",
+        "Enabled",
+        "DataSource",
+        "LevelSource",
+        "StreetNameEN",
+        "StreetNameTC",
+        "ST_CODE",
+        "FloorID",
+        "BuildingID_1",
+        "BuildingID_2",
+        "SiteID",
+        "TerminalID",
+        "AccessTimeID",
+        "CreationDate",
+        "ModifiedBy",
+        "LastAmendmentDate",
+        "Shape_Length"
+      ]
+    }
+  },
+  "samples": {
+    "central-outdoor": {
+      "featureCount": 1200,
+      "exceededTransferLimit": true,
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "hasZ": true,
+      "zRange": [2.882400000002235, 99.32790000000386],
+      "vertices": 2907,
+      "nonNull": {
+        "Gradient": 1200,
+        "FloorID": 35,
+        "AccessTimeID": 63,
+        "LastAmendmentDate": 1200
+      },
+      "counts": {
+        "FeatureType": {
+          "Footway": 747,
+          "Staircase": 190,
+          "Crossing - Cautionary": 10,
+          "Escalator": 10,
+          "Footbridge": 60,
+          "Crossing - Others": 12,
+          "Crossing - Signalized": 10,
+          "RunIn": 25,
+          "Service Lane": 105,
+          "Traffic Island": 9,
+          "Lift": 1,
+          "Ramp": 2,
+          "Generalized Walkway inside Park": 19
+        },
+        "Location": {
+          "Outdoor": 1149,
+          "Indoor": 51
+        },
+        "WeatherProof": {
+          "NonCovered": 976,
+          "Covered": 217,
+          "Unclassified": 7
+        },
+        "WheelchairBarrier": {
+          "False": 995,
+          "True": 205
+        },
+        "WheelchairAccess": {
+          "False": 1199,
+          "True": 1
+        },
+        "Enabled": {
+          "True": 1200
+        },
+        "Direction": {
+          "Both Ways": 1191,
+          "One Way Backward": 4,
+          "One Way Forward": 5
+        }
+      }
+    },
+    "central-indoor": {
+      "featureCount": 1200,
+      "exceededTransferLimit": true,
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "hasZ": true,
+      "zRange": [-22.929999999993015, 12.69999999999709],
+      "vertices": 2608,
+      "nonNull": {
+        "Gradient": 1200,
+        "FloorID": 1200,
+        "AccessTimeID": 0,
+        "LastAmendmentDate": 1200
+      },
+      "counts": {
+        "FeatureType": {
+          "Footway": 1005,
+          "Escalator": 52,
+          "Staircase": 56,
+          "Travelator": 15,
+          "Lift": 61,
+          "Ramp": 11
+        },
+        "Location": {
+          "Indoor": 949,
+          "Paid": 251
+        },
+        "WeatherProof": {
+          "Covered": 1200
+        },
+        "WheelchairBarrier": {
+          "False": 961,
+          "True": 239
+        },
+        "WheelchairAccess": {
+          "False": 1200
+        },
+        "Enabled": {
+          "True": 1200
+        },
+        "Direction": {
+          "Both Ways": 1183,
+          "One Way Backward": 7,
+          "One Way Forward": 10
+        }
+      }
+    },
+    "admiralty-outdoor": {
+      "featureCount": 1200,
+      "exceededTransferLimit": true,
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "hasZ": true,
+      "zRange": [3.3659000000043306, 116.03539999999339],
+      "vertices": 3738,
+      "nonNull": {
+        "Gradient": 1200,
+        "FloorID": 29,
+        "AccessTimeID": 296,
+        "LastAmendmentDate": 1200
+      },
+      "counts": {
+        "FeatureType": {
+          "Generalized Walkway inside Park": 66,
+          "Footway": 810,
+          "Staircase": 115,
+          "Footbridge": 73,
+          "RunIn": 33,
+          "Ramp": 11,
+          "Crossing - Cautionary": 27,
+          "Traffic Island": 18,
+          "Crossing - Others": 12,
+          "Escalator": 6,
+          "Crossing - Signalized": 15,
+          "Crossing - Zebra": 2,
+          "Service Lane": 5,
+          "Lift": 6,
+          "Subway": 1
+        },
+        "Location": {
+          "Outdoor": 1140,
+          "Indoor": 60
+        },
+        "WeatherProof": {
+          "NonCovered": 902,
+          "Covered": 296,
+          "Unclassified": 2
+        },
+        "WheelchairBarrier": {
+          "False": 1061,
+          "True": 139
+        },
+        "WheelchairAccess": {
+          "False": 1198,
+          "True": 2
+        },
+        "Enabled": {
+          "True": 1200
+        },
+        "Direction": {
+          "Both Ways": 1194,
+          "One Way Forward": 3,
+          "One Way Backward": 3
+        }
+      }
+    },
+    "admiralty-indoor": {
+      "featureCount": 1200,
+      "exceededTransferLimit": true,
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "hasZ": true,
+      "zRange": [-33.63000000000466, 12.794999999998254],
+      "vertices": 2630,
+      "nonNull": {
+        "Gradient": 1200,
+        "FloorID": 1200,
+        "AccessTimeID": 0,
+        "LastAmendmentDate": 1200
+      },
+      "counts": {
+        "FeatureType": {
+          "Footway": 1046,
+          "Escalator": 55,
+          "Staircase": 63,
+          "Stairlift": 7,
+          "Ramp": 3,
+          "Lift": 24,
+          "Travelator": 2
+        },
+        "Location": {
+          "Indoor": 290,
+          "Paid": 910
+        },
+        "WeatherProof": {
+          "Covered": 1200
+        },
+        "WheelchairBarrier": {
+          "True": 267,
+          "False": 933
+        },
+        "WheelchairAccess": {
+          "False": 1199,
+          "True": 1
+        },
+        "Enabled": {
+          "True": 1200
+        },
+        "Direction": {
+          "Both Ways": 1194,
+          "One Way Backward": 3,
+          "One Way Forward": 3
+        }
+      }
+    },
+    "kowloon-outdoor": {
+      "featureCount": 1200,
+      "exceededTransferLimit": true,
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "hasZ": true,
+      "zRange": [0.5359999999927823, 31.873300000006566],
+      "vertices": 2734,
+      "nonNull": {
+        "Gradient": 1200,
+        "FloorID": 53,
+        "AccessTimeID": 77,
+        "LastAmendmentDate": 1200
+      },
+      "counts": {
+        "FeatureType": {
+          "Footbridge": 21,
+          "Footway": 917,
+          "Staircase": 17,
+          "Crossing - Cautionary": 106,
+          "RunIn": 10,
+          "Lift": 3,
+          "Crossing - Others": 17,
+          "Traffic Island": 14,
+          "Crossing - Signalized": 17,
+          "Generalized Walkway inside Park": 23,
+          "Service Lane": 41,
+          "Subway": 9,
+          "Ramp": 5
+        },
+        "Location": {
+          "Outdoor": 1090,
+          "Indoor": 110
+        },
+        "WeatherProof": {
+          "Covered": 207,
+          "NonCovered": 877,
+          "Unclassified": 116
+        },
+        "WheelchairBarrier": {
+          "False": 989,
+          "True": 211
+        },
+        "WheelchairAccess": {
+          "False": 1196,
+          "True": 4
+        },
+        "Enabled": {
+          "True": 1200
+        },
+        "Direction": {
+          "Both Ways": 1200
+        }
+      }
+    },
+    "kowloon-indoor": {
+      "featureCount": 1200,
+      "exceededTransferLimit": true,
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "hasZ": true,
+      "zRange": [-10.30000000000291, 23.5],
+      "vertices": 2723,
+      "nonNull": {
+        "Gradient": 1200,
+        "FloorID": 1200,
+        "AccessTimeID": 0,
+        "LastAmendmentDate": 1200
+      },
+      "counts": {
+        "FeatureType": {
+          "Escalator": 81,
+          "Footway": 1027,
+          "Staircase": 43,
+          "Lift": 42,
+          "Ramp": 7
+        },
+        "Location": {
+          "Indoor": 897,
+          "Paid": 303
+        },
+        "WeatherProof": {
+          "Covered": 1200
+        },
+        "WheelchairBarrier": {
+          "True": 193,
+          "False": 1007
+        },
+        "WheelchairAccess": {
+          "False": 1200
+        },
+        "Enabled": {
+          "True": 1200
+        },
+        "Direction": {
+          "One Way Backward": 8,
+          "Both Ways": 1192
+        }
+      }
+    },
+    "admiralty-core-outdoor": {
+      "featureCount": 816,
+      "exceededTransferLimit": false,
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "hasZ": true,
+      "zRange": [-6.5, 33.58599999999569],
+      "vertices": 2151,
+      "nonNull": {
+        "Gradient": 816,
+        "FloorID": 182,
+        "AccessTimeID": 272,
+        "LastAmendmentDate": 816
+      },
+      "counts": {
+        "FeatureType": {
+          "Footway": 599,
+          "Generalized Walkway inside Park": 16,
+          "RunIn": 12,
+          "Staircase": 45,
+          "Footbridge": 48,
+          "Escalator": 28,
+          "Traffic Island": 20,
+          "Crossing - Zebra": 2,
+          "Crossing - Cautionary": 25,
+          "Crossing - Signalized": 2,
+          "Crossing - Others": 5,
+          "Lift": 11,
+          "Service Lane": 1,
+          "Ramp": 2
+        },
+        "Location": {
+          "Outdoor": 558,
+          "Indoor": 258
+        },
+        "WeatherProof": {
+          "Covered": 499,
+          "NonCovered": 310,
+          "Unclassified": 7
+        },
+        "WheelchairBarrier": {
+          "False": 739,
+          "True": 77
+        },
+        "WheelchairAccess": {
+          "False": 814,
+          "True": 2
+        },
+        "Enabled": {
+          "True": 816
+        },
+        "Direction": {
+          "Both Ways": 793,
+          "One Way Forward": 13,
+          "One Way Backward": 10
+        }
+      }
+    },
+    "admiralty-core-indoor": {
+      "featureCount": 835,
+      "exceededTransferLimit": false,
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "hasZ": true,
+      "zRange": [-33.63000000000466, 6.214000000007218],
+      "vertices": 1826,
+      "nonNull": {
+        "Gradient": 835,
+        "FloorID": 835,
+        "AccessTimeID": 0,
+        "LastAmendmentDate": 835
+      },
+      "counts": {
+        "FeatureType": {
+          "Stairlift": 11,
+          "Staircase": 60,
+          "Footway": 698,
+          "Ramp": 1,
+          "Escalator": 48,
+          "Travelator": 2,
+          "Lift": 15
+        },
+        "Location": {
+          "Indoor": 256,
+          "Paid": 579
+        },
+        "WeatherProof": {
+          "Covered": 835
+        },
+        "WheelchairBarrier": {
+          "True": 180,
+          "False": 655
+        },
+        "WheelchairAccess": {
+          "False": 834,
+          "True": 1
+        },
+        "Enabled": {
+          "True": 835
+        },
+        "Direction": {
+          "Both Ways": 813,
+          "One Way Forward": 13,
+          "One Way Backward": 9
+        }
+      }
+    },
+    "central-core-outdoor": {
+      "featureCount": 569,
+      "exceededTransferLimit": false,
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "hasZ": true,
+      "zRange": [0.827000000004773, 13.5],
+      "vertices": 1362,
+      "nonNull": {
+        "Gradient": 569,
+        "FloorID": 73,
+        "AccessTimeID": 72,
+        "LastAmendmentDate": 569
+      },
+      "counts": {
+        "FeatureType": {
+          "Footway": 361,
+          "Footbridge": 70,
+          "Staircase": 36,
+          "Escalator": 13,
+          "Generalized Walkway inside Park": 9,
+          "Crossing - Others": 13,
+          "Traffic Island": 22,
+          "Crossing - Signalized": 12,
+          "Crossing - Cautionary": 7,
+          "RunIn": 8,
+          "Lift": 8,
+          "Service Lane": 1,
+          "Subway": 8,
+          "Ramp": 1
+        },
+        "Location": {
+          "Outdoor": 456,
+          "Indoor": 113
+        },
+        "WeatherProof": {
+          "NonCovered": 249,
+          "Covered": 312,
+          "Unclassified": 8
+        },
+        "WheelchairBarrier": {
+          "False": 518,
+          "True": 51
+        },
+        "WheelchairAccess": {
+          "False": 564,
+          "True": 5
+        },
+        "Enabled": {
+          "True": 569
+        },
+        "Direction": {
+          "Both Ways": 556,
+          "One Way Backward": 3,
+          "One Way Forward": 10
+        }
+      }
+    },
+    "central-core-indoor": {
+      "featureCount": 839,
+      "exceededTransferLimit": false,
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "hasZ": true,
+      "zRange": [-15.145000000004075, 12.69999999999709],
+      "vertices": 1764,
+      "nonNull": {
+        "Gradient": 839,
+        "FloorID": 839,
+        "AccessTimeID": 0,
+        "LastAmendmentDate": 839
+      },
+      "counts": {
+        "FeatureType": {
+          "Footway": 722,
+          "Staircase": 13,
+          "Ramp": 9,
+          "Lift": 48,
+          "Escalator": 39,
+          "Travelator": 8
+        },
+        "Location": {
+          "Paid": 277,
+          "Indoor": 562
+        },
+        "WeatherProof": {
+          "Covered": 839
+        },
+        "WheelchairBarrier": {
+          "False": 736,
+          "True": 103
+        },
+        "WheelchairAccess": {
+          "False": 839
+        },
+        "Enabled": {
+          "True": 839
+        },
+        "Direction": {
+          "Both Ways": 823,
+          "One Way Backward": 7,
+          "One Way Forward": 9
+        }
+      }
+    }
+  },
+  "tables": {
+    "access-time": {
+      "fields": [
+        "OBJECTID",
+        "AccessTimeID",
+        "AccessTimeType",
+        "DescriptionTC",
+        "DescriptionEN",
+        "CreationDate",
+        "ModifiedBy",
+        "LastAmendmentDate"
+      ],
+      "sample": {
+        "displayFieldName": "AccessTimeType",
+        "fieldAliases": {
+          "OBJECTID": "OBJECTID",
+          "AccessTimeID": "AccessTimeID",
+          "AccessTimeType": "AccessTimeType",
+          "DescriptionTC": "DescriptionTC",
+          "DescriptionEN": "DescriptionEN",
+          "CreationDate": "CreationDate",
+          "LastAmendmentDate": "LastAmendmentDate"
+        },
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID"
+          },
+          {
+            "name": "AccessTimeID",
+            "type": "esriFieldTypeInteger",
+            "alias": "AccessTimeID"
+          },
+          {
+            "name": "AccessTimeType",
+            "type": "esriFieldTypeString",
+            "alias": "AccessTimeType",
+            "length": 10
+          },
+          {
+            "name": "DescriptionTC",
+            "type": "esriFieldTypeString",
+            "alias": "DescriptionTC",
+            "length": 255
+          },
+          {
+            "name": "DescriptionEN",
+            "type": "esriFieldTypeString",
+            "alias": "DescriptionEN",
+            "length": 255
+          },
+          {
+            "name": "CreationDate",
+            "type": "esriFieldTypeDate",
+            "alias": "CreationDate",
+            "length": 8
+          },
+          {
+            "name": "LastAmendmentDate",
+            "type": "esriFieldTypeDate",
+            "alias": "LastAmendmentDate",
+            "length": 8
+          }
+        ],
+        "features": [
+          {
+            "attributes": {
+              "OBJECTID": 1,
+              "AccessTimeID": 290000489,
+              "AccessTimeType": "OPEN",
+              "DescriptionTC": "美麗華酒店",
+              "DescriptionEN": "Hotel Miramar",
+              "CreationDate": 1657065600000,
+              "LastAmendmentDate": 1657065600000
+            }
+          },
+          {
+            "attributes": {
+              "OBJECTID": 2,
+              "AccessTimeID": 290000490,
+              "AccessTimeType": "OPEN",
+              "DescriptionTC": "屯門站",
+              "DescriptionEN": "Tuen Mun Station",
+              "CreationDate": 1657065600000,
+              "LastAmendmentDate": 1657065600000
+            }
+          },
+          {
+            "attributes": {
+              "OBJECTID": 3,
+              "AccessTimeID": 290000491,
+              "AccessTimeType": "OPEN",
+              "DescriptionTC": "兆康站",
+              "DescriptionEN": "Siu Hong Station",
+              "CreationDate": 1657065600000,
+              "LastAmendmentDate": 1657065600000
+            }
+          },
+          {
+            "attributes": {
+              "OBJECTID": 4,
+              "AccessTimeID": 290000492,
+              "AccessTimeType": "OPEN",
+              "DescriptionTC": "康城站",
+              "DescriptionEN": "Lohas Park Station",
+              "CreationDate": 1657065600000,
+              "LastAmendmentDate": 1657065600000
+            }
+          },
+          {
+            "attributes": {
+              "OBJECTID": 5,
+              "AccessTimeID": 290000494,
+              "AccessTimeType": "OPEN",
+              "DescriptionTC": "炮台山站",
+              "DescriptionEN": "Fortress Hill Station",
+              "CreationDate": 1657065600000,
+              "LastAmendmentDate": 1657065600000
+            }
+          }
+        ],
+        "exceededTransferLimit": true
+      }
+    },
+    "access-time-details": {
+      "fields": ["OBJECTID", "AccessTimeID", "DayCode", "FromTime", "ToTime"],
+      "sample": {
+        "displayFieldName": "DayCode",
+        "fieldAliases": {
+          "OBJECTID": "OBJECTID",
+          "AccessTimeID": "AccessTimeID",
+          "DayCode": "DayCode",
+          "FromTime": "FromTime",
+          "ToTime": "ToTime"
+        },
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID"
+          },
+          {
+            "name": "AccessTimeID",
+            "type": "esriFieldTypeInteger",
+            "alias": "AccessTimeID"
+          },
+          {
+            "name": "DayCode",
+            "type": "esriFieldTypeString",
+            "alias": "DayCode",
+            "length": 6
+          },
+          {
+            "name": "FromTime",
+            "type": "esriFieldTypeInteger",
+            "alias": "FromTime"
+          },
+          {
+            "name": "ToTime",
+            "type": "esriFieldTypeInteger",
+            "alias": "ToTime"
+          }
+        ],
+        "features": [
+          {
+            "attributes": {
+              "OBJECTID": 1,
+              "AccessTimeID": 150000059,
+              "DayCode": "ED",
+              "FromTime": 700,
+              "ToTime": 2300
+            }
+          },
+          {
+            "attributes": {
+              "OBJECTID": 2,
+              "AccessTimeID": 150000060,
+              "DayCode": "ED",
+              "FromTime": 0,
+              "ToTime": 2359
+            }
+          },
+          {
+            "attributes": {
+              "OBJECTID": 3,
+              "AccessTimeID": 150000061,
+              "DayCode": "ED",
+              "FromTime": 0,
+              "ToTime": 2359
+            }
+          },
+          {
+            "attributes": {
+              "OBJECTID": 4,
+              "AccessTimeID": 150000062,
+              "DayCode": "ED",
+              "FromTime": 0,
+              "ToTime": 2359
+            }
+          },
+          {
+            "attributes": {
+              "OBJECTID": 5,
+              "AccessTimeID": 150000063,
+              "DayCode": "ED",
+              "FromTime": 0,
+              "ToTime": 2359
+            }
+          }
+        ],
+        "exceededTransferLimit": true
+      }
+    },
+    "floor-relations": {
+      "fields": [
+        "ObjectID",
+        "FloorID",
+        "FloorPolyID",
+        "BuildingID",
+        "EnglishName",
+        "ChineseName",
+        "DataSource",
+        "LevelSource",
+        "CreationDate",
+        "ModifiedBy",
+        "LastAmendmentDate"
+      ],
+      "sample": {
+        "displayFieldName": "EnglishName",
+        "fieldAliases": {
+          "ObjectID": "ObjectID",
+          "FloorID": "FloorID",
+          "FloorPolyID": "FloorPolyID",
+          "BuildingID": "BuildingID",
+          "EnglishName": "EnglishName",
+          "ChineseName": "ChineseName",
+          "DataSource": "DataSource",
+          "LevelSource": "LevelSource",
+          "CreationDate": "CreationDate",
+          "LastAmendmentDate": "LastAmendmentDate"
+        },
+        "fields": [
+          {
+            "name": "ObjectID",
+            "type": "esriFieldTypeOID",
+            "alias": "ObjectID"
+          },
+          {
+            "name": "FloorID",
+            "type": "esriFieldTypeInteger",
+            "alias": "FloorID"
+          },
+          {
+            "name": "FloorPolyID",
+            "type": "esriFieldTypeString",
+            "alias": "FloorPolyID",
+            "length": 28
+          },
+          {
+            "name": "BuildingID",
+            "type": "esriFieldTypeInteger",
+            "alias": "BuildingID"
+          },
+          {
+            "name": "EnglishName",
+            "type": "esriFieldTypeString",
+            "alias": "EnglishName",
+            "length": 150
+          },
+          {
+            "name": "ChineseName",
+            "type": "esriFieldTypeString",
+            "alias": "ChineseName",
+            "length": 150
+          },
+          {
+            "name": "DataSource",
+            "type": "esriFieldTypeInteger",
+            "alias": "DataSource"
+          },
+          {
+            "name": "LevelSource",
+            "type": "esriFieldTypeInteger",
+            "alias": "LevelSource"
+          },
+          {
+            "name": "CreationDate",
+            "type": "esriFieldTypeDate",
+            "alias": "CreationDate",
+            "length": 8
+          },
+          {
+            "name": "LastAmendmentDate",
+            "type": "esriFieldTypeDate",
+            "alias": "LastAmendmentDate",
+            "length": 8
+          }
+        ],
+        "features": [
+          {
+            "attributes": {
+              "ObjectID": 1,
+              "FloorID": 290000239,
+              "FloorPolyID": null,
+              "BuildingID": 1100011021,
+              "EnglishName": "G",
+              "ChineseName": "地下",
+              "DataSource": 1,
+              "LevelSource": 1,
+              "CreationDate": 1657065600000,
+              "LastAmendmentDate": 1660608000000
+            }
+          },
+          {
+            "attributes": {
+              "ObjectID": 2,
+              "FloorID": 290000242,
+              "FloorPolyID": "<Null>",
+              "BuildingID": 1105716087,
+              "EnglishName": "Bus Terminus Under",
+              "ChineseName": "下層巴士總站",
+              "DataSource": 1,
+              "LevelSource": 1,
+              "CreationDate": 1657152000000,
+              "LastAmendmentDate": 1660608000000
+            }
+          },
+          {
+            "attributes": {
+              "ObjectID": 3,
+              "FloorID": 290000247,
+              "FloorPolyID": null,
+              "BuildingID": 1810178263,
+              "EnglishName": "G/F",
+              "ChineseName": "地下",
+              "DataSource": 1,
+              "LevelSource": 1,
+              "CreationDate": 1657324800000,
+              "LastAmendmentDate": 1660608000000
+            }
+          },
+          {
+            "attributes": {
+              "ObjectID": 4,
+              "FloorID": 290000248,
+              "FloorPolyID": null,
+              "BuildingID": 1810195154,
+              "EnglishName": "G/F",
+              "ChineseName": "地下",
+              "DataSource": 1,
+              "LevelSource": 1,
+              "CreationDate": 1658102400000,
+              "LastAmendmentDate": 1660608000000
+            }
+          },
+          {
+            "attributes": {
+              "ObjectID": 5,
+              "FloorID": 290000249,
+              "FloorPolyID": null,
+              "BuildingID": 1810195154,
+              "EnglishName": "1/F",
+              "ChineseName": "一樓",
+              "DataSource": 1,
+              "LevelSource": 1,
+              "CreationDate": 1658102400000,
+              "LastAmendmentDate": 1660608000000
+            }
+          }
+        ],
+        "exceededTransferLimit": true
+      }
+    }
+  },
+  "modes": [
+    {
+      "name": "Shortest Path",
+      "id": "1",
+      "type": "WALK",
+      "description": "最短路線",
+      "timeAttributeName": "Time",
+      "distanceAttributeName": "Length",
+      "impedanceAttributeName": "Length",
+      "restrictionAttributeNames": ["Direction"],
+      "attributeParameterValues": [
+        {
+          "attributeName": "Avoid Escalator (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Avoid Lift (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Avoid Paid Area (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Avoid Staircase (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Direction",
+          "parameterName": "Restriction Usage",
+          "value": "Prohibited"
+        },
+        {
+          "attributeName": "Prefer Escalator (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        },
+        {
+          "attributeName": "Prefer Lift (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        },
+        {
+          "attributeName": "Prefer Staircase (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        },
+        {
+          "attributeName": "Prohabit Wheelchair Barrier",
+          "parameterName": "Restriction Usage",
+          "value": "Prohibited"
+        },
+        {
+          "attributeName": "Avoid Outdoor (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Prefer Indoor (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        }
+      ],
+      "useHierarchy": false,
+      "uturnAtJunctions": "esriNFSBAllowBacktrack",
+      "simplificationTolerance": null,
+      "simplificationToleranceUnits": "esriMeters"
+    },
+    {
+      "name": "Barrier Free Path",
+      "id": "2",
+      "type": "WALK",
+      "description": "無障礙路線",
+      "timeAttributeName": "Time",
+      "distanceAttributeName": "Length",
+      "impedanceAttributeName": "Length",
+      "restrictionAttributeNames": ["Direction", "Prohabit Wheelchair Barrier"],
+      "attributeParameterValues": [
+        {
+          "attributeName": "Avoid Escalator (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Avoid Lift (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Avoid Paid Area (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Avoid Staircase (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Direction",
+          "parameterName": "Restriction Usage",
+          "value": "Prohibited"
+        },
+        {
+          "attributeName": "Prefer Escalator (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        },
+        {
+          "attributeName": "Prefer Lift (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        },
+        {
+          "attributeName": "Prefer Staircase (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        },
+        {
+          "attributeName": "Prohabit Wheelchair Barrier",
+          "parameterName": "Restriction Usage",
+          "value": "Prohibited"
+        },
+        {
+          "attributeName": "Avoid Outdoor (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Prefer Indoor (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        }
+      ],
+      "useHierarchy": false,
+      "uturnAtJunctions": "esriNFSBAllowBacktrack",
+      "simplificationTolerance": null,
+      "simplificationToleranceUnits": "esriMeters"
+    },
+    {
+      "name": "Recommended Path",
+      "id": "3",
+      "type": "WALK",
+      "description": "建議路線",
+      "timeAttributeName": "Time",
+      "distanceAttributeName": "Length",
+      "impedanceAttributeName": "Length",
+      "restrictionAttributeNames": [
+        "Avoid Paid Area (high)",
+        "Avoid Staircase (high)",
+        "Direction",
+        "Prefer Escalator (high)",
+        "Prefer Lift (high)",
+        "Avoid Outdoor (high)",
+        "Prefer Indoor (high)"
+      ],
+      "attributeParameterValues": [
+        {
+          "attributeName": "Avoid Escalator (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Avoid Lift (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Avoid Paid Area (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Avoid Staircase (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Direction",
+          "parameterName": "Restriction Usage",
+          "value": "Prohibited"
+        },
+        {
+          "attributeName": "Prefer Escalator (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        },
+        {
+          "attributeName": "Prefer Lift (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        },
+        {
+          "attributeName": "Prefer Staircase (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        },
+        {
+          "attributeName": "Prohabit Wheelchair Barrier",
+          "parameterName": "Restriction Usage",
+          "value": "Prohibited"
+        },
+        {
+          "attributeName": "Avoid Outdoor (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Prefer Indoor (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        }
+      ],
+      "useHierarchy": false,
+      "uturnAtJunctions": "esriNFSBAllowBacktrack",
+      "simplificationTolerance": null,
+      "simplificationToleranceUnits": "esriMeters"
+    },
+    {
+      "name": "Stair Climbing to Health Path",
+      "id": "4",
+      "type": "WALK",
+      "description": "行樓梯 健身心路線",
+      "timeAttributeName": "Time",
+      "distanceAttributeName": "Length",
+      "impedanceAttributeName": "Length",
+      "restrictionAttributeNames": [
+        "Avoid Escalator (high)",
+        "Avoid Lift (high)",
+        "Direction",
+        "Prefer Staircase (high)"
+      ],
+      "attributeParameterValues": [
+        {
+          "attributeName": "Avoid Escalator (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Avoid Lift (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Avoid Paid Area (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Avoid Staircase (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Direction",
+          "parameterName": "Restriction Usage",
+          "value": "Prohibited"
+        },
+        {
+          "attributeName": "Prefer Escalator (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        },
+        {
+          "attributeName": "Prefer Lift (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        },
+        {
+          "attributeName": "Prefer Staircase (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        },
+        {
+          "attributeName": "Prohabit Wheelchair Barrier",
+          "parameterName": "Restriction Usage",
+          "value": "Prohibited"
+        },
+        {
+          "attributeName": "Avoid Outdoor (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Prefer Indoor (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        }
+      ],
+      "useHierarchy": false,
+      "uturnAtJunctions": "esriNFSBAllowBacktrack",
+      "simplificationTolerance": null,
+      "simplificationToleranceUnits": "esriMeters"
+    },
+    {
+      "name": "Unpaid Area Preferable Path",
+      "id": "5",
+      "type": "WALK",
+      "description": "非付費區優先路線",
+      "timeAttributeName": "Time",
+      "distanceAttributeName": "Length",
+      "impedanceAttributeName": "Length",
+      "restrictionAttributeNames": ["Avoid Paid Area (high)", "Direction"],
+      "attributeParameterValues": [
+        {
+          "attributeName": "Avoid Escalator (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Avoid Lift (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Avoid Paid Area (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Avoid Staircase (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Direction",
+          "parameterName": "Restriction Usage",
+          "value": "Prohibited"
+        },
+        {
+          "attributeName": "Prefer Escalator (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        },
+        {
+          "attributeName": "Prefer Lift (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        },
+        {
+          "attributeName": "Prefer Staircase (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        },
+        {
+          "attributeName": "Prohabit Wheelchair Barrier",
+          "parameterName": "Restriction Usage",
+          "value": "Prohibited"
+        },
+        {
+          "attributeName": "Avoid Outdoor (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Avoid_High"
+        },
+        {
+          "attributeName": "Prefer Indoor (high)",
+          "parameterName": "Restriction Usage",
+          "value": "Prefer_High"
+        }
+      ],
+      "useHierarchy": false,
+      "uturnAtJunctions": "esriNFSBAllowBacktrack",
+      "simplificationTolerance": null,
+      "simplificationToleranceUnits": "esriMeters"
+    }
+  ],
+  "networkDataset": {
+    "name": "NetworkDataset_Indoor_Outdoor",
+    "buildTime": 1783475226000,
+    "state": "esriNDSBuilt",
+    "networkAttributes": [
+      {
+        "name": "Time",
+        "dataType": "esriNADTDouble",
+        "units": "esriNAUMinutes",
+        "usageType": "esriNAUTCost",
+        "parameterNames": [],
+        "restrictionUsageParameterName": null,
+        "trafficSupport": "esriNTSNone"
+      },
+      {
+        "name": "Length",
+        "dataType": "esriNADTDouble",
+        "units": "esriNAUMeters",
+        "usageType": "esriNAUTCost",
+        "parameterNames": [],
+        "restrictionUsageParameterName": null,
+        "trafficSupport": "esriNTSNone"
+      },
+      {
+        "name": "Avoid Escalator (high)",
+        "dataType": "esriNADTBoolean",
+        "units": "esriNAUUnknown",
+        "usageType": "esriNAUTRestriction",
+        "parameterNames": ["Restriction Usage"],
+        "restrictionUsageParameterName": "Restriction Usage",
+        "trafficSupport": "esriNTSNone"
+      },
+      {
+        "name": "Avoid Lift (high)",
+        "dataType": "esriNADTBoolean",
+        "units": "esriNAUUnknown",
+        "usageType": "esriNAUTRestriction",
+        "parameterNames": ["Restriction Usage"],
+        "restrictionUsageParameterName": "Restriction Usage",
+        "trafficSupport": "esriNTSNone"
+      },
+      {
+        "name": "Avoid Paid Area (high)",
+        "dataType": "esriNADTBoolean",
+        "units": "esriNAUUnknown",
+        "usageType": "esriNAUTRestriction",
+        "parameterNames": ["Restriction Usage"],
+        "restrictionUsageParameterName": "Restriction Usage",
+        "trafficSupport": "esriNTSNone"
+      },
+      {
+        "name": "Avoid Staircase (high)",
+        "dataType": "esriNADTBoolean",
+        "units": "esriNAUUnknown",
+        "usageType": "esriNAUTRestriction",
+        "parameterNames": ["Restriction Usage"],
+        "restrictionUsageParameterName": "Restriction Usage",
+        "trafficSupport": "esriNTSNone"
+      },
+      {
+        "name": "Direction",
+        "dataType": "esriNADTBoolean",
+        "units": "esriNAUUnknown",
+        "usageType": "esriNAUTRestriction",
+        "parameterNames": ["Restriction Usage"],
+        "restrictionUsageParameterName": "Restriction Usage",
+        "trafficSupport": "esriNTSNone"
+      },
+      {
+        "name": "Prefer Escalator (high)",
+        "dataType": "esriNADTBoolean",
+        "units": "esriNAUUnknown",
+        "usageType": "esriNAUTRestriction",
+        "parameterNames": ["Restriction Usage"],
+        "restrictionUsageParameterName": "Restriction Usage",
+        "trafficSupport": "esriNTSNone"
+      },
+      {
+        "name": "Prefer Lift (high)",
+        "dataType": "esriNADTBoolean",
+        "units": "esriNAUUnknown",
+        "usageType": "esriNAUTRestriction",
+        "parameterNames": ["Restriction Usage"],
+        "restrictionUsageParameterName": "Restriction Usage",
+        "trafficSupport": "esriNTSNone"
+      },
+      {
+        "name": "Prefer Staircase (high)",
+        "dataType": "esriNADTBoolean",
+        "units": "esriNAUUnknown",
+        "usageType": "esriNAUTRestriction",
+        "parameterNames": ["Restriction Usage"],
+        "restrictionUsageParameterName": "Restriction Usage",
+        "trafficSupport": "esriNTSNone"
+      },
+      {
+        "name": "Prohabit Wheelchair Barrier",
+        "dataType": "esriNADTBoolean",
+        "units": "esriNAUUnknown",
+        "usageType": "esriNAUTRestriction",
+        "parameterNames": ["Restriction Usage"],
+        "restrictionUsageParameterName": "Restriction Usage",
+        "trafficSupport": "esriNTSNone"
+      },
+      {
+        "name": "Road Class",
+        "dataType": "esriNADTInteger",
+        "units": "esriNAUUnknown",
+        "usageType": "esriNAUTDescriptor",
+        "parameterNames": [],
+        "restrictionUsageParameterName": null,
+        "trafficSupport": "esriNTSNone"
+      },
+      {
+        "name": "Avoid Outdoor (high)",
+        "dataType": "esriNADTBoolean",
+        "units": "esriNAUUnknown",
+        "usageType": "esriNAUTRestriction",
+        "parameterNames": ["Restriction Usage"],
+        "restrictionUsageParameterName": "Restriction Usage",
+        "trafficSupport": "esriNTSNone"
+      },
+      {
+        "name": "Prefer Indoor (high)",
+        "dataType": "esriNADTBoolean",
+        "units": "esriNAUUnknown",
+        "usageType": "esriNAUTRestriction",
+        "parameterNames": ["Restriction Usage"],
+        "restrictionUsageParameterName": "Restriction Usage",
+        "trafficSupport": "esriNTSNone"
+      }
+    ],
+    "networkSources": [
+      {
+        "name": "merged_PedRoute_line1",
+        "elementType": "esriNETEdge",
+        "sourceType": "esriNSTEdgeFeature",
+        "id": 1
+      },
+      {
+        "name": "NetworkDataset_Indoor_Outdoor_Junctions",
+        "elementType": "esriNETJunction",
+        "sourceType": "esriNSTSystemJunction",
+        "id": 2
+      }
+    ]
+  },
+  "joins": {
+    "floorIds": [
+      250000014, 250000018, 250000019, 250000020, 250000021, 250000023, 1008130000, 1008130002,
+      1008130004, 1008131002, 1008131003, 1008210000
+    ],
+    "accessTimeIds": [
+      240000066, 240000067, 240000068, 240000072, 240000078, 240000079, 240000080, 250000052
+    ],
+    "results": {
+      "floor-relations-selected-joined": {
+        "displayFieldName": "EnglishName",
+        "fieldAliases": {
+          "FloorID": "FloorID",
+          "FloorPolyID": "FloorPolyID",
+          "BuildingID": "BuildingID",
+          "EnglishName": "EnglishName",
+          "ChineseName": "ChineseName"
+        },
+        "fields": [
+          {
+            "name": "FloorID",
+            "type": "esriFieldTypeInteger",
+            "alias": "FloorID"
+          },
+          {
+            "name": "FloorPolyID",
+            "type": "esriFieldTypeString",
+            "alias": "FloorPolyID",
+            "length": 28
+          },
+          {
+            "name": "BuildingID",
+            "type": "esriFieldTypeInteger",
+            "alias": "BuildingID"
+          },
+          {
+            "name": "EnglishName",
+            "type": "esriFieldTypeString",
+            "alias": "EnglishName",
+            "length": 150
+          },
+          {
+            "name": "ChineseName",
+            "type": "esriFieldTypeString",
+            "alias": "ChineseName",
+            "length": 150
+          }
+        ],
+        "features": [
+          {
+            "attributes": {
+              "FloorID": 250000014,
+              "FloorPolyID": "<Null>",
+              "BuildingID": 1103117123,
+              "EnglishName": "Ground",
+              "ChineseName": "地下"
+            }
+          },
+          {
+            "attributes": {
+              "FloorID": 250000018,
+              "FloorPolyID": "<Null>",
+              "BuildingID": 1103117123,
+              "EnglishName": "Platform Level",
+              "ChineseName": "月台層"
+            }
+          },
+          {
+            "attributes": {
+              "FloorID": 250000019,
+              "FloorPolyID": null,
+              "BuildingID": 1103117370,
+              "EnglishName": "1/F",
+              "ChineseName": "一樓"
+            }
+          },
+          {
+            "attributes": {
+              "FloorID": 250000020,
+              "FloorPolyID": null,
+              "BuildingID": 1103117370,
+              "EnglishName": "Ground",
+              "ChineseName": null
+            }
+          },
+          {
+            "attributes": {
+              "FloorID": 250000021,
+              "FloorPolyID": null,
+              "BuildingID": 1103126152,
+              "EnglishName": "Ground",
+              "ChineseName": null
+            }
+          },
+          {
+            "attributes": {
+              "FloorID": 250000023,
+              "FloorPolyID": null,
+              "BuildingID": 1103125961,
+              "EnglishName": "2/F",
+              "ChineseName": "二樓"
+            }
+          },
+          {
+            "attributes": {
+              "FloorID": 1008210000,
+              "FloorPolyID": "F3524318290P2015073002000001",
+              "BuildingID": 1108242360,
+              "EnglishName": "Exit B Ground Level",
+              "ChineseName": "B出口 地面"
+            }
+          },
+          {
+            "attributes": {
+              "FloorID": 1008130000,
+              "FloorPolyID": "F3471318429T2005043002000000",
+              "BuildingID": 1108242120,
+              "EnglishName": "In-town Check In Level",
+              "ChineseName": "市區預辦登機層"
+            }
+          },
+          {
+            "attributes": {
+              "FloorID": 1008130002,
+              "FloorPolyID": "F3471318429T2005043002000200",
+              "BuildingID": 1108242120,
+              "EnglishName": "Exit C1 Concourse Level (Tung Chung Line)",
+              "ChineseName": "C1 出口大堂(東涌綫)"
+            }
+          }
+        ]
+      },
+      "access-time-joined": {
+        "displayFieldName": "AccessTimeType",
+        "fieldAliases": {
+          "AccessTimeID": "AccessTimeID",
+          "AccessTimeType": "AccessTimeType",
+          "DescriptionEN": "DescriptionEN",
+          "DescriptionTC": "DescriptionTC",
+          "LastAmendmentDate": "LastAmendmentDate"
+        },
+        "fields": [
+          {
+            "name": "AccessTimeID",
+            "type": "esriFieldTypeInteger",
+            "alias": "AccessTimeID"
+          },
+          {
+            "name": "AccessTimeType",
+            "type": "esriFieldTypeString",
+            "alias": "AccessTimeType",
+            "length": 10
+          },
+          {
+            "name": "DescriptionEN",
+            "type": "esriFieldTypeString",
+            "alias": "DescriptionEN",
+            "length": 255
+          },
+          {
+            "name": "DescriptionTC",
+            "type": "esriFieldTypeString",
+            "alias": "DescriptionTC",
+            "length": 255
+          },
+          {
+            "name": "LastAmendmentDate",
+            "type": "esriFieldTypeDate",
+            "alias": "LastAmendmentDate",
+            "length": 8
+          }
+        ],
+        "features": [
+          {
+            "attributes": {
+              "AccessTimeID": 250000052,
+              "AccessTimeType": "OPEN",
+              "DescriptionEN": "Elgin Street Children's Playground",
+              "DescriptionTC": "伊利近街兒童遊樂場",
+              "LastAmendmentDate": 1642982400000
+            }
+          },
+          {
+            "attributes": {
+              "AccessTimeID": 240000066,
+              "AccessTimeType": "OPEN",
+              "DescriptionEN": "Lift",
+              "DescriptionTC": "升降機",
+              "LastAmendmentDate": 1642982400000
+            }
+          },
+          {
+            "attributes": {
+              "AccessTimeID": 240000067,
+              "AccessTimeType": "OPEN",
+              "DescriptionEN": "Lift",
+              "DescriptionTC": "升降機",
+              "LastAmendmentDate": 1642982400000
+            }
+          },
+          {
+            "attributes": {
+              "AccessTimeID": 240000068,
+              "AccessTimeType": "OPEN",
+              "DescriptionEN": "Lift",
+              "DescriptionTC": "升降機",
+              "LastAmendmentDate": 1642982400000
+            }
+          },
+          {
+            "attributes": {
+              "AccessTimeID": 240000072,
+              "AccessTimeType": "OPEN",
+              "DescriptionEN": "Saigon Street Playground",
+              "DescriptionTC": "西貢街遊樂場",
+              "LastAmendmentDate": 1642982400000
+            }
+          },
+          {
+            "attributes": {
+              "AccessTimeID": 240000078,
+              "AccessTimeType": "OPEN",
+              "DescriptionEN": "Ning Po Street / Shanghai Street Rest Garden",
+              "DescriptionTC": "寧波街／上海街休憩花園",
+              "LastAmendmentDate": 1642982400000
+            }
+          },
+          {
+            "attributes": {
+              "AccessTimeID": 240000079,
+              "AccessTimeType": "OPEN",
+              "DescriptionEN": "Kowloon Park",
+              "DescriptionTC": "九龍公園",
+              "LastAmendmentDate": 1642982400000
+            }
+          },
+          {
+            "attributes": {
+              "AccessTimeID": 240000080,
+              "AccessTimeType": "OPEN",
+              "DescriptionEN": "King George V Memorial Park (Kowloon)",
+              "DescriptionTC": "九龍英皇佐治五世紀念公園",
+              "LastAmendmentDate": 1642982400000
+            }
+          }
+        ]
+      },
+      "access-time-details-joined": {
+        "displayFieldName": "DayCode",
+        "fieldAliases": {
+          "AccessTimeID": "AccessTimeID",
+          "DayCode": "DayCode",
+          "FromTime": "FromTime",
+          "ToTime": "ToTime"
+        },
+        "fields": [
+          {
+            "name": "AccessTimeID",
+            "type": "esriFieldTypeInteger",
+            "alias": "AccessTimeID"
+          },
+          {
+            "name": "DayCode",
+            "type": "esriFieldTypeString",
+            "alias": "DayCode",
+            "length": 6
+          },
+          {
+            "name": "FromTime",
+            "type": "esriFieldTypeInteger",
+            "alias": "FromTime"
+          },
+          {
+            "name": "ToTime",
+            "type": "esriFieldTypeInteger",
+            "alias": "ToTime"
+          }
+        ],
+        "features": [
+          {
+            "attributes": {
+              "AccessTimeID": 250000052,
+              "DayCode": "ED",
+              "FromTime": 0,
+              "ToTime": 2359
+            }
+          },
+          {
+            "attributes": {
+              "AccessTimeID": 240000066,
+              "DayCode": "ED",
+              "FromTime": 0,
+              "ToTime": 2359
+            }
+          },
+          {
+            "attributes": {
+              "AccessTimeID": 240000067,
+              "DayCode": "ED",
+              "FromTime": 0,
+              "ToTime": 2359
+            }
+          },
+          {
+            "attributes": {
+              "AccessTimeID": 240000068,
+              "DayCode": "ED",
+              "FromTime": 0,
+              "ToTime": 2359
+            }
+          },
+          {
+            "attributes": {
+              "AccessTimeID": 240000072,
+              "DayCode": "ED",
+              "FromTime": 700,
+              "ToTime": 2300
+            }
+          },
+          {
+            "attributes": {
+              "AccessTimeID": 240000078,
+              "DayCode": "ED",
+              "FromTime": 0,
+              "ToTime": 2359
+            }
+          },
+          {
+            "attributes": {
+              "AccessTimeID": 240000079,
+              "DayCode": "ED",
+              "FromTime": 500,
+              "ToTime": 2359
+            }
+          },
+          {
+            "attributes": {
+              "AccessTimeID": 240000080,
+              "DayCode": "ED",
+              "FromTime": 0,
+              "ToTime": 2359
+            }
+          }
+        ]
+      }
+    }
+  },
+  "routes": {
+    "route-shortest": {
+      "distanceM": 1164.3782343203738,
+      "minutes": 19.406303905339566,
+      "pathSha256": "b28df647c373a55e5002ea5b987371494ec7cff26d7f25cbba83cbc72d036419",
+      "hasZ": true,
+      "steps": 59,
+      "mentions": {
+        "stair": 8,
+        "elevator": 0,
+        "escalator": 0,
+        "footbridge": 3,
+        "subway": 0
+      },
+      "messages": [],
+      "maneuvers": {
+        "esriDMTDepart": 1,
+        "esriDMTStraight": 25,
+        "esriDMTTurnRight": 14,
+        "esriDMTTurnLeft": 9,
+        "": 8,
+        "esriDMTBearLeft": 1,
+        "esriDMTStop": 1
+      },
+      "barrierAttributes": [],
+      "responseKeys": ["messages", "checksum", "routes", "stops", "directions"],
+      "directionKeys": ["routeId", "routeName", "hasZ", "hasM", "summary", "features"],
+      "directionFeatureKeys": ["attributes", "compressedGeometry", "strings"],
+      "stopAttributes": [
+        {
+          "ObjectID": 1,
+          "Name": "Central Waterfront public reference",
+          "RouteName": null,
+          "Sequence": 1,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": null,
+          "DepartCurbApproach": 1,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 80471,
+          "PosAlong": 0.1004055027941145,
+          "SideOfEdge": 1,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16442741579971,
+          "SnapY": 22.283591704847915,
+          "SnapZ": 4.220624929707745,
+          "DistanceToNetworkInMeters": 2.9707167030820574,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 0,
+          "Cumul_Length": 0,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        },
+        {
+          "ObjectID": 2,
+          "Name": "Hong Kong Park public reference",
+          "RouteName": null,
+          "Sequence": 2,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": 1,
+          "DepartCurbApproach": null,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 82143,
+          "PosAlong": 0.3197978271890836,
+          "SideOfEdge": 2,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16140552629821,
+          "SnapY": 22.277834452000388,
+          "SnapZ": 24.29258822279148,
+          "DistanceToNetworkInMeters": 3.8769537238322074,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 19.406303905339566,
+          "Cumul_Length": 1164.3782343203738,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        }
+      ]
+    },
+    "route-recommended": {
+      "distanceM": 1376.77120535715,
+      "minutes": 22.946186755952496,
+      "pathSha256": "c875c523890154225977f0bb265ce1612dbda29b1a65742b00cb94154e8eb6f4",
+      "hasZ": true,
+      "steps": 69,
+      "mentions": {
+        "stair": 4,
+        "elevator": 0,
+        "escalator": 6,
+        "footbridge": 3,
+        "subway": 0
+      },
+      "messages": [
+        {
+          "type": 50,
+          "description": "Network elements with avoid-restrictions are traversed in the output (restriction attribute names: \"Avoid Staircase (high)\" \"Avoid Outdoor (high)\")."
+        }
+      ],
+      "maneuvers": {
+        "esriDMTDepart": 1,
+        "esriDMTStraight": 23,
+        "esriDMTTurnLeft": 20,
+        "esriDMTTurnRight": 15,
+        "": 7,
+        "esriDMTSharpLeft": 1,
+        "esriDMTSharpRight": 1,
+        "esriDMTStop": 1
+      },
+      "barrierAttributes": [],
+      "responseKeys": ["messages", "checksum", "routes", "stops", "directions"],
+      "directionKeys": ["routeId", "routeName", "hasZ", "hasM", "summary", "features"],
+      "directionFeatureKeys": ["attributes", "compressedGeometry", "strings"],
+      "stopAttributes": [
+        {
+          "ObjectID": 1,
+          "Name": "Central Waterfront public reference",
+          "RouteName": null,
+          "Sequence": 1,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": null,
+          "DepartCurbApproach": 1,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 80471,
+          "PosAlong": 0.1004055027941145,
+          "SideOfEdge": 1,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16442741579971,
+          "SnapY": 22.283591704847915,
+          "SnapZ": 4.220624929707745,
+          "DistanceToNetworkInMeters": 2.9707167030820574,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 0,
+          "Cumul_Length": 0,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        },
+        {
+          "ObjectID": 2,
+          "Name": "Hong Kong Park public reference",
+          "RouteName": null,
+          "Sequence": 2,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": 2,
+          "DepartCurbApproach": null,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 82143,
+          "PosAlong": 0.3197978271890836,
+          "SideOfEdge": 2,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16140552629821,
+          "SnapY": 22.277834452000388,
+          "SnapZ": 24.29258822279148,
+          "DistanceToNetworkInMeters": 3.8769537238322074,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 22.946186755952496,
+          "Cumul_Length": 1376.77120535715,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        }
+      ]
+    },
+    "route-barrier-free": {
+      "distanceM": 1820.5850720666551,
+      "minutes": 30.34308453444426,
+      "pathSha256": "2b8b5548acea0abcecf2f52cad75c0b197b5ef8e45d7f3ebdff1a215d6105143",
+      "hasZ": true,
+      "steps": 64,
+      "mentions": {
+        "stair": 0,
+        "elevator": 2,
+        "escalator": 0,
+        "footbridge": 7,
+        "subway": 0
+      },
+      "messages": [],
+      "maneuvers": {
+        "esriDMTDepart": 1,
+        "esriDMTStraight": 36,
+        "esriDMTTurnLeft": 12,
+        "esriDMTTurnRight": 7,
+        "esriDMTSharpRight": 1,
+        "esriDMTBearRight": 3,
+        "": 2,
+        "esriDMTBearLeft": 1,
+        "esriDMTStop": 1
+      },
+      "barrierAttributes": [],
+      "responseKeys": ["messages", "checksum", "routes", "stops", "directions"],
+      "directionKeys": ["routeId", "routeName", "hasZ", "hasM", "summary", "features"],
+      "directionFeatureKeys": ["attributes", "compressedGeometry", "strings"],
+      "stopAttributes": [
+        {
+          "ObjectID": 1,
+          "Name": "Central Waterfront public reference",
+          "RouteName": null,
+          "Sequence": 1,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": null,
+          "DepartCurbApproach": 1,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 80471,
+          "PosAlong": 0.1004055027941145,
+          "SideOfEdge": 1,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16442741579971,
+          "SnapY": 22.283591704847915,
+          "SnapZ": 4.220624929707745,
+          "DistanceToNetworkInMeters": 2.9707167030820574,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 0,
+          "Cumul_Length": 0,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        },
+        {
+          "ObjectID": 2,
+          "Name": "Hong Kong Park public reference",
+          "RouteName": null,
+          "Sequence": 2,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": 1,
+          "DepartCurbApproach": null,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 82143,
+          "PosAlong": 0.3197978271890836,
+          "SideOfEdge": 2,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16140552629821,
+          "SnapY": 22.277834452000388,
+          "SnapZ": 24.29258822279148,
+          "DistanceToNetworkInMeters": 3.8769537238322074,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 30.34308453444426,
+          "Cumul_Length": 1820.5850720666551,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        }
+      ]
+    },
+    "route-unpaid": {
+      "distanceM": 1164.3782343203738,
+      "minutes": 19.406303905339566,
+      "pathSha256": "b28df647c373a55e5002ea5b987371494ec7cff26d7f25cbba83cbc72d036419",
+      "hasZ": true,
+      "steps": 59,
+      "mentions": {
+        "stair": 8,
+        "elevator": 0,
+        "escalator": 0,
+        "footbridge": 3,
+        "subway": 0
+      },
+      "messages": [],
+      "maneuvers": {
+        "esriDMTDepart": 1,
+        "esriDMTStraight": 25,
+        "esriDMTTurnRight": 14,
+        "esriDMTTurnLeft": 9,
+        "": 8,
+        "esriDMTBearLeft": 1,
+        "esriDMTStop": 1
+      },
+      "barrierAttributes": [],
+      "responseKeys": ["messages", "checksum", "routes", "stops", "directions"],
+      "directionKeys": ["routeId", "routeName", "hasZ", "hasM", "summary", "features"],
+      "directionFeatureKeys": ["attributes", "compressedGeometry", "strings"],
+      "stopAttributes": [
+        {
+          "ObjectID": 1,
+          "Name": "Central Waterfront public reference",
+          "RouteName": null,
+          "Sequence": 1,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": null,
+          "DepartCurbApproach": 1,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 80471,
+          "PosAlong": 0.1004055027941145,
+          "SideOfEdge": 1,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16442741579971,
+          "SnapY": 22.283591704847915,
+          "SnapZ": 4.220624929707745,
+          "DistanceToNetworkInMeters": 2.9707167030820574,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 0,
+          "Cumul_Length": 0,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        },
+        {
+          "ObjectID": 2,
+          "Name": "Hong Kong Park public reference",
+          "RouteName": null,
+          "Sequence": 2,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": 1,
+          "DepartCurbApproach": null,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 82143,
+          "PosAlong": 0.3197978271890836,
+          "SideOfEdge": 2,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16140552629821,
+          "SnapY": 22.277834452000388,
+          "SnapZ": 24.29258822279148,
+          "DistanceToNetworkInMeters": 3.8769537238322074,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 19.406303905339566,
+          "Cumul_Length": 1164.3782343203738,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        }
+      ]
+    },
+    "route-json-shortest-control": {
+      "distanceM": 1164.3782343203738,
+      "minutes": 19.406303905339566,
+      "pathSha256": "b28df647c373a55e5002ea5b987371494ec7cff26d7f25cbba83cbc72d036419",
+      "hasZ": true,
+      "steps": 59,
+      "mentions": {
+        "stair": 8,
+        "elevator": 0,
+        "escalator": 0,
+        "footbridge": 3,
+        "subway": 0
+      },
+      "messages": [],
+      "maneuvers": {
+        "esriDMTDepart": 1,
+        "esriDMTStraight": 25,
+        "esriDMTTurnRight": 14,
+        "esriDMTTurnLeft": 9,
+        "": 8,
+        "esriDMTBearLeft": 1,
+        "esriDMTStop": 1
+      },
+      "barrierAttributes": [],
+      "responseKeys": ["messages", "checksum", "routes", "stops", "directions"],
+      "directionKeys": ["routeId", "routeName", "hasZ", "hasM", "summary", "features"],
+      "directionFeatureKeys": ["attributes", "compressedGeometry", "strings"],
+      "stopAttributes": [
+        {
+          "ObjectID": 1,
+          "Name": "Central Waterfront public reference",
+          "RouteName": null,
+          "Sequence": 1,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": null,
+          "DepartCurbApproach": 1,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 80471,
+          "PosAlong": 0.1004055027941145,
+          "SideOfEdge": 1,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16442741579971,
+          "SnapY": 22.283591704847915,
+          "SnapZ": 4.220624929707745,
+          "DistanceToNetworkInMeters": 2.9707167030820574,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 0,
+          "Cumul_Length": 0,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        },
+        {
+          "ObjectID": 2,
+          "Name": "Hong Kong Park public reference",
+          "RouteName": null,
+          "Sequence": 2,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": 1,
+          "DepartCurbApproach": null,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 82143,
+          "PosAlong": 0.3197978271890836,
+          "SideOfEdge": 2,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16140552629821,
+          "SnapY": 22.277834452000388,
+          "SnapZ": 24.29258822279148,
+          "DistanceToNetworkInMeters": 3.8769537238322074,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 19.406303905339566,
+          "Cumul_Length": 1164.3782343203738,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        }
+      ]
+    },
+    "route-json-covered-preference": {
+      "distanceM": 1340.4099156542047,
+      "minutes": 22.34016526090342,
+      "pathSha256": "3651b25a16e44818844d6fa275df49207a4dce3511b3782a122303c32e52a2d9",
+      "hasZ": true,
+      "steps": 70,
+      "mentions": {
+        "stair": 5,
+        "elevator": 1,
+        "escalator": 5,
+        "footbridge": 4,
+        "subway": 0
+      },
+      "messages": [
+        {
+          "type": 50,
+          "description": "Network elements with avoid-restrictions are traversed in the output (restriction attribute names: \"Avoid Outdoor (high)\")."
+        }
+      ],
+      "maneuvers": {
+        "esriDMTDepart": 1,
+        "esriDMTStraight": 23,
+        "esriDMTTurnLeft": 17,
+        "esriDMTTurnRight": 16,
+        "": 8,
+        "esriDMTBearLeft": 1,
+        "esriDMTSharpRight": 2,
+        "esriDMTSharpLeft": 1,
+        "esriDMTStop": 1
+      },
+      "barrierAttributes": [],
+      "responseKeys": ["messages", "checksum", "routes", "stops", "directions"],
+      "directionKeys": ["routeId", "routeName", "hasZ", "hasM", "summary", "features"],
+      "directionFeatureKeys": ["attributes", "compressedGeometry", "strings"],
+      "stopAttributes": [
+        {
+          "ObjectID": 1,
+          "Name": "Central Waterfront public reference",
+          "RouteName": null,
+          "Sequence": 1,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": null,
+          "DepartCurbApproach": 1,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 80471,
+          "PosAlong": 0.1004055027941145,
+          "SideOfEdge": 1,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16442741579971,
+          "SnapY": 22.283591704847915,
+          "SnapZ": 4.220624929707745,
+          "DistanceToNetworkInMeters": 2.9707167030820574,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 0,
+          "Cumul_Length": 0,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        },
+        {
+          "ObjectID": 2,
+          "Name": "Hong Kong Park public reference",
+          "RouteName": null,
+          "Sequence": 2,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": 2,
+          "DepartCurbApproach": null,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 82143,
+          "PosAlong": 0.3197978271890836,
+          "SideOfEdge": 2,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16140552629821,
+          "SnapY": 22.277834452000388,
+          "SnapZ": 24.29258822279148,
+          "DistanceToNetworkInMeters": 3.8769537238322074,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 22.34016526090342,
+          "Cumul_Length": 1340.4099156542047,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        }
+      ]
+    },
+    "route-json-invalid-control": {
+      "distanceM": 1164.3782343203738,
+      "minutes": 19.406303905339566,
+      "pathSha256": "b28df647c373a55e5002ea5b987371494ec7cff26d7f25cbba83cbc72d036419",
+      "hasZ": true,
+      "steps": 59,
+      "mentions": {
+        "stair": 8,
+        "elevator": 0,
+        "escalator": 0,
+        "footbridge": 3,
+        "subway": 0
+      },
+      "messages": [
+        {
+          "type": 50,
+          "description": "The following restriction attributes are not valid and were ignored:  EXPERIMENT_NONEXISTENT_RESTRICTION"
+        }
+      ],
+      "maneuvers": {
+        "esriDMTDepart": 1,
+        "esriDMTStraight": 25,
+        "esriDMTTurnRight": 14,
+        "esriDMTTurnLeft": 9,
+        "": 8,
+        "esriDMTBearLeft": 1,
+        "esriDMTStop": 1
+      },
+      "barrierAttributes": [],
+      "responseKeys": ["messages", "checksum", "routes", "stops", "directions"],
+      "directionKeys": ["routeId", "routeName", "hasZ", "hasM", "summary", "features"],
+      "directionFeatureKeys": ["attributes", "compressedGeometry", "strings"],
+      "stopAttributes": [
+        {
+          "ObjectID": 1,
+          "Name": "Central Waterfront public reference",
+          "RouteName": null,
+          "Sequence": 1,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": null,
+          "DepartCurbApproach": 1,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 80471,
+          "PosAlong": 0.1004055027941145,
+          "SideOfEdge": 1,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16442741579971,
+          "SnapY": 22.283591704847915,
+          "SnapZ": 4.220624929707745,
+          "DistanceToNetworkInMeters": 2.9707167030820574,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 0,
+          "Cumul_Length": 0,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        },
+        {
+          "ObjectID": 2,
+          "Name": "Hong Kong Park public reference",
+          "RouteName": null,
+          "Sequence": 2,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": 1,
+          "DepartCurbApproach": null,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 82143,
+          "PosAlong": 0.3197978271890836,
+          "SideOfEdge": 2,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16140552629821,
+          "SnapY": 22.277834452000388,
+          "SnapZ": 24.29258822279148,
+          "DistanceToNetworkInMeters": 3.8769537238322074,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 19.406303905339566,
+          "Cumul_Length": 1164.3782343203738,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        }
+      ]
+    },
+    "route-style-navigation": {
+      "distanceM": 1376.77120535715,
+      "minutes": 22.946186755952496,
+      "pathSha256": "c875c523890154225977f0bb265ce1612dbda29b1a65742b00cb94154e8eb6f4",
+      "hasZ": true,
+      "steps": 73,
+      "mentions": {
+        "stair": 4,
+        "elevator": 0,
+        "escalator": 6,
+        "footbridge": 3,
+        "subway": 0
+      },
+      "messages": [
+        {
+          "type": 50,
+          "description": "Network elements with avoid-restrictions are traversed in the output (restriction attribute names: \"Avoid Staircase (high)\" \"Avoid Outdoor (high)\")."
+        }
+      ],
+      "maneuvers": {
+        "esriDMTDepart": 1,
+        "esriDMTStraight": 31,
+        "esriDMTTurnLeft": 17,
+        "esriDMTTurnRight": 16,
+        "esriDMTBearRight": 2,
+        "esriDMTSharpLeft": 1,
+        "esriDMTBearLeft": 3,
+        "esriDMTSharpRight": 1,
+        "esriDMTStop": 1
+      },
+      "barrierAttributes": [],
+      "responseKeys": ["messages", "checksum", "routes", "stops", "directions"],
+      "directionKeys": ["routeId", "routeName", "hasZ", "hasM", "summary", "features"],
+      "directionFeatureKeys": ["attributes", "compressedGeometry", "strings"],
+      "stopAttributes": [
+        {
+          "ObjectID": 1,
+          "Name": "Central Waterfront public reference",
+          "RouteName": null,
+          "Sequence": 1,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": null,
+          "DepartCurbApproach": 1,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 80471,
+          "PosAlong": 0.1004055027941145,
+          "SideOfEdge": 1,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16442741579971,
+          "SnapY": 22.283591704847915,
+          "SnapZ": 4.220624929707745,
+          "DistanceToNetworkInMeters": 2.9707167030820574,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 0,
+          "Cumul_Length": 0,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        },
+        {
+          "ObjectID": 2,
+          "Name": "Hong Kong Park public reference",
+          "RouteName": null,
+          "Sequence": 2,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": 2,
+          "DepartCurbApproach": null,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 82143,
+          "PosAlong": 0.3197978271890836,
+          "SideOfEdge": 2,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16140552629821,
+          "SnapY": 22.277834452000388,
+          "SnapZ": 24.29258822279148,
+          "DistanceToNetworkInMeters": 3.8769537238322074,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 22.946186755952496,
+          "Cumul_Length": 1376.77120535715,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        }
+      ]
+    },
+    "route-style-desktop": {
+      "distanceM": 1376.77120535715,
+      "minutes": 22.946186755952496,
+      "pathSha256": "c875c523890154225977f0bb265ce1612dbda29b1a65742b00cb94154e8eb6f4",
+      "hasZ": true,
+      "steps": 68,
+      "mentions": {
+        "stair": 4,
+        "elevator": 0,
+        "escalator": 6,
+        "footbridge": 3,
+        "subway": 0
+      },
+      "messages": [
+        {
+          "type": 50,
+          "description": "Network elements with avoid-restrictions are traversed in the output (restriction attribute names: \"Avoid Staircase (high)\" \"Avoid Outdoor (high)\")."
+        }
+      ],
+      "maneuvers": {
+        "esriDMTDepart": 1,
+        "esriDMTStraight": 31,
+        "esriDMTTurnLeft": 13,
+        "esriDMTTurnRight": 11,
+        "esriDMTBearRight": 2,
+        "esriDMTTurnLeftLeft": 1,
+        "esriDMTTurnRightLeft": 2,
+        "esriDMTTurnLeftRight": 1,
+        "esriDMTBearLeft": 3,
+        "esriDMTSharpRight": 1,
+        "esriDMTTurnRightRight": 1,
+        "esriDMTStop": 1
+      },
+      "barrierAttributes": [],
+      "responseKeys": ["messages", "checksum", "routes", "stops", "directions"],
+      "directionKeys": ["routeId", "routeName", "hasZ", "hasM", "summary", "features"],
+      "directionFeatureKeys": ["attributes", "compressedGeometry", "strings"],
+      "stopAttributes": [
+        {
+          "ObjectID": 1,
+          "Name": "Central Waterfront public reference",
+          "RouteName": null,
+          "Sequence": 1,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": null,
+          "DepartCurbApproach": 1,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 80471,
+          "PosAlong": 0.1004055027941145,
+          "SideOfEdge": 1,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16442741579971,
+          "SnapY": 22.283591704847915,
+          "SnapZ": 4.220624929707745,
+          "DistanceToNetworkInMeters": 2.9707167030820574,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 0,
+          "Cumul_Length": 0,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        },
+        {
+          "ObjectID": 2,
+          "Name": "Hong Kong Park public reference",
+          "RouteName": null,
+          "Sequence": 2,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": 2,
+          "DepartCurbApproach": null,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 82143,
+          "PosAlong": 0.3197978271890836,
+          "SideOfEdge": 2,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16140552629821,
+          "SnapY": 22.277834452000388,
+          "SnapZ": 24.29258822279148,
+          "DistanceToNetworkInMeters": 3.8769537238322074,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 22.946186755952496,
+          "Cumul_Length": 1376.77120535715,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        }
+      ]
+    },
+    "route-avoid-location": {
+      "distanceM": 1168.8978766614568,
+      "minutes": 19.481631277690948,
+      "pathSha256": "9045662897ff233ec04140cb46276820bf83070648236be8b2df1df2c66c61ee",
+      "hasZ": true,
+      "steps": 65,
+      "mentions": {
+        "stair": 8,
+        "elevator": 0,
+        "escalator": 0,
+        "footbridge": 2,
+        "subway": 0
+      },
+      "messages": [],
+      "maneuvers": {
+        "esriDMTDepart": 1,
+        "esriDMTStraight": 30,
+        "esriDMTTurnRight": 12,
+        "esriDMTTurnLeft": 11,
+        "": 8,
+        "esriDMTSharpLeft": 1,
+        "esriDMTBearLeft": 1,
+        "esriDMTStop": 1
+      },
+      "barrierAttributes": [
+        {
+          "ObjectID": 1,
+          "Name": "Experiment: avoid one source route location",
+          "SourceID": 1,
+          "SourceOID": 81032,
+          "PosAlong": 0.1176200868281401,
+          "SideOfEdge": 2,
+          "CurbApproach": 0,
+          "Status": 0,
+          "FullEdge": 1,
+          "BarrierType": 0,
+          "Attr_Time": 0,
+          "Attr_Length": 0
+        }
+      ],
+      "responseKeys": ["messages", "checksum", "routes", "stops", "barriers", "directions"],
+      "directionKeys": ["routeId", "routeName", "hasZ", "hasM", "summary", "features"],
+      "directionFeatureKeys": ["attributes", "compressedGeometry", "strings"],
+      "stopAttributes": [
+        {
+          "ObjectID": 1,
+          "Name": "Central Waterfront public reference",
+          "RouteName": null,
+          "Sequence": 1,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": null,
+          "DepartCurbApproach": 1,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 80471,
+          "PosAlong": 0.1004055027941145,
+          "SideOfEdge": 1,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16442741579971,
+          "SnapY": 22.283591704847915,
+          "SnapZ": 4.220624929707745,
+          "DistanceToNetworkInMeters": 2.9707167030820574,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 0,
+          "Cumul_Length": 0,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        },
+        {
+          "ObjectID": 2,
+          "Name": "Hong Kong Park public reference",
+          "RouteName": null,
+          "Sequence": 2,
+          "TimeWindowStart": null,
+          "TimeWindowEnd": null,
+          "ArriveCurbApproach": 1,
+          "DepartCurbApproach": null,
+          "ArriveTime": null,
+          "DepartTime": null,
+          "ArriveTimeUTC": null,
+          "DepartTimeUTC": null,
+          "LocationType": 0,
+          "SourceID": 1,
+          "SourceOID": 82143,
+          "PosAlong": 0.3197978271890836,
+          "SideOfEdge": 2,
+          "CurbApproach": 0,
+          "Status": 0,
+          "SnapX": 114.16140552629821,
+          "SnapY": 22.277834452000388,
+          "SnapZ": 24.29258822279148,
+          "DistanceToNetworkInMeters": 3.8769537238322074,
+          "Attr_Time": 0,
+          "Attr_Length": 0,
+          "Cumul_Time": 19.481631277690948,
+          "Cumul_Length": 1168.8978766614568,
+          "Wait_Time": null,
+          "CumulWait_Time": null,
+          "Violation_Time": null,
+          "CumulViolation_Time": null
+        }
+      ]
+    }
+  },
+  "evidence": {
+    "outdoor-service": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer?f=pjson",
+      "capturedAt": "2026-10-19T06:31:38.296991+00:00",
+      "dataSha256": "6de1e07692a8464e1f9f3a6cfd5da1bcfe0b08b16b1eac78226e4d1b38b06526"
+    },
+    "outdoor-edges-schema": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer/0?f=pjson",
+      "capturedAt": "2026-10-19T06:31:38.854596+00:00",
+      "dataSha256": "e42bff5498e0e201f9b0f2623e1f0bddbc5edbb44e88f5a91bcc14852e1aa7d5"
+    },
+    "indoor-service": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1742809197336_78665/MapServer?f=pjson",
+      "capturedAt": "2026-10-19T06:31:41.492921+00:00",
+      "dataSha256": "8be58b8d3a4417a4485fcc9d0380b0fb950de26b50619237762a98e99f86b684"
+    },
+    "indoor-edges-schema": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1742809197336_78665/MapServer/0?f=pjson",
+      "capturedAt": "2026-10-19T06:34:17.688437+00:00",
+      "dataSha256": "604c70eb77a6f3bd96b2224d6e5be13c0bb908c8b2a814cb616b2b8f6382b5db"
+    },
+    "router-metadata": {
+      "url": "https://mapapi.hkmapservice.gov.hk/PedRoute/NAServer/route?f=pjson",
+      "capturedAt": "2026-10-19T06:31:41.730819+00:00",
+      "dataSha256": "f77522bea8b92d1b5ead62794d81fd6e6d060717ad1473b5a62afcbe00d6a3bb"
+    },
+    "access-time-schema": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer/1005?f=pjson",
+      "capturedAt": "2026-10-19T06:34:17.631609+00:00",
+      "dataSha256": "a337a5407249c2c85015046524a5be5f8e678d602679d15e2cd71cf291a4e1bf"
+    },
+    "router-modes": {
+      "url": "https://mapapi.hkmapservice.gov.hk/PedRoute/NAServer/route/retrieveTravelModes?f=json",
+      "capturedAt": "2026-10-19T06:31:43.330839+00:00",
+      "dataSha256": "dfc0a9aecc1472d12eb20d3b671ce5c8de8d4886fcd41b46e7ee5b52a1d4b3d8"
+    },
+    "access-time-details-schema": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer/1006?f=pjson",
+      "capturedAt": "2026-10-19T06:34:20.702331+00:00",
+      "dataSha256": "154efd03867a5a32d2ea2cdb2ad807acc87e9aed729a9da30898934865bf1d15"
+    },
+    "floor-relations-schema": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer/1002?f=pjson",
+      "capturedAt": "2026-10-19T06:34:20.629139+00:00",
+      "dataSha256": "207716c75b48ecbedd7443882c4f9a9dabdcac947ae332096c358b855a5cd0b9"
+    },
+    "central-outdoor": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer/0/query?f=json&where=1%3D1&geometry=114.153%2C22.279%2C114.165%2C22.286&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPedestrianRouteID%2CLocation%2CFeatureType%2CAliasNameEN%2CAliasNameTC%2CWeatherProof%2CWheelchairBarrier%2CWheelchairAccess%2CObstaclesType%2CGradient%2CDirection%2CEnabled%2CPositionCertainty%2CFloorID%2CAccessTimeID%2CLastAmendmentDate%2CShape_Length&returnGeometry=true&returnZ=true&orderByFields=OBJECTID&resultRecordCount=1200",
+      "capturedAt": "2026-10-19T06:34:24.835938+00:00",
+      "dataSha256": "7295bf4b03d44527ba82078879cdcb88719014f0ad34b5f49edb2b074c5fa500"
+    },
+    "central-indoor": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1742809197336_78665/MapServer/0/query?f=json&where=1%3D1&geometry=114.153%2C22.279%2C114.165%2C22.286&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPedestrianRouteID%2CLocation%2CFeatureType%2CAliasNameEN%2CAliasNameTC%2CWeatherProof%2CWheelchairBarrier%2CWheelchairAccess%2CObstaclesType%2CGradient%2CDirection%2CEnabled%2CPositionCertainty%2CFloorID%2CAccessTimeID%2CLastAmendmentDate%2CShape_Length&returnGeometry=true&returnZ=true&orderByFields=OBJECTID&resultRecordCount=1200",
+      "capturedAt": "2026-10-19T06:34:25.939030+00:00",
+      "dataSha256": "c9d8e91ec1289f3b608b1655af1e3c09459c1c4f8f0b2d4c54f831ba8ff0a831"
+    },
+    "admiralty-indoor": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1742809197336_78665/MapServer/0/query?f=json&where=1%3D1&geometry=114.16%2C22.275%2C114.172%2C22.282&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPedestrianRouteID%2CLocation%2CFeatureType%2CAliasNameEN%2CAliasNameTC%2CWeatherProof%2CWheelchairBarrier%2CWheelchairAccess%2CObstaclesType%2CGradient%2CDirection%2CEnabled%2CPositionCertainty%2CFloorID%2CAccessTimeID%2CLastAmendmentDate%2CShape_Length&returnGeometry=true&returnZ=true&orderByFields=OBJECTID&resultRecordCount=1200",
+      "capturedAt": "2026-10-19T06:34:30.797484+00:00",
+      "dataSha256": "d1c58bd1630db556d9f62e5028fbdb595a3a65e1c1ccfd235a008a6efda38527"
+    },
+    "admiralty-outdoor": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer/0/query?f=json&where=1%3D1&geometry=114.16%2C22.275%2C114.172%2C22.282&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPedestrianRouteID%2CLocation%2CFeatureType%2CAliasNameEN%2CAliasNameTC%2CWeatherProof%2CWheelchairBarrier%2CWheelchairAccess%2CObstaclesType%2CGradient%2CDirection%2CEnabled%2CPositionCertainty%2CFloorID%2CAccessTimeID%2CLastAmendmentDate%2CShape_Length&returnGeometry=true&returnZ=true&orderByFields=OBJECTID&resultRecordCount=1200",
+      "capturedAt": "2026-10-19T06:34:30.603511+00:00",
+      "dataSha256": "601e2b7f8ab9bed64c50590d46df1c05ef79c2ef3f09ae2de7004c208ac6c4f6"
+    },
+    "kowloon-outdoor": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer/0/query?f=json&where=1%3D1&geometry=114.157%2C22.3%2C114.171%2C22.308&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPedestrianRouteID%2CLocation%2CFeatureType%2CAliasNameEN%2CAliasNameTC%2CWeatherProof%2CWheelchairBarrier%2CWheelchairAccess%2CObstaclesType%2CGradient%2CDirection%2CEnabled%2CPositionCertainty%2CFloorID%2CAccessTimeID%2CLastAmendmentDate%2CShape_Length&returnGeometry=true&returnZ=true&orderByFields=OBJECTID&resultRecordCount=1200",
+      "capturedAt": "2026-10-19T06:34:34.239239+00:00",
+      "dataSha256": "f2b2791eec15b9014538905201e4885d67f4966970fd07e9e1e7c090c6f60cf5"
+    },
+    "kowloon-indoor": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1742809197336_78665/MapServer/0/query?f=json&where=1%3D1&geometry=114.157%2C22.3%2C114.171%2C22.308&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPedestrianRouteID%2CLocation%2CFeatureType%2CAliasNameEN%2CAliasNameTC%2CWeatherProof%2CWheelchairBarrier%2CWheelchairAccess%2CObstaclesType%2CGradient%2CDirection%2CEnabled%2CPositionCertainty%2CFloorID%2CAccessTimeID%2CLastAmendmentDate%2CShape_Length&returnGeometry=true&returnZ=true&orderByFields=OBJECTID&resultRecordCount=1200",
+      "capturedAt": "2026-10-19T06:34:34.783867+00:00",
+      "dataSha256": "8582662d135398072577557771977125a3698de71f3179654ee8f09c7a635a26"
+    },
+    "admiralty-core-outdoor": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer/0/query?f=json&where=1%3D1&geometry=114.163%2C22.278%2C114.166%2C22.281&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPedestrianRouteID%2CLocation%2CFeatureType%2CAliasNameEN%2CAliasNameTC%2CWeatherProof%2CWheelchairBarrier%2CWheelchairAccess%2CObstaclesType%2CGradient%2CDirection%2CEnabled%2CPositionCertainty%2CFloorID%2CAccessTimeID%2CLastAmendmentDate%2CShape_Length&returnGeometry=true&returnZ=true&orderByFields=OBJECTID&resultRecordCount=1200",
+      "capturedAt": "2026-10-19T06:36:08.698761+00:00",
+      "dataSha256": "d78b6421992dbab4d6bf86c27fbe3dff53f70bb232ba69c105aa551390416d8a"
+    },
+    "admiralty-core-indoor": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1742809197336_78665/MapServer/0/query?f=json&where=1%3D1&geometry=114.163%2C22.278%2C114.166%2C22.281&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPedestrianRouteID%2CLocation%2CFeatureType%2CAliasNameEN%2CAliasNameTC%2CWeatherProof%2CWheelchairBarrier%2CWheelchairAccess%2CObstaclesType%2CGradient%2CDirection%2CEnabled%2CPositionCertainty%2CFloorID%2CAccessTimeID%2CLastAmendmentDate%2CShape_Length&returnGeometry=true&returnZ=true&orderByFields=OBJECTID&resultRecordCount=1200",
+      "capturedAt": "2026-10-19T06:36:08.512636+00:00",
+      "dataSha256": "871258ccf6a9cab927cca4c2725ac9b62c8c5e798988a4b7c16c43f43bd44a4c"
+    },
+    "central-core-outdoor": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer/0/query?f=json&where=1%3D1&geometry=114.158%2C22.282%2C114.161%2C22.285&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPedestrianRouteID%2CLocation%2CFeatureType%2CAliasNameEN%2CAliasNameTC%2CWeatherProof%2CWheelchairBarrier%2CWheelchairAccess%2CObstaclesType%2CGradient%2CDirection%2CEnabled%2CPositionCertainty%2CFloorID%2CAccessTimeID%2CLastAmendmentDate%2CShape_Length&returnGeometry=true&returnZ=true&orderByFields=OBJECTID&resultRecordCount=1200",
+      "capturedAt": "2026-10-19T06:36:13.233800+00:00",
+      "dataSha256": "d6034ee076db210bb6fcba287a297efba235dc936bb97afb6ba0744fee819804"
+    },
+    "central-core-indoor": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1742809197336_78665/MapServer/0/query?f=json&where=1%3D1&geometry=114.158%2C22.282%2C114.161%2C22.285&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPedestrianRouteID%2CLocation%2CFeatureType%2CAliasNameEN%2CAliasNameTC%2CWeatherProof%2CWheelchairBarrier%2CWheelchairAccess%2CObstaclesType%2CGradient%2CDirection%2CEnabled%2CPositionCertainty%2CFloorID%2CAccessTimeID%2CLastAmendmentDate%2CShape_Length&returnGeometry=true&returnZ=true&orderByFields=OBJECTID&resultRecordCount=1200",
+      "capturedAt": "2026-10-19T06:36:12.404811+00:00",
+      "dataSha256": "d1cd51a3850ab561cf92c1190ee0c2813abe8a036371ba19515f85824e2d6cc0"
+    },
+    "access-time-sample": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer/1005/query?f=json&where=1%3D1&outFields=OBJECTID%2CAccessTimeID%2CAccessTimeType%2CDescriptionTC%2CDescriptionEN%2CCreationDate%2CLastAmendmentDate&returnGeometry=false&resultRecordCount=5&orderByFields=OBJECTID",
+      "capturedAt": "2026-10-19T06:34:37.607194+00:00",
+      "dataSha256": "95e3ca39f26515282ca01219636ff63b9edf56aab6ced46ff79181b665b9f648"
+    },
+    "access-time-details-sample": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer/1006/query?f=json&where=1%3D1&outFields=OBJECTID%2CAccessTimeID%2CDayCode%2CFromTime%2CToTime&returnGeometry=false&resultRecordCount=5&orderByFields=OBJECTID",
+      "capturedAt": "2026-10-19T06:34:37.814284+00:00",
+      "dataSha256": "ed4a4613cfad5b5d003ddeaf8ab081beebf7c4d16b80fdeaf9ffa59d4358f496"
+    },
+    "floor-relations-sample": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer/1002/query?f=json&where=1%3D1&outFields=ObjectID%2CFloorID%2CFloorPolyID%2CBuildingID%2CEnglishName%2CChineseName%2CDataSource%2CLevelSource%2CCreationDate%2CLastAmendmentDate&returnGeometry=false&resultRecordCount=5&orderByFields=OBJECTID",
+      "capturedAt": "2026-10-19T06:34:40.099939+00:00",
+      "dataSha256": "200116397e0a8105a0925aa9216d2eb4c8229bca5d641f39631841b6e5f5c6fe"
+    },
+    "route-shortest": {
+      "url": "https://mapapi.hkmapservice.gov.hk/PedRoute/NAServer/route/solve?f=json&stops=%7B%22features%22%3A%5B%7B%22attributes%22%3A%7B%22Name%22%3A%22Central+Waterfront+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1644%2C%22y%22%3A22.2836%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%2C%7B%22attributes%22%3A%7B%22Name%22%3A%22Hong+Kong+Park+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1614%2C%22y%22%3A22.2778%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%5D%7D&outSR=4326&returnZ=true&returnStops=true&directionsLanguage=en&directionsLengthUnits=esriNAUMeters&directionsStyleName=NA+Campus&travelMode=1",
+      "capturedAt": "2026-10-19T06:34:43.058799+00:00",
+      "dataSha256": "febf4eae4799dae2def92623001af1a46ba400ee13c5a5a851a125e85065f8f1"
+    },
+    "route-recommended": {
+      "url": "https://mapapi.hkmapservice.gov.hk/PedRoute/NAServer/route/solve?f=json&stops=%7B%22features%22%3A%5B%7B%22attributes%22%3A%7B%22Name%22%3A%22Central+Waterfront+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1644%2C%22y%22%3A22.2836%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%2C%7B%22attributes%22%3A%7B%22Name%22%3A%22Hong+Kong+Park+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1614%2C%22y%22%3A22.2778%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%5D%7D&outSR=4326&returnZ=true&returnStops=true&directionsLanguage=en&directionsLengthUnits=esriNAUMeters&directionsStyleName=NA+Campus&travelMode=3",
+      "capturedAt": "2026-10-19T06:34:43.061218+00:00",
+      "dataSha256": "5682df9157e732e55ddb58aa1bff9508c5111f89b8e2e316bcd362993d6f780d"
+    },
+    "route-barrier-free": {
+      "url": "https://mapapi.hkmapservice.gov.hk/PedRoute/NAServer/route/solve?f=json&stops=%7B%22features%22%3A%5B%7B%22attributes%22%3A%7B%22Name%22%3A%22Central+Waterfront+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1644%2C%22y%22%3A22.2836%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%2C%7B%22attributes%22%3A%7B%22Name%22%3A%22Hong+Kong+Park+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1614%2C%22y%22%3A22.2778%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%5D%7D&outSR=4326&returnZ=true&returnStops=true&directionsLanguage=en&directionsLengthUnits=esriNAUMeters&directionsStyleName=NA+Campus&travelMode=2",
+      "capturedAt": "2026-10-19T06:34:46.203312+00:00",
+      "dataSha256": "1bd3b86e1364cf1c16a17f188d4c37d38f141dfe2d1394f30d37642ede0554b6"
+    },
+    "route-unpaid": {
+      "url": "https://mapapi.hkmapservice.gov.hk/PedRoute/NAServer/route/solve?f=json&stops=%7B%22features%22%3A%5B%7B%22attributes%22%3A%7B%22Name%22%3A%22Central+Waterfront+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1644%2C%22y%22%3A22.2836%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%2C%7B%22attributes%22%3A%7B%22Name%22%3A%22Hong+Kong+Park+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1614%2C%22y%22%3A22.2778%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%5D%7D&outSR=4326&returnZ=true&returnStops=true&directionsLanguage=en&directionsLengthUnits=esriNAUMeters&directionsStyleName=NA+Campus&travelMode=5",
+      "capturedAt": "2026-10-19T06:34:47.835894+00:00",
+      "dataSha256": "febf4eae4799dae2def92623001af1a46ba400ee13c5a5a851a125e85065f8f1"
+    },
+    "route-json-shortest-control": {
+      "url": "https://mapapi.hkmapservice.gov.hk/PedRoute/NAServer/route/solve?f=json&stops=%7B%22features%22%3A%5B%7B%22attributes%22%3A%7B%22Name%22%3A%22Central+Waterfront+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1644%2C%22y%22%3A22.2836%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%2C%7B%22attributes%22%3A%7B%22Name%22%3A%22Hong+Kong+Park+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1614%2C%22y%22%3A22.2778%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%5D%7D&outSR=4326&returnZ=true&returnStops=true&directionsLanguage=en&directionsLengthUnits=esriNAUMeters&directionsStyleName=NA+Campus&travelMode=%7B%22name%22%3A%22Shortest+Path%22%2C%22id%22%3A%221%22%2C%22type%22%3A%22WALK%22%2C%22description%22%3A%22%5Cu6700%5Cu77ed%5Cu8def%5Cu7dda%22%2C%22timeAttributeName%22%3A%22Time%22%2C%22distanceAttributeName%22%3A%22Length%22%2C%22impedanceAttributeName%22%3A%22Length%22%2C%22restrictionAttributeNames%22%3A%5B%22Direction%22%5D%2C%22attributeParameterValues%22%3A%5B%7B%22attributeName%22%3A%22Avoid+Escalator+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Avoid_High%22%7D%2C%7B%22attributeName%22%3A%22Avoid+Lift+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Avoid_High%22%7D%2C%7B%22attributeName%22%3A%22Avoid+Paid+Area+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Avoid_High%22%7D%2C%7B%22attributeName%22%3A%22Avoid+Staircase+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Avoid_High%22%7D%2C%7B%22attributeName%22%3A%22Direction%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prohibited%22%7D%2C%7B%22attributeName%22%3A%22Prefer+Escalator+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prefer_High%22%7D%2C%7B%22attributeName%22%3A%22Prefer+Lift+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prefer_High%22%7D%2C%7B%22attributeName%22%3A%22Prefer+Staircase+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prefer_High%22%7D%2C%7B%22attributeName%22%3A%22Prohabit+Wheelchair+Barrier%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prohibited%22%7D%2C%7B%22attributeName%22%3A%22Avoid+Outdoor+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Avoid_High%22%7D%2C%7B%22attributeName%22%3A%22Prefer+Indoor+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prefer_High%22%7D%5D%2C%22useHierarchy%22%3Afalse%2C%22uturnAtJunctions%22%3A%22esriNFSBAllowBacktrack%22%2C%22simplificationTolerance%22%3Anull%2C%22simplificationToleranceUnits%22%3A%22esriMeters%22%7D",
+      "capturedAt": "2026-10-19T06:34:49.348263+00:00",
+      "dataSha256": "febf4eae4799dae2def92623001af1a46ba400ee13c5a5a851a125e85065f8f1"
+    },
+    "route-json-covered-preference": {
+      "url": "https://mapapi.hkmapservice.gov.hk/PedRoute/NAServer/route/solve?f=json&stops=%7B%22features%22%3A%5B%7B%22attributes%22%3A%7B%22Name%22%3A%22Central+Waterfront+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1644%2C%22y%22%3A22.2836%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%2C%7B%22attributes%22%3A%7B%22Name%22%3A%22Hong+Kong+Park+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1614%2C%22y%22%3A22.2778%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%5D%7D&outSR=4326&returnZ=true&returnStops=true&directionsLanguage=en&directionsLengthUnits=esriNAUMeters&directionsStyleName=NA+Campus&travelMode=%7B%22name%22%3A%22Experiment+covered+preference%22%2C%22type%22%3A%22WALK%22%2C%22description%22%3A%22%5Cu6700%5Cu77ed%5Cu8def%5Cu7dda%22%2C%22timeAttributeName%22%3A%22Time%22%2C%22distanceAttributeName%22%3A%22Length%22%2C%22impedanceAttributeName%22%3A%22Length%22%2C%22restrictionAttributeNames%22%3A%5B%22Direction%22%2C%22Avoid+Outdoor+%28high%29%22%2C%22Prefer+Indoor+%28high%29%22%5D%2C%22attributeParameterValues%22%3A%5B%7B%22attributeName%22%3A%22Avoid+Escalator+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Avoid_High%22%7D%2C%7B%22attributeName%22%3A%22Avoid+Lift+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Avoid_High%22%7D%2C%7B%22attributeName%22%3A%22Avoid+Paid+Area+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Avoid_High%22%7D%2C%7B%22attributeName%22%3A%22Avoid+Staircase+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Avoid_High%22%7D%2C%7B%22attributeName%22%3A%22Direction%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prohibited%22%7D%2C%7B%22attributeName%22%3A%22Prefer+Escalator+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prefer_High%22%7D%2C%7B%22attributeName%22%3A%22Prefer+Lift+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prefer_High%22%7D%2C%7B%22attributeName%22%3A%22Prefer+Staircase+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prefer_High%22%7D%2C%7B%22attributeName%22%3A%22Prohabit+Wheelchair+Barrier%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prohibited%22%7D%2C%7B%22attributeName%22%3A%22Avoid+Outdoor+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Avoid_High%22%7D%2C%7B%22attributeName%22%3A%22Prefer+Indoor+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prefer_High%22%7D%5D%2C%22useHierarchy%22%3Afalse%2C%22uturnAtJunctions%22%3A%22esriNFSBAllowBacktrack%22%2C%22simplificationTolerance%22%3Anull%2C%22simplificationToleranceUnits%22%3A%22esriMeters%22%7D",
+      "capturedAt": "2026-10-19T06:34:50.408541+00:00",
+      "dataSha256": "4c7f1ea496de126dfb183cc0b25287d8810ecb95a2f3a24b4b9cea33cca18ead"
+    },
+    "route-json-invalid-control": {
+      "url": "https://mapapi.hkmapservice.gov.hk/PedRoute/NAServer/route/solve?f=json&stops=%7B%22features%22%3A%5B%7B%22attributes%22%3A%7B%22Name%22%3A%22Central+Waterfront+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1644%2C%22y%22%3A22.2836%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%2C%7B%22attributes%22%3A%7B%22Name%22%3A%22Hong+Kong+Park+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1614%2C%22y%22%3A22.2778%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%5D%7D&outSR=4326&returnZ=true&returnStops=true&directionsLanguage=en&directionsLengthUnits=esriNAUMeters&directionsStyleName=NA+Campus&travelMode=%7B%22name%22%3A%22Experiment+covered+preference%22%2C%22type%22%3A%22WALK%22%2C%22description%22%3A%22%5Cu6700%5Cu77ed%5Cu8def%5Cu7dda%22%2C%22timeAttributeName%22%3A%22Time%22%2C%22distanceAttributeName%22%3A%22Length%22%2C%22impedanceAttributeName%22%3A%22Length%22%2C%22restrictionAttributeNames%22%3A%5B%22EXPERIMENT_NONEXISTENT_RESTRICTION%22%5D%2C%22attributeParameterValues%22%3A%5B%7B%22attributeName%22%3A%22Avoid+Escalator+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Avoid_High%22%7D%2C%7B%22attributeName%22%3A%22Avoid+Lift+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Avoid_High%22%7D%2C%7B%22attributeName%22%3A%22Avoid+Paid+Area+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Avoid_High%22%7D%2C%7B%22attributeName%22%3A%22Avoid+Staircase+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Avoid_High%22%7D%2C%7B%22attributeName%22%3A%22Direction%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prohibited%22%7D%2C%7B%22attributeName%22%3A%22Prefer+Escalator+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prefer_High%22%7D%2C%7B%22attributeName%22%3A%22Prefer+Lift+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prefer_High%22%7D%2C%7B%22attributeName%22%3A%22Prefer+Staircase+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prefer_High%22%7D%2C%7B%22attributeName%22%3A%22Prohabit+Wheelchair+Barrier%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prohibited%22%7D%2C%7B%22attributeName%22%3A%22Avoid+Outdoor+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Avoid_High%22%7D%2C%7B%22attributeName%22%3A%22Prefer+Indoor+%28high%29%22%2C%22parameterName%22%3A%22Restriction+Usage%22%2C%22value%22%3A%22Prefer_High%22%7D%5D%2C%22useHierarchy%22%3Afalse%2C%22uturnAtJunctions%22%3A%22esriNFSBAllowBacktrack%22%2C%22simplificationTolerance%22%3Anull%2C%22simplificationToleranceUnits%22%3A%22esriMeters%22%7D",
+      "capturedAt": "2026-10-19T06:34:51.703392+00:00",
+      "dataSha256": "7329d872108db0b699f5a55c2a2f895a8b7aaaf1cc857578f026ba216f388902"
+    },
+    "route-style-navigation": {
+      "url": "https://mapapi.hkmapservice.gov.hk/PedRoute/NAServer/route/solve?f=json&stops=%7B%22features%22%3A%5B%7B%22attributes%22%3A%7B%22Name%22%3A%22Central+Waterfront+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1644%2C%22y%22%3A22.2836%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%2C%7B%22attributes%22%3A%7B%22Name%22%3A%22Hong+Kong+Park+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1614%2C%22y%22%3A22.2778%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%5D%7D&outSR=4326&returnZ=true&returnStops=true&directionsLanguage=en&directionsLengthUnits=esriNAUMeters&directionsStyleName=NA+Navigation&travelMode=3",
+      "capturedAt": "2026-10-19T06:36:15.854736+00:00",
+      "dataSha256": "97242fb2acde31cf860d41cca4703855277a0572b2432a906dbb562f9d8976a1"
+    },
+    "route-style-desktop": {
+      "url": "https://mapapi.hkmapservice.gov.hk/PedRoute/NAServer/route/solve?f=json&stops=%7B%22features%22%3A%5B%7B%22attributes%22%3A%7B%22Name%22%3A%22Central+Waterfront+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1644%2C%22y%22%3A22.2836%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%2C%7B%22attributes%22%3A%7B%22Name%22%3A%22Hong+Kong+Park+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1614%2C%22y%22%3A22.2778%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%5D%7D&outSR=4326&returnZ=true&returnStops=true&directionsLanguage=en&directionsLengthUnits=esriNAUMeters&directionsStyleName=NA+Desktop&travelMode=3",
+      "capturedAt": "2026-10-19T06:36:15.852366+00:00",
+      "dataSha256": "20916bfb6276b8352377f9ead61381d02f03df07d2d8e5e0d73e4ac1042fe3db"
+    },
+    "route-avoid-location": {
+      "url": "https://mapapi.hkmapservice.gov.hk/PedRoute/NAServer/route/solve?f=json&stops=%7B%22features%22%3A%5B%7B%22attributes%22%3A%7B%22Name%22%3A%22Central+Waterfront+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1644%2C%22y%22%3A22.2836%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%2C%7B%22attributes%22%3A%7B%22Name%22%3A%22Hong+Kong+Park+public+reference%22%7D%2C%22geometry%22%3A%7B%22x%22%3A114.1614%2C%22y%22%3A22.2778%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%5D%7D&outSR=4326&returnZ=true&returnStops=true&directionsLanguage=en&directionsLengthUnits=esriNAUMeters&directionsStyleName=NA+Campus&travelMode=1&barriers=%7B%22features%22%3A%5B%7B%22attributes%22%3A%7B%22Name%22%3A%22Experiment%3A+avoid+one+source+route+location%22%2C%22BarrierType%22%3A0%2C%22FullEdge%22%3A1%7D%2C%22geometry%22%3A%7B%22x%22%3A114.16157941000006%2C%22y%22%3A22.279954042000043%2C%22z%22%3A14.839999999996508%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D%7D%5D%7D&returnBarriers=true",
+      "capturedAt": "2026-10-19T06:37:57.560915+00:00",
+      "dataSha256": "7e0292bcea84d0b995a91e03450f1cb96bb937ff893318f2007ac3d2e3b6d760"
+    },
+    "access-time-joined": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer/1005/query?f=json&where=AccessTimeID+IN+%28240000066%2C240000067%2C240000068%2C240000072%2C240000078%2C240000079%2C240000080%2C250000052%29&outFields=AccessTimeID%2CAccessTimeType%2CDescriptionEN%2CDescriptionTC%2CLastAmendmentDate&returnGeometry=false&resultRecordCount=100",
+      "capturedAt": "2026-10-19T06:36:17.949182+00:00",
+      "dataSha256": "ae62408afa615985b48d116fbed90d0f3cb7ac699169cd1828a7533889d2607b"
+    },
+    "floor-relations-selected-joined": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer/1002/query?f=json&where=FloorID+IN+%28250000014%2C250000018%2C250000019%2C250000020%2C250000021%2C250000023%2C1008130000%2C1008130002%2C1008130004%2C1008131002%2C1008131003%2C1008210000%29&outFields=FloorID%2CFloorPolyID%2CBuildingID%2CEnglishName%2CChineseName&returnGeometry=false&resultRecordCount=100",
+      "capturedAt": "2026-10-19T06:38:00.705163+00:00",
+      "dataSha256": "74b8d5d3cb0512144db7e845cf73ef25809331a2cb0138dc0832f03dd45a63bc"
+    },
+    "access-time-details-joined": {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637222018065_52265/MapServer/1006/query?f=json&where=AccessTimeID+IN+%28240000066%2C240000067%2C240000068%2C240000072%2C240000078%2C240000079%2C240000080%2C250000052%29&outFields=AccessTimeID%2CDayCode%2CFromTime%2CToTime&returnGeometry=false&resultRecordCount=100",
+      "capturedAt": "2026-10-19T06:36:20.570216+00:00",
+      "dataSha256": "282cf87119ab27c0e5ec708ef396555664e23d414e3d8f80be6b68bbb29f93e0"
+    }
+  },
+  "checks": {
+    "bothSchemasContainZ": true,
+    "coreQueriesNotTruncated": true,
+    "jsonControlMatchesNumericShortest": true,
+    "coveredPreferenceChangesGeometry": true,
+    "invalidRestrictionReportedIgnored": true,
+    "barrierLocatedAndPathChanged": true,
+    "directionStylesPreserveRoute": true
+  },
+  "decoderCompatibility": {
+    "decoder": "@esri/arcgis-rest-routing 4.11.0 decompressGeometry",
+    "archiveSha256": "01fe3d172fd03c4f5c0f1d0a893151906149a5099239663fb50bdcb91a5176c3",
+    "sampledDirections": 69,
+    "decodedFinite": 0,
+    "conclusion": "This decoder does not accept these XYZM compressed directions. Do not use its nonfinite coordinates for markers."
+  }
+}

@@ -36,9 +36,12 @@ export function instructionTransition(text: string): keyof typeof transitionLabe
 }
 
 /** Symbols echo explicit source manoeuvres; route geometry never invents a turn. */
-export function instructionSymbol(text: string): NavigationSymbol {
+export function instructionSymbol(text: string, maneuver?: string): NavigationSymbol {
   const transition = instructionTransition(text);
   if (transition) return transition;
+  if (/Left$/.test(maneuver ?? '')) return 'left';
+  if (/Right$/.test(maneuver ?? '')) return 'right';
+  if (maneuver === 'esriDMTStraight') return 'straight';
   if (
     /^(?:(?:turn|bear|keep) (?:slightly )?(?:to the )?left\b|(?:向)?左轉|靠左)/i.test(text.trim())
   )

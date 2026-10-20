@@ -14,6 +14,9 @@ import { StationStartChoice } from './StationStartChoice';
 import { StationRouteCards } from './StationRouteCards';
 import { endpointStation } from './station-endpoint';
 import { RouteDirections } from './RouteDirections';
+import { RouteServiceNotes } from './RouteServiceNotes';
+import { RouteNetworkPanel } from './RouteNetworkPanel';
+import type { RouteNetworkState } from './use-route-network';
 import type { IndoorMapChoice } from './indoor-map';
 import { RouteHeightProfile } from './RouteHeightProfile';
 import { requestWalkingLocation } from './walking-location';
@@ -51,7 +54,9 @@ export function WalkingPlanner({
   stationLoading = false,
   stationUnavailable = false,
   onExpandComparison,
+  network,
 }: {
+  network?: RouteNetworkState;
   onExpandComparison?: () => void;
   stationContexts?: StationRouteContext[];
   onInspectStation: (id: string) => void;
@@ -91,6 +96,9 @@ export function WalkingPlanner({
   const comparison = useRouteComparison(initialRoute ?? undefined);
   const [destinationInfo, setDestinationInfo] = useState<import('@hk/contracts').SearchResult>();
   const [discoveryPreference, setDiscoveryPreference] = useState<DiscoveryIntent | null>(null);
+  const [preferCover, setPreferCover] = useState(
+    initialRoute?.request.preferences?.preferCover ?? false,
+  );
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [locating, setLocating] = useState(false);
@@ -172,7 +180,13 @@ export function WalkingPlanner({
         from = { ...from, assumedConcourse: true };
       setStart(from);
       const result = await requestWalkingRoute(
-        { start: from, end, profile, language },
+        {
+          start: from,
+          end,
+          profile,
+          language,
+          ...(preferCover ? { preferences: { preferCover: true } } : {}),
+        },
         controller.signal,
       );
       if (request !== revision.current || controller.signal.aborted) return;
@@ -380,7 +394,15 @@ export function WalkingPlanner({
                     row,
                   );
                   if (editing === 'end') setDestinationInfo(row);
-                  if (intent) setDiscoveryPreference(intent);
+                  if (intent) {
+                    setDiscoveryPreference(intent);
+                    setPreferCover(!!intent.routePreferences?.preferCover);
+                    if (intent.mobility !== 'walking') {
+                      const suggested =
+                        intent.mobility === 'barrier-free' ? 'barrier-free' : 'recommended';
+                      setProfile(suggested);
+                    }
+                  }
                 }}
               />
             ) : (
@@ -471,8 +493,13 @@ export function WalkingPlanner({
             {discoveryPreference.mobility === 'fewer-stairs'
               ? 'fewer stairs'
               : 'barrier-free access'}
-            . Choose and compare the official route profiles; this request does not verify
-            accessibility or lift operation.
+            . The suggested profile is editable; compare the official routes. This request does not
+            verify accessibility or lift operation.
+          </p>
+        )}
+        {preferCover && !route && (
+          <p className="comparison-note">
+            Cover preferred · editable in Options. Outdoor sections may remain.
           </p>
         )}
         {!editing && !route && (
@@ -503,6 +530,23 @@ export function WalkingPlanner({
               <Settings2 size={16} />
               Options
             </summary>
+            <label>
+              <input
+                type="checkbox"
+                checked={preferCover}
+                onChange={(e) => {
+                  invalidate(false);
+                  setPreferCover(e.target.checked);
+                }}
+              />
+              Prefer covered paths
+            </label>
+            {preferCover && (
+              <p>
+                {profile === 'recommended' ? 'Recommended already favours indoor paths. ' : ''}A
+                soft preference; outdoor sections may remain.
+              </p>
+            )}
             <label>
               Directions language
               <select
@@ -568,6 +612,11 @@ export function WalkingPlanner({
       )}
       {route && (
         <article className="route-result" aria-label="Walking directions">
+          <RouteServiceNotes messages={route.sourceMessages} />
+          {route.request.preferences?.preferCover && (
+            <p className="comparison-note">Cover preferred · continuous shelter is not verified.</p>
+          )}
+          {network && <RouteNetworkPanel network={network} route={route} />}
           {route && <StationRouteCards contexts={stationContexts} onInspect={onInspectStation} />}
           {route && stationLoading && (
             <p className="search-notice" role="status">

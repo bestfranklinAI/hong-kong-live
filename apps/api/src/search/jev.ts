@@ -16,7 +16,8 @@ const needs = {
   'open-now': 'places that are open now or currently operating',
   'working-lifts': 'lifts confirmed to be working now',
   'indoor-position': 'knowing the user’s current indoor position or floor',
-  'covered-walk': 'a walking route continuously sheltered from weather',
+  'covered-walk':
+    'a strictly continuous shelter requirement: under cover ALL the way, no outdoor sections, 全程有蓋 or 完全唔可以淋雨. Soft preferences such as preferably, 盡量 or outdoor sections are okay do NOT request continuous shelter',
 } as const;
 // Initial evaluation policies, not measured calibration or accessibility guarantees.
 const NOUL_THRESHOLD = 0.7;
@@ -32,9 +33,10 @@ export class JevDiscoveryAssistant implements DiscoveryAssistant {
     const areas = jevAreaCandidates(request.query);
     const questions: Questions = {
       mobility: choice(
-        `${RULES} Which mobility preference does the user express? Working lifts alone does not imply a wheelchair or barrier-free request.`,
+        `${RULES} Which mobility preference does the user positively express? A request for working lifts describes equipment status only and belongs to ordinary walking unless the user separately requests avoiding stairs or wheelchair access. Negated stair avoidance (唔使避樓梯, 不需要避開樓梯) is ordinary walking.`,
         {
-          walking: 'Ordinary walking, with no explicit stair avoidance or wheelchair requirement.',
+          walking:
+            'Ordinary walking, working-lift status alone, or explicitly negated stair avoidance. No positive request to avoid stairs or require wheelchair access.',
           'fewer-stairs':
             'Prefer fewer stairs or avoid stairs (盡量少樓梯), without an explicit wheelchair/barrier-free requirement.',
           'barrier-free':
@@ -59,6 +61,9 @@ export class JevDiscoveryAssistant implements DiscoveryAssistant {
       questions[`need_${key}`] = noul(
         `${RULES} Does the user request ${description}? Judge the request, not whether this information is available.`,
       );
+    questions.prefer_cover = noul(
+      `${RULES} Does the user explicitly prefer a sheltered or covered walk, including a soft preference such as preferably covered, avoid rain, 盡量有遮蔭 or 有蓋通道? Negation is no. This expresses a preference, never a claim that a route is covered. A demand for continuous shelter also counts, but must remain an unverified need.`,
+    );
 
     const { answers } = await this.client.evaluate(
       { state: { query: request.query, language: request.language }, questions },
@@ -85,6 +90,7 @@ export class JevDiscoveryAssistant implements DiscoveryAssistant {
       interests: Object.keys(interests).filter((key) => selected(`interest_${key}`)),
       area: area === 'none' ? '' : areas[Number(area.slice(5))],
       mobility: chosen('mobility'),
+      ...(selected('prefer_cover') ? { routePreferences: { preferCover: true } } : {}),
       unverifiedNeeds: Object.keys(needs).filter((key) => selected(`need_${key}`)),
     });
   }

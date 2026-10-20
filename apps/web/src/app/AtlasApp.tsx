@@ -1,4 +1,5 @@
 import { RouteMapSwitcher } from '../features/navigation/RouteMapSwitcher';
+import { useRouteNetwork } from '../features/navigation/use-route-network';
 import { JourneyGuide } from '../features/navigation/JourneyGuide';
 import { useJourneyGuidance } from '../features/navigation/use-journey-guidance';
 import type { JourneyStep } from '../features/navigation/journey-steps';
@@ -153,6 +154,9 @@ export function AtlasApp() {
     null,
   );
   const routeStations = useRouteStations(walkingRoute);
+  const routeNetwork = useRouteNetwork(
+    search.mode === 'explore' && plannerOpen ? walkingRoute : null,
+  );
   const journey = useJourneyGuidance(walkingRoute, routeStations.contexts, routeStations.loading);
   const [routeMapRevision, setRouteMapRevision] = useState(0);
   const stationFloorSelections = useRef(new Map<string, string>());
@@ -652,6 +656,9 @@ export function AtlasApp() {
                   stationRouteView={search.mode === 'explore' ? routeStations.view : undefined}
                   onRouteStationSelect={setRouteStationId}
                   walkingRoute={search.mode === 'explore' ? walkingRoute : null}
+                  pedestrianNetwork={
+                    !guiding && !indoorMap && !activeRouteStation ? routeNetwork.data : undefined
+                  }
                   basemap={basemap}
                   mapLanguage={mapLanguage}
                   quality={quality}
@@ -802,6 +809,7 @@ export function AtlasApp() {
                         </button>
                       ) : plannerOpen ? (
                         <WalkingPlanner
+                          network={routeNetwork}
                           onExpandComparison={() => {
                             if (mobile) setSheetSnap('full');
                           }}

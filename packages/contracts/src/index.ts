@@ -79,6 +79,7 @@ export { places, searchPlaces, getPlace, categoryLabels } from './places';
 export * from './map-links';
 export * from './facilities';
 export * from './routing';
+export * from './pedestrian-network';
 export * from './indoor';
 export type { MapNameLabel } from './map-labels';
 

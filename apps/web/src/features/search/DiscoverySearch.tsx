@@ -178,6 +178,9 @@ export function DiscoverySearch({
                 <li key={interest}>{interestLabels[interest]}</li>
               ))}
               <li>{mobilityLabels[result.intent.mobility]}</li>
+              {result.intent.routePreferences?.preferCover && (
+                <li>Prefer cover · not guaranteed</li>
+              )}
               {result.intent.area && <li>Area: {result.intent.area}</li>}
             </ul>
             {!result.intent.interests.length && (

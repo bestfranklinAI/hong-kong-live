@@ -21,9 +21,9 @@ const replay = () => ({
 
 it('reports all model cases unrun for reference-only pipeline checks', () => {
   const report = evaluateDiscovery();
-  expect(report.total).toBe(8);
+  expect(report.total).toBe(12);
   expect(report.modelEvaluated).toBe(false);
-  expect(report.modelCasesUnrun).toBe(8);
+  expect(report.modelCasesUnrun).toBe(12);
   expect(report.passed).toBe(0);
   expect(report.failed).toBe(0);
   expect(report.rollout).toBe('blocked');
@@ -31,7 +31,7 @@ it('reports all model cases unrun for reference-only pipeline checks', () => {
 
 it('scores response replays without calling them live model validation or enabling rollout', () => {
   const report = evaluateDiscovery(discoveryReplaySchema.parse(replay()));
-  expect(report.passed).toBe(8);
+  expect(report.passed).toBe(12);
   expect(report.failed).toBe(0);
   expect(report.liveModelRun).toBe(false);
   expect(report.rollout).toBe('human-review-required');
@@ -39,8 +39,8 @@ it('scores response replays without calling them live model validation or enabli
 
 it('fails missing responses, incorrect negation, and unknown ranking IDs', () => {
   const missing = evaluateDiscovery({ ...replay(), cases: [] });
-  expect(missing.failed).toBe(8);
-  expect(missing.modelCasesUnrun).toBe(8);
+  expect(missing.failed).toBe(12);
+  expect(missing.modelCasesUnrun).toBe(12);
   expect(missing.modelEvaluated).toBe(false);
   const cases = replay().cases;
   cases[0].ranking.candidateIds = ['invented:cafe'];

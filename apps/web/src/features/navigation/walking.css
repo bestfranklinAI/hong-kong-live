@@ -1907,3 +1907,245 @@
   background: #155c50;
   color: white;
 }
+
+.route-network {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control, 12px);
+  background: var(--surface);
+  margin-block: 12px;
+  overflow: hidden;
+}
+.network-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 12px;
+  cursor: pointer;
+}
+.network-toggle input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--forest);
+  flex-shrink: 0;
+}
+.network-toggle span {
+  display: grid;
+  gap: 3px;
+}
+.network-toggle small,
+.network-caption,
+.network-record small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.network-toggle strong {
+  font-size: 14px;
+}
+.network-content {
+  padding: 0 12px 12px;
+}
+.network-content p {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.network-tabs {
+  display: flex;
+  gap: 8px;
+}
+.network-tabs button,
+.network-diagram-heading button,
+.network-content button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.network-tabs button[aria-pressed='true'] {
+  border-color: var(--forest);
+  color: var(--forest);
+  background: var(--soft);
+  font-weight: 600;
+}
+.network-diagram-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.network-diagram {
+  width: 100%;
+  display: block;
+  background: var(--soft);
+  border-radius: 12px;
+  margin-block: 8px;
+}
+.network-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  cursor: pointer;
+}
+.network-line--connection {
+  stroke: #7866a1;
+}
+.network-line--covered {
+  stroke: #547bb2;
+}
+.network-line--uncovered {
+  stroke: #b47a40;
+}
+.network-line--unknown {
+  stroke: #929b96;
+  stroke-dasharray: 3 3;
+}
+.network-line--disabled {
+  stroke-dasharray: 4 3;
+  opacity: 0.6;
+}
+.network-line--selected {
+  stroke: var(--ink);
+  stroke-width: 4;
+}
+.network-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  font-size: 12px;
+}
+.network-legend span::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 3px;
+  margin-right: 5px;
+  vertical-align: middle;
+  background: #929b96;
+}
+.network-legend .covered::before {
+  background: #547bb2;
+}
+.network-legend .uncovered::before {
+  background: #b47a40;
+}
+.network-filter {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  margin-block: 12px;
+}
+.network-filter select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 8px;
+  font: inherit;
+  font-size: 16px;
+}
+.network-record {
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--soft);
+  font-size: 13px;
+}
+.route-source-messages {
+  border-left: 3px solid #b47a40;
+  padding: 8px 12px;
+  background: var(--soft);
+  border-radius: 4px;
+  font-size: 13px;
+}
+.route-source-messages p {
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.network-line--route {
+  stroke: var(--forest);
+  stroke-width: 4;
+  opacity: 0.7;
+  cursor: default;
+}
+.network-legend .route::before {
+  background: var(--forest);
+  height: 4px;
+}
+.network-legend .connection::before {
+  background: #7866a1;
+}
+
+.network-tabs button {
+  flex: 1;
+}
+.network-record {
+  margin-block: 12px;
+  overflow-wrap: anywhere;
+}
+.network-record-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.network-record-heading button {
+  flex-shrink: 0;
+}
+.network-line:focus-visible {
+  stroke: var(--ink);
+  stroke-width: 5;
+  outline: none;
+}
+.network-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 12px;
+  cursor: pointer;
+}
+.network-hit:focus-visible {
+  outline: none;
+}
+.network-hit:focus-visible + .network-line {
+  stroke: var(--ink);
+  stroke-width: 5;
+}
+.network-line--vertical {
+  stroke-width: 6;
+}
+.network-hit {
+  stroke-linecap: round;
+}
+.network-section:focus-visible {
+  outline: none;
+}
+.network-section:focus-visible .network-line {
+  stroke: var(--ink);
+  stroke-width: 5;
+}
+.network-dot {
+  fill: #7866a1;
+  stroke: white;
+  stroke-width: 1.5;
+  cursor: pointer;
+}
+.network-dot--covered {
+  fill: #547bb2;
+}
+.network-dot--uncovered {
+  fill: #b47a40;
+}
+.network-dot--unknown {
+  fill: #929b96;
+}
+.network-section[aria-pressed='true'] .network-dot,
+.network-section:focus-visible .network-dot {
+  fill: var(--ink);
+}

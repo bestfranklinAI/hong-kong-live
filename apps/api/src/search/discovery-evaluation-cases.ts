@@ -82,6 +82,7 @@ export const discoveryEvaluationCases: DiscoveryEvaluationCase[] = [
       area: '',
       mobility: 'walking',
       unverifiedNeeds: ['covered-walk'],
+      routePreferences: { preferCover: true },
     },
   },
   {
@@ -91,5 +92,52 @@ export const discoveryEvaluationCases: DiscoveryEvaluationCase[] = [
       language: 'en',
     },
     expected: { interests: [], area: '', mobility: 'walking', unverifiedNeeds: [] },
+  },
+  {
+    id: 'english-soft-cover',
+    request: {
+      query: 'A waterfront walk near Central, preferably covered but outdoor sections are okay',
+      language: 'en',
+    },
+    expected: {
+      interests: ['waterfront'],
+      area: 'Central',
+      mobility: 'walking',
+      routePreferences: { preferCover: true },
+      unverifiedNeeds: [],
+    },
+    acceptedAreas: ['Central', '中環'],
+  },
+  {
+    id: 'cantonese-soft-cover',
+    request: { query: '中環海濱行下，盡量行有蓋通道，少啲樓梯', language: 'tc' },
+    expected: {
+      interests: ['waterfront'],
+      area: '中環',
+      mobility: 'fewer-stairs',
+      routePreferences: { preferCover: true },
+      unverifiedNeeds: [],
+    },
+    acceptedAreas: ['Central', '中環'],
+  },
+  {
+    id: 'english-negated-cover',
+    request: {
+      query: 'A waterfront walk in Central; I do not need a covered route',
+      language: 'en',
+    },
+    expected: {
+      interests: ['waterfront'],
+      area: 'Central',
+      mobility: 'walking',
+      unverifiedNeeds: [],
+    },
+    acceptedAreas: ['Central', '中環'],
+  },
+  {
+    id: 'cantonese-negated-cover',
+    request: { query: '中環海濱行下，唔需要有蓋通道，唔使避樓梯', language: 'tc' },
+    expected: { interests: ['waterfront'], area: '中環', mobility: 'walking', unverifiedNeeds: [] },
+    acceptedAreas: ['Central', '中環'],
   },
 ];

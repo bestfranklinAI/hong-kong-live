@@ -22,7 +22,8 @@ export async function requestWalkingRoute(request: RouteRequest, cancellation: A
     if (!result.success) throw new Error('Route response unavailable. Try again.');
     if (
       result.data.request.profile !== request.profile ||
-      result.data.request.language !== request.language
+      result.data.request.language !== request.language ||
+      !!result.data.request.preferences?.preferCover !== !!request.preferences?.preferCover
     )
       throw new Error(
         'The route response does not match the requested profile or language. Try again.',

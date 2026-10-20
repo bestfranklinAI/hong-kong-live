@@ -29,7 +29,7 @@ export function RouteDirections({ route }: { route: WalkingRoute }) {
             className={step.kind ? 'route-step route-step--transition' : 'route-step'}
           >
             <div className="route-step-symbol">
-              <NavigationIcon kind={instructionSymbol(step.text)} />
+              <NavigationIcon kind={instructionSymbol(step.text, step.maneuver)} />
               <span>{index + 1}</span>
             </div>
             <div className="route-step-content">

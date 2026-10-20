@@ -42,6 +42,7 @@ export function evaluateDiscovery(replay?: DiscoveryReplay) {
     if (
       !sameSet(intent.interests, reference.interests) ||
       intent.mobility !== reference.mobility ||
+      !!intent.routePreferences?.preferCover !== !!reference.routePreferences?.preferCover ||
       !sameSet(intent.unverifiedNeeds, reference.unverifiedNeeds) ||
       !areas.includes(normalizeSearchText(intent.area))
     )

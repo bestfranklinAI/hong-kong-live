@@ -28,7 +28,9 @@ export function JourneyGuide({
       aria-label="Continuous journey guidance"
     >
       <div className="journey-instruction" aria-live="polite" aria-atomic="true">
-        <NavigationIcon kind={instructionSymbol(step.instruction.text)} />
+        <NavigationIcon
+          kind={instructionSymbol(step.instruction.text, step.instruction.maneuver)}
+        />
         <div>
           <small>
             {complete

@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef, type ReactNode } from 'react';
 import type { WalkingRoute } from '@hk/contracts';
 import type { LocationFix } from '../../scene/UserLocation';
 import type { routeProgress } from './route-progress';
+import { RouteServiceNotes } from './RouteServiceNotes';
 
 /** The current instruction stays on the map; supporting details open in a separate sheet. */
 export function WalkingGuidance({
@@ -136,6 +137,7 @@ export function WalkingGuidance({
                   <RefreshCw size={16} /> Refresh location
                 </button>
               </details>
+              <RouteServiceNotes messages={route.sourceMessages} />
               <details>
                 <summary>All directions · {route.steps.length} steps</summary>
                 <ol>

@@ -2,20 +2,25 @@ import { indoorStationSchema } from '@hk/contracts';
 import { IndoorCatalogue } from '@hk/providers';
 import { Hono } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
-import { routeRequestSchema, type DataMode } from '@hk/contracts';
-import { WalkingRouter, ProviderError, type Fetcher } from '@hk/providers';
+import { routeRequestSchema, networkRequestSchema, type DataMode } from '@hk/contracts';
+import {
+  WalkingRouter,
+  PedestrianNetworkProvider,
+  ProviderError,
+  type Fetcher,
+} from '@hk/providers';
 export function routingRoutes(fetcher: Fetcher, now: () => number, mode: DataMode) {
   const app = new Hono(),
     router = new WalkingRouter(fetcher, now);
   const indoor = new IndoorCatalogue(fetcher, now);
+  const network = new PedestrianNetworkProvider(fetcher, now);
   let windowAt = now(),
     requests = 0;
-  app.use(
-    '*',
+  app.use('*', (c, next) =>
     bodyLimit({
-      maxSize: 8192,
+      maxSize: c.req.path.endsWith('/network') ? 512 * 1024 : 8192,
       onError: (c) => c.json({ error: 'Route request is too large.' }, 413),
-    }),
+    })(c, next),
   );
   app.use('*', async (c, next) => {
     if (mode === 'fixture')
@@ -30,6 +35,24 @@ export function routingRoutes(fetcher: Fetcher, now: () => number, mode: DataMod
     if (++requests > 30)
       return c.json({ error: 'Too many route requests. Try again in a minute.' }, 429);
     await next();
+  });
+  app.post('/network', async (c) => {
+    const parsed = networkRequestSchema.safeParse(await c.req.json().catch(() => null));
+    if (!parsed.success)
+      return c.json({ error: 'Choose a valid walking route for nearby paths.' }, 400);
+    try {
+      return c.json(await network.nearRoute(parsed.data));
+    } catch (error) {
+      return c.json(
+        {
+          error:
+            error instanceof ProviderError
+              ? error.message
+              : 'Nearby paths are temporarily unavailable.',
+        },
+        502,
+      );
+    }
   });
   app.get('/indoor/stations', async (c) => {
     try {

@@ -23,4 +23,5 @@ export * from './restaurant-locations';
 export * from './map-links';
 export * from './facilities';
 export * from './routing';
+export * from './pedestrian-network';
 export * from './indoor';

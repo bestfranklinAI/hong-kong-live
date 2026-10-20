@@ -28,11 +28,14 @@ function typedResponse(body: Body, intent: DiscoveryIntent, scores: number[] = [
     answers: Object.fromEntries(
       Object.entries(body.questions).map(([id, question]) => {
         if (question.type === 'noul') {
-          const yes = id.startsWith('interest_')
-            ? intent.interests.includes(id.slice(9) as DiscoveryIntent['interests'][number])
-            : intent.unverifiedNeeds.includes(
-                id.slice(5) as DiscoveryIntent['unverifiedNeeds'][number],
-              );
+          const yes =
+            id === 'prefer_cover'
+              ? !!intent.routePreferences?.preferCover
+              : id.startsWith('interest_')
+                ? intent.interests.includes(id.slice(9) as DiscoveryIntent['interests'][number])
+                : intent.unverifiedNeeds.includes(
+                    id.slice(5) as DiscoveryIntent['unverifiedNeeds'][number],
+                  );
           return [id, { type: 'noul', noul: yes ? 1 : 0 }];
         }
         if (question.type === 'choice') {
@@ -96,7 +99,7 @@ it('builds strict Cantonese preferences from independent Noul/Choice answers wit
     await new JevDiscoveryAssistant(client).interpret(request, new AbortController().signal),
   ).toEqual(intent);
   expect(calls[0].state).toEqual({ query: request.query, language: request.language });
-  expect(Object.keys(calls[0].questions)).toHaveLength(13);
+  expect(Object.keys(calls[0].questions)).toHaveLength(14);
   expect(calls[0].questions.interest_food.type).toBe('noul');
   expect(calls[0].questions.mobility.type).toBe('choice');
   expect(JSON.stringify(calls[0])).not.toContain('coordinates');
@@ -246,7 +249,7 @@ it('uses the explicit runtime gate and keeps fixture mode isolated even with a c
   expect(result.results[0]).toEqual(retrieveDiscoveryCandidates(intent, request)[0].result);
 });
 
-it('executes the eight-case Jev path through an injected transport without claiming live model evidence', async () => {
+it('executes the twelve-case Jev path through an injected transport without claiming live model evidence', async () => {
   const fetcher = vi.fn<Fetcher>(async (_url, options) => {
     const body: Body = JSON.parse(options!.body as string);
     const test = discoveryEvaluationCases.find((row) => row.request.query === body.state.query)!;
@@ -256,14 +259,14 @@ it('executes the eight-case Jev path through an injected transport without claim
     return Response.json(typedResponse(body, test.expected, scores));
   });
   const report = await evaluateJev(configured, new AbortController().signal, fetcher);
-  expect(report.passed).toBe(8);
+  expect(report.passed).toBe(12);
   expect(report.failed).toBe(0);
   expect(report.rollout).toBe('human-review-required');
   expect(report.liveModelRun).toBe(false);
-  expect(report.provider.attemptedRequests).toBe(14);
+  expect(report.provider.attemptedRequests).toBe(22);
   expect(report.provider.observedModels).toEqual(['jev-test-double']);
   await expect(
     evaluateJev({ ...configured, HK_DATA_MODE: 'fixture' }, new AbortController().signal, fetcher),
   ).rejects.toThrow('live');
-  expect(fetcher).toHaveBeenCalledTimes(14);
+  expect(fetcher).toHaveBeenCalledTimes(22);
 });
