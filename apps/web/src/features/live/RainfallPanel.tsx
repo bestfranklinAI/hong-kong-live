@@ -12,9 +12,8 @@ export function RainfallPanel({ rain }: { rain: RainfallControls }) {
     (publication !== null && rain.now - Date.parse(publication.issuedAt) >= 24 * 60_000);
   return (
     <section className="rainfall-panel" aria-label="Rainfall forecast">
-      <span className="eyebrow">NEXT TWO HOURS · HKO</span>
-      <h2>Where will it rain?</h2>
-      <p>Forecast accumulation for each half-hour. Provisional data, not observed radar.</p>
+      <h2>Rainfall forecast</h2>
+      <p>Next two hours · HKO · mm per half-hour</p>
       <span className={`status-label ${publication && !delayed ? 'fresh' : ''}`}>
         <span />
         {query.data?.mode === 'fixture'
@@ -27,14 +26,6 @@ export function RainfallPanel({ rain }: { rain: RainfallControls }) {
                 ? 'Update delayed · last usable forecast'
                 : 'Latest forecast'}
       </span>
-      <div className="rainfall-style" role="group" aria-label="Rainfall appearance">
-        <button aria-pressed={rain.style === 'smooth'} onClick={() => rain.setStyle('smooth')}>
-          Smooth
-        </button>
-        <button aria-pressed={rain.style === 'grid'} onClick={() => rain.setStyle('grid')}>
-          Source grid
-        </button>
-      </div>
       {frame ? (
         <>
           <div className="rainfall-period">
@@ -76,12 +67,7 @@ export function RainfallPanel({ rain }: { rain: RainfallControls }) {
               </span>
             ))}
           </div>
-          <small>
-            mm / 30 min · grey = missing. Outside the grid: no coverage.{' '}
-            {rain.style === 'smooth'
-              ? 'Smoothed for display; source resolution is unchanged. Faint rain fades near zero.'
-              : 'Clear = 0. Original forecast cells.'}
-          </small>
+          <small>Grey = no data · clear = no forecast rain</small>
           {frame.values.every((value) => value === 0) && (
             <p>No rainfall is forecast across this grid for this period.</p>
           )}
@@ -89,32 +75,44 @@ export function RainfallPanel({ rain }: { rain: RainfallControls }) {
       ) : (
         <p role="status">
           {query.isPending
-            ? 'The first request can take up to 45 seconds; subsequent requests share the prepared grid.'
+            ? 'Loading the latest HKO forecast. This can take up to 45 seconds.'
             : query.data?.error ||
               'No current forecast can be displayed. The rainfall overlay is hidden.'}
         </p>
       )}
-      <p className="rainfall-source">
-        Issued: {hkSourceTime(query.data?.sourceUpdatedAt)}
-        <br />
-        Fetched: {hkSourceTime(query.data?.fetchedAt)}
-      </p>
-      <button
-        className="text-button"
-        disabled={query.isFetching}
-        onClick={() => void query.refetch()}
-      >
-        <RefreshCw size={14} />
-        Refresh rainfall
-      </button>
-      <a
-        className="text-button"
-        href="https://data.gov.hk/en-data/dataset/hk-hko-rss-gridded-rainfall-nowcast-in-hong-kong"
-        target="_blank"
-        rel="noreferrer"
-      >
-        HKO forecast source ↗
-      </a>
+      <p className="rainfall-source">Issued: {hkSourceTime(query.data?.sourceUpdatedAt)}</p>
+      <details className="rainfall-display-options">
+        <summary>Display & source</summary>
+        <div className="rainfall-style" role="group" aria-label="Rainfall appearance">
+          <button aria-pressed={rain.style === 'smooth'} onClick={() => rain.setStyle('smooth')}>
+            Smooth
+          </button>
+          <button aria-pressed={rain.style === 'grid'} onClick={() => rain.setStyle('grid')}>
+            Source grid
+          </button>
+        </div>
+        <p>
+          Provisional forecast, not observed radar. Outside the grid there is no coverage. Smooth
+          display changes appearance, not the source resolution; faint rain fades near zero.
+        </p>
+        <p className="rainfall-source">Fetched: {hkSourceTime(query.data?.fetchedAt)}</p>
+        <button
+          className="text-button"
+          disabled={query.isFetching}
+          onClick={() => void query.refetch()}
+        >
+          <RefreshCw size={14} />
+          Refresh rainfall
+        </button>
+        <a
+          className="text-button"
+          href="https://data.gov.hk/en-data/dataset/hk-hko-rss-gridded-rainfall-nowcast-in-hong-kong"
+          target="_blank"
+          rel="noreferrer"
+        >
+          HKO forecast source ↗
+        </a>
+      </details>
     </section>
   );
 }

@@ -53,6 +53,63 @@ it('validates indoor station identifiers before provider I/O', async () => {
   );
   expect(fetcher).not.toHaveBeenCalled();
 });
+it('rejects arbitrary network queries before I/O and never fetches network data in fixture mode', async () => {
+  const fetcher = vi.fn();
+  const request = (body: unknown) =>
+    new Request('http://localhost/api/v1/routes/network', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  const app = createApp({ fetcher });
+  expect(
+    (
+      await app.request(
+        request({
+          paths: [
+            [
+              [0, 0],
+              [1, 1],
+            ],
+          ],
+          category: 'cover',
+        }),
+      )
+    ).status,
+  ).toBe(400);
+  expect(
+    (
+      await app.request(
+        request({
+          paths: [
+            [
+              [114.16, 22.28],
+              [114.17, 22.28],
+            ],
+          ],
+          category: 'cover',
+          where: '1=1',
+        }),
+      )
+    ).status,
+  ).toBe(400);
+  expect(
+    (
+      await createApp({ fetcher, mode: 'fixture' }).request(
+        request({
+          paths: [
+            [
+              [114.16, 22.28],
+              [114.17, 22.28],
+            ],
+          ],
+          category: 'cover',
+        }),
+      )
+    ).status,
+  ).toBe(503);
+  expect(fetcher).not.toHaveBeenCalled();
+});
 
 it('validates floor requests and keeps unavailable geometry explicit', async () => {
   const fetcher = vi.fn(async () => new Response('{}'));

@@ -1,7 +1,7 @@
 import { normalizeSearchText, type SearchResult, type CatalogueStatus } from '@hk/contracts';
 export interface SearchRepository {
   search(query: string, limit: number): SearchResult[];
-  nearby(lat: number, lng: number, limit: number): SearchResult[];
+  nearby(lat: number, lng: number, limit: number, radiusM?: number): SearchResult[];
   get(id: string): SearchResult | undefined;
   status(now: number): CatalogueStatus;
   locate(id: string, address: string, match: SearchResult | undefined, now: number): void;

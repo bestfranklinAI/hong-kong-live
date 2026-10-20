@@ -12,11 +12,15 @@ const colours: Record<FacilityCategory, string> = {
   sports: '#a3642c',
   library: '#765aa2',
   refill: '#247eae',
+  park: '#427b52',
+  culture: '#9a6840',
 };
 const paths: Record<FacilityCategory, string> = {
   sports: '<path d="M12 12v16m5-13v10m6-10v10m5-13v16M17 20h6"/>',
   library: '<path d="M20 14c-4-3-8-3-11-2v16c4-1 7 0 11 2 4-2 7-3 11-2V12c-3-1-7-1-11 2v16"/>',
   refill: '<path d="M20 9c-3 5-9 10-9 15a9 9 0 0 0 18 0c0-5-6-10-9-15Z"/>',
+  park: '<path d="m20 8-8 12h4l-6 8h20l-6-8h4L20 8Zm0 20v5"/>',
+  culture: '<path d="m9 16 11-7 11 7H9Zm3 4v9m8-9v9m8-9v9M9 32h22"/>',
 };
 function icon(category: FacilityCategory, count: number) {
   const content =

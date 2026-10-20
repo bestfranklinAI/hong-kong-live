@@ -75,7 +75,6 @@ Map inspection: choose a station, level and point type, then **Choose on map**. 
 
 Map-picker verification: typecheck, lint, 154 tests and production build passed. Browser inspection confirmed marker framing, the level label, return-to-list and endpoint selection through the numbered fallback. Automated native canvas taps did not produce a selection in this browser session; the marker confirmation interaction still needs a physical touch check.
 
-
 ## Selected floor boundaries
 
 The map picker retrieves `mtr_level_polygon` venue by venue through `GET /api/v1/routes/indoor/stations/:uuid/floors`. A live Sung Wong Toi response on 26 September 2026 contains six Polygon features; their level IDs match the existing points. The captured response is `fixtures/providers/landsd-mtr-levels-swt-2026-09-26.json` for tests only. The adapter also accepts MultiPolygon geometry, preserves all rings and source XYZ, rejects mixed venues, duplicate IDs, unclosed rings and conflicting level Z, and limits total geometry to 100,000 vertices within the existing 6 MiB response budget.
@@ -152,3 +151,13 @@ Tests cover a small off-centre hole, concave boundaries, disconnected floor part
 A public entrance-to-entrance test returned explicit `Popcorn 1 Level G` directions with route Z approximately 6.95 m. The indoor Ground Floor geometry is at 5.65 m and the venue has three distinct Ground Floor IDs. Strict 0.25 m height matching therefore finds no confirmed floor segments. This is a source representation mismatch, not a verified 1.3 m datum correction.
 
 The building viewer can now make a separately labelled **2D direction-level match**: complete route edges must fit the cumulative distance interval of an explicit venue-and-level instruction, and uniquely intersect the corresponding named floor footprint. Geometry/direction total lengths must agree within 1% (minimum 2 m). Route lines are clipped to the floor outline; no source Z is changed, and this match is not promoted into a verified 3D alignment. A G-only instruction bounded by two explicit instructions for the same venue and level can share that 2D match. Other unnamed or ambiguous portions remain unassigned. The recorded route and floors are in `popcorn-route-2026-10-17.json` for regression tests only.
+
+## Network enrichment and solver experiments — 19 October 2026
+
+The [bounded network/solver experiment](audits/pedestrian-network-experiments-2026-10-19.md) confirms useful network attributes, access-time joins, custom JSON travel modes and a point barrier without replacing the source solver. It recommends a gradual hybrid approach, not a completed local graph feature.
+
+The raw direction response includes `maneuverType` and `compressedGeometry`, which the current normalized app model drops. Earlier references to absent per-step coordinates describe that normalized model; they should not be read as evidence that the upstream response has no spatial instruction data. The tested REST JS 4.11.0 helper did not decode these XYZM direction strings into usable finite coordinates; a compatible decoder and spatial validation remain necessary. The raw network schemas now declare HKPD height in metres, separately from the still-unverified route-to-city height alignment.
+
+## Optional network context and preferences — 19 October 2026
+
+The implemented [network integration](../architecture/pedestrian-network.md) adds bounded nearby source records, a local height diagram, preserved manoeuvres/service warnings and an allowlisted cover preference. Nearby records are not matched route edges. Raw XYZM instruction decoding, route exposure percentages, access-hour joins and authoritative floor matching remain unimplemented. See [verification](../verification/pedestrian-network.md).

@@ -15,6 +15,23 @@ const names = {
   'barrier-free': 'Barrier Free Path',
 };
 const point = z.array(z.number().finite()).min(2).max(4);
+const travelModeSchema = z
+  .object({
+    name: z.string(),
+    id: z.string(),
+    restrictionAttributeNames: z.array(z.string()).optional(),
+    attributeParameterValues: z
+      .array(
+        z.object({
+          attributeName: z.string(),
+          parameterName: z.string(),
+          value: z.union([z.string(), z.number()]),
+        }),
+      )
+      .optional(),
+  })
+  .passthrough();
+type TravelMode = z.infer<typeof travelModeSchema>;
 const responseSchema = z.object({
   routes: z.object({
     hasZ: z.boolean().optional(),
@@ -43,12 +60,17 @@ const responseSchema = z.object({
               text: z.string(),
               length: z.number().finite().nonnegative(),
               time: z.number().finite().nonnegative(),
+              maneuverType: z.string().max(100).optional(),
             }),
           }),
         ),
       }),
     )
     .min(1),
+  messages: z
+    .array(z.object({ type: z.number(), description: z.string().max(2000) }))
+    .max(30)
+    .optional(),
 });
 export function horizontalDistance(
   a: { lng: number; lat: number },
@@ -110,11 +132,14 @@ export function normalizeWalkingRoute(
       text: a.text,
       distanceM: a.length,
       durationMinutes: a.time,
+      ...(a.maneuverType ? { maneuver: a.maneuverType } : {}),
     })),
     endpointOffsetsM: offsets,
     fetchedAt: new Date(now).toISOString(),
     sourceUpdatedAt: null,
     sourceUrl: ROUTING_SOURCE_URL,
+    sourceMessages:
+      parsed.data.messages?.filter((m) => m.type !== 0).map((m) => m.description) ?? [],
     warnings: [
       'Planning preview, not live navigation. Confirm the entrance and level before walking.',
       'The map line is a ground projection. Source heights are preserved; their vertical datum is not yet verified.',
@@ -132,8 +157,8 @@ export function normalizeWalkingRoute(
 }
 /** Short-lived bounded cache: precise journey coordinates are never persisted. */
 export class WalkingRouter {
-  private modes?: { expires: number; values: { name: string; id: string }[] };
-  private modesPending?: Promise<{ name: string; id: string }[]>;
+  private modes?: { expires: number; values: TravelMode[] };
+  private modesPending?: Promise<TravelMode[]>;
   private cache = new Map<string, { expires: number; route: WalkingRoute }>();
   private pending = new Map<string, Promise<WalkingRoute>>();
   constructor(
@@ -145,9 +170,7 @@ export class WalkingRouter {
     if (this.modesPending) return this.modesPending;
     this.modesPending = (async () => {
       const raw = await fetchJson(`${BASE}/retrieveTravelModes?f=json`, this.fetcher);
-      const data = z
-        .object({ supportedTravelModes: z.array(z.object({ name: z.string(), id: z.string() })) })
-        .parse(raw);
+      const data = z.object({ supportedTravelModes: z.array(travelModeSchema) }).parse(raw);
       this.modes = { expires: this.now() + 86400000, values: data.supportedTravelModes };
       return data.supportedTravelModes;
     })().finally(() => {
@@ -170,6 +193,23 @@ export class WalkingRouter {
     const task = (async () => {
       const mode = (await this.travelModes()).find((m) => m.name === names[request.profile]);
       if (!mode) throw new ProviderError('The requested route profile is unavailable.');
+      let travelMode = mode.id;
+      if (request.preferences?.preferCover) {
+        if (!mode.restrictionAttributeNames || !mode.attributeParameterValues)
+          throw new ProviderError('The source cannot apply the cover preference right now.');
+        const cover = ['Avoid Outdoor (high)', 'Prefer Indoor (high)'];
+        if (
+          !cover.every((name) =>
+            mode.attributeParameterValues!.some((p) => p.attributeName === name),
+          )
+        )
+          throw new ProviderError('The source cannot apply the cover preference right now.');
+        // Preserve every profile restriction, especially wheelchair barriers. Never accept client mode JSON.
+        travelMode = JSON.stringify({
+          ...mode,
+          restrictionAttributeNames: [...new Set([...mode.restrictionAttributeNames, ...cover])],
+        });
+      }
       const stops = {
         features: [request.start, request.end].map((p) => ({
           attributes: { Name: p.name },
@@ -183,7 +223,7 @@ export class WalkingRouter {
       };
       const query = new URLSearchParams({
         stops: JSON.stringify(stops),
-        travelMode: mode.id,
+        travelMode,
         f: 'json',
         returnZ: 'true',
         outSR: '4326',

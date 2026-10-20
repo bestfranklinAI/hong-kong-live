@@ -28,9 +28,8 @@ export function CamerasPanel({
   );
   return (
     <section className="cameras-panel" aria-label="Traffic cameras">
-      <div className="panel-heading">
-        <span className="eyebrow">A LOOK AT THE ROAD</span>
-        <h1>Street level.</h1>
+      <div className="panel-heading explore-heading">
+        <h1>Traffic cameras</h1>
         <p>Select a map marker or find a camera below.</p>
       </div>
       {selected && <CameraSnapshot key={selected.id} camera={selected} />}

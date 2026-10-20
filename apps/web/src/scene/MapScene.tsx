@@ -122,6 +122,9 @@ export default function MapScene(props: MapSceneProps) {
   useEffect(() => {
     controller.current?.setCityPresentation(props.cityPresentation ?? 'photo');
   }, [props.cityPresentation]);
+  useEffect(() => {
+    controller.current?.setPedestrianNetwork(props.pedestrianNetwork);
+  }, [props.pedestrianNetwork]);
 
   useEffect(() => {
     controller.current?.setCityView(props.cityView);

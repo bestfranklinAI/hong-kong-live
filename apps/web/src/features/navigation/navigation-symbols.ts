@@ -7,6 +7,9 @@ export const navigationPaths = {
   ramp: ['M3 19h18L3 8z', 'M8 5h9m-3-3 3 3-3 3'],
   entry: ['M10 3h10v18H10', 'M3 12h11m-4-4 4 4-4 4'],
   platform: ['M6 3h12v14H6z', 'M6 10h12', 'M8 21l2-4m4 0 2 4', 'M9 14h.01M15 14h.01'],
+  left: ['M18 21v-9a4 4 0 0 0-4-4H4', 'M9 3 4 8l5 5'],
+  right: ['M6 21v-9a4 4 0 0 1 4-4h10', 'm15 3 5 5-5 5'],
+  straight: ['M12 21V3', 'm5 10 7-7 7 7'],
   walk: ['M13 3h.01', 'M8 21l3-7', 'M16 21l-3-9 1-5', 'M6 12l3-5h5l4 5h3'],
 } as const;
 export type NavigationSymbol = keyof typeof navigationPaths;
@@ -30,4 +33,28 @@ export function instructionTransition(text: string): keyof typeof transitionLabe
     return 'stairs';
   if (/\b(?:take|use) (?:the |an? )?ramp\b|(?:沿|使用)斜道/i.test(text)) return 'ramp';
   return null;
+}
+
+/** Symbols echo explicit source manoeuvres; route geometry never invents a turn. */
+export function instructionSymbol(text: string, maneuver?: string): NavigationSymbol {
+  const transition = instructionTransition(text);
+  if (transition) return transition;
+  if (/Left$/.test(maneuver ?? '')) return 'left';
+  if (/Right$/.test(maneuver ?? '')) return 'right';
+  if (maneuver === 'esriDMTStraight') return 'straight';
+  if (
+    /^(?:(?:turn|bear|keep) (?:slightly )?(?:to the )?left\b|(?:向)?左轉|靠左)/i.test(text.trim())
+  )
+    return 'left';
+  if (
+    /^(?:(?:turn|bear|keep) (?:slightly )?(?:to the )?right\b|(?:向)?右轉|靠右)/i.test(text.trim())
+  )
+    return 'right';
+  if (
+    /^(?:go (?:straight|forward)\b|continue (?:straight|forward)\b|直行|沿.+前行)/i.test(
+      text.trim(),
+    )
+  )
+    return 'straight';
+  return 'walk';
 }

@@ -19,6 +19,7 @@ it('follows GPS, pauses on map interaction, recentres and releases its listeners
   follow.set(true, true, fix, 8);
   preRender.raiseEvent();
   expect(camera.lookAt).toHaveBeenCalled();
+  expect(camera.lookAt.mock.calls[0][1].range).toBe(260);
   expect(user.set).toHaveBeenLastCalledWith({ ...fix, z: 8 });
   const calls = camera.lookAt.mock.calls.length;
   canvas.dispatchEvent(new Event('pointerdown'));

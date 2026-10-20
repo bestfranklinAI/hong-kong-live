@@ -57,7 +57,10 @@ export function PlaceDetail({
         {place.name}
       </h2>
       <p className="chinese-name">{place.nameZh}</p>
-      <p className="detail-description">{place.description}</p>
+      <details className="place-description">
+        <summary>About this place</summary>
+        <p className="detail-description">{place.description}</p>
+      </details>
       <div className="detail-location">
         <MapPin size={15} />
         <span>{place.district}</span>
@@ -71,7 +74,7 @@ export function PlaceDetail({
       {!place.station && <BuildingIndoorButton name={place.name} nameZh={place.nameZh} />}
       {place.station && (
         <>
-          <button className="walking-submit" onClick={() => setIndoorOpen(true)}>
+          <button className="secondary-button" onClick={() => setIndoorOpen(true)}>
             View indoor map
           </button>
           <StationIndoorDialog
@@ -87,7 +90,7 @@ export function PlaceDetail({
       )}
       <div className="detail-actions">
         <button
-          className={`primary-button ${saved ? 'saved' : ''}`}
+          className={`secondary-button ${saved ? 'saved' : ''}`}
           onClick={() => toggleSaved(place.id)}
           aria-pressed={saved}
         >
@@ -109,7 +112,7 @@ export function PlaceDetail({
       {shareState !== 'idle' && (
         <p className="share-feedback" role="status">
           {shareState === 'copied'
-            ? 'Link copied. Share a little discovery.'
+            ? 'Link copied.'
             : 'Copy the address from your browser to share this view.'}
         </p>
       )}

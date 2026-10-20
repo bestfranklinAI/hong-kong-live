@@ -35,7 +35,9 @@ export function StationFloorPlan({
   routeForVenue,
   initialLevel,
   onLevelChange,
+  journeyGuidance,
 }: {
+  journeyGuidance?: (floorId: string) => ReactNode;
   routeForVenue?: WalkingRoute;
   initialLevel?: string;
   onLevelChange?: (id: string) => void;
@@ -233,7 +235,7 @@ export function StationFloorPlan({
             initialRotation={rotation}
             onRotationChange={setRotation}
             overlay={
-              stationRoute ? (
+              stationRoute && !journeyGuidance ? (
                 <StationFloorInstructions
                   compact
                   route={stationRoute.route}
@@ -268,7 +270,8 @@ export function StationFloorPlan({
               />
             )}
           </IndoorMapCanvas>
-          {stationRoute && (
+          {stationRoute && journeyGuidance && journeyGuidance(floor.id)}
+          {stationRoute && !journeyGuidance && (
             <StationRouteJourney
               context={stationRoute.context}
               route={stationRoute.route}

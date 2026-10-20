@@ -95,16 +95,22 @@ export class NavigationCamera {
     )
       return;
     this.lastPaint = { ...this.pose, ...insets, city };
+    // A wider neighbourhood view leaves the next junction visible above the guidance card.
+    const range = 260;
     const camera = this.widget.camera;
     camera.lookAt(
       Cartesian3.fromDegrees(this.pose.lng, this.pose.lat, this.pose.z),
-      new HeadingPitchRange(this.pose.heading, this.cityView() ? -Math.PI / 3 : -Math.PI / 2, 160),
+      new HeadingPitchRange(
+        this.pose.heading,
+        this.cityView() ? -Math.PI / 3 : -Math.PI / 2,
+        range,
+      ),
     );
     camera.lookAtTransform(Matrix4.IDENTITY);
     const height = this.widget.canvas.clientHeight;
     if (height && camera.frustum instanceof PerspectiveFrustum && camera.frustum.fovy) {
       const shift =
-        ((insets.bottom - insets.top) / height) * 160 * Math.tan(camera.frustum.fovy / 2);
+        ((insets.bottom - insets.top) / height) * range * Math.tan(camera.frustum.fovy / 2);
       const destination = Cartesian3.subtract(
         camera.positionWC,
         Cartesian3.multiplyByScalar(camera.upWC, shift, new Cartesian3()),

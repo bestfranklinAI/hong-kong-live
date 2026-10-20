@@ -23,8 +23,7 @@ export function WindyWeather({
         <div className="windy-heading">
           <Wind size={24} />
           <div>
-            <span className="eyebrow">HONG KONG · WEATHER</span>
-            <h1>A little change in the air.</h1>
+            <h1>Weather forecast</h1>
           </div>
         </div>
         <div className="windy-actions">

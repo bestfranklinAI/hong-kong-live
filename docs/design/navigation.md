@@ -6,11 +6,29 @@ Navigation is the primary landing task in Explore/Navigate. The route form repla
 
 1. Paste a shared Google Maps link, coordinates, or type a place in To.
 2. Choose a result. From defaults to Current location, with GPS requested only when the user asks for a route. Both fields can be edited independently. Map selection and official station-level selection are contextual alternatives while editing a field.
-3. Select Recommended, Shortest, or Step-free. Calculate the route once; show a compact distance/time summary and Start walking. Language, source limitations, original directions and floor plans use progressive disclosure.
+3. Select Recommended, Shortest, or Barrier-free. Calculate the preferred route, then use Compare routes to load the two remaining profiles. Select an available result to update the map and journey. Language, source limitations, original directions and floor plans use progressive disclosure.
 4. Start walking enables a GPS watcher and optional compass permission, a heading-aware marker, a smooth follow camera, approximate remaining distance and source instructions. Touching the map or using manual camera controls pauses camera following; Recentre resumes it. During guidance, the mobile location button also recentres using the existing GPS watcher rather than requesting a separate fix and overview flight. End stops the watcher and restores the planned route.
 5. An off-route warning offers explicit recalculation from the current fix. A denied location permission, stale fix or poor accuracy is not presented as reliable guidance.
 
 The Android link supplied on 17 October 2026 expands to a business/floor/address string and a Google place ID, without coordinates. The resolver preserves that label and offers official LandsD address candidates, prioritising an exact building-name match. It does not treat an unrelated Google page camera, or another business inside the same building, as the shared business location. Such candidates are building references: the business identity, floor and entrance are not independently verified. URLs with explicit place coordinates continue to resolve directly. Arbitrary URL proxying remains prohibited.
+
+## Route comparison and preferences
+
+The preferred profile is requested first. Compare routes expands the mobile sheet and loads only the missing profiles through the existing validated routing API. All comparison requests reuse the first result's resolved mapped endpoints, including a resolved assumed concourse, and the same directions language. The GPS origin is captured once for that comparison. Each profile has its own pending/error state and retry; failures never replace a valid selected route. Loaded choices can be selected without another request. Identical mapped paths are identified as such rather than presented as fabricated alternatives.
+
+Cards show source distance/time estimates, recognised lift/stair/escalator/ramp instruction counts, and expandable connection gaps and source notes. Counts describe direction mentions, not distinct equipment or verified accessibility. Missing instructions leave accessibility unknown. A Barrier-free result mentioning stairs or escalators has an explicit caution. Comparisons relative to Recommended are omitted when it is unavailable; if source resolution changes the mapped endpoints, the card flags the difference instead of calculating a time/distance delta. Waiting times, closures, access hours, paid-area restrictions and wheelchair suitability are not independently verified.
+
+Selecting another route changes the map and starts a new manual journey with no inherited floor confirmations. Changing endpoints or direction language clears alternatives and cancels pending work. Late responses cannot repopulate a replaced trip; requests have a 45-second client deadline. Successful results stay in component memory for the current planning session. Starting guidance unmounts the comparison; returning retains the selected route and can compare its alternatives again through the provider's existing short-lived cache.
+
+Only the preferred profile and directions language are added to device preferences; routes and coordinates are not persisted there. Existing trips retain their explicit profile/language. The UI calls the official profile Barrier-free rather than implying a guaranteed step-free walk. A comparison uses the already selected concourse connection for fairness; choose a different mapped starting point or plan a new Barrier-free trip to resolve a new concourse connection under that profile.
+
+## Continuous journey guidance
+
+The planner, active walking card and route floor plans share one manual cursor through the complete government direction sequence. Continue opens the next instruction's city or indoor view; browsing maps and changing floors do not advance the journey. Returning from an indoor plan retains the current instruction. Starting or ending GPS guidance retains this cursor; a replacement route resets it and its floor confirmations.
+
+An instruction links to an indoor venue only when it names exactly one available route venue. A floor link requires an unambiguous supplied venue/floor name, including Traditional Chinese names and the documented ground-floor aliases. A source lift, escalator, stair or ramp instruction between two instructions naming the same venue stays in that venue view, with no assigned floor. Other sections retain the city view and their original source text, including exits, malls, footbridges and streets; a city view does not imply an outdoor section. Missing indoor coverage preserves the full source sequence.
+
+For a linked floor, the user opens its plan, checks signs and selects **I'm on [floor]** before Continue becomes available. The confirmation applies to the uninterrupted visit to that floor; a connector, a different floor, or another section requires a new confirmation when returning. Browsing another floor is never confirmation. GPS updates do not advance this cursor, confirm a floor, or complete the journey. The final Finish journey action is explicitly manual. These controls do not validate current access, lift operation or physical indoor positioning.
 
 ## Evidence boundaries
 
@@ -119,3 +137,9 @@ A generic station start no longer blocks planning on exit selection. The client 
 A route's last uniquely matched station floor can identify a recommended mapped exit only when an entry on that floor lies within 12 m of same-height route vertices. The exit is labelled on the city map and indoor plan. This is the route's recommendation, not proof of the globally closest exit, fare-gate access or current opening status.
 
 Named intermediate buildings now use the same floor matching as stations. Opening any available building while a route exists also attempts local matching against its floor polygons and source Z, selecting a matched route floor by default. Missing/ambiguous matches remain explicitly unavailable; no route is projected onto an unrelated floor. City overview framing points from the route's start toward its destination rather than resetting north.
+
+## 19 October mobile journey revision
+
+See [mobile interface and user journeys](mobile-experience.md) for the current implemented presentation. The route preview focuses on destination, estimated time/distance and Start walking; directions, edits and source details are disclosed. Active walking replaces the discovery sheet with a fixed instruction dock. GPS diagnostics and all directions move into Journey details; the correct open floor no longer repeats a view-floor action. The shared manual cursor and explicit floor confirmation remain authoritative.
+
+The follow camera uses a 260 m range. Location-based planning waits for a fresh fix meeting the existing 60 m reported-accuracy gate and supports cancellation. Continuous walking updates, poor-fix gating, stale-fix expiry and manual rerouting remain; Refresh location restarts acquisition without replacing the route. This is not a measurement of real-device location accuracy.

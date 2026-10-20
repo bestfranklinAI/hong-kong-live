@@ -7,22 +7,29 @@ import {
   searchResponseSchema,
   locateResponseSchema,
   type SearchResult,
+  type DiscoveryIntent,
+  type Coordinates,
 } from '@hk/contracts';
 import { MapPin, Search } from 'lucide-react';
 import { getJson } from '../live/queries';
 import './search.css';
 import { MapLinkResult } from './MapLinkResult';
+import { DiscoverySearch } from './DiscoverySearch';
 
 export function SearchResults({
   query,
   compact = false,
   language,
   onSelect,
+  discoveryCenter,
+  selectionPurpose,
 }: {
   compact?: boolean;
   query: string;
   language: 'en' | 'tc';
-  onSelect: (result: SearchResult) => void;
+  onSelect: (result: SearchResult, intent?: DiscoveryIntent) => void;
+  discoveryCenter?: Coordinates;
+  selectionPurpose?: 'map' | 'start' | 'end';
 }) {
   const [debounced, setDebounced] = useState(query);
   const [detail, setDetail] = useState<{
@@ -115,6 +122,16 @@ export function SearchResults({
   }
   return (
     <section className="unified-search" aria-label="Search results">
+      {coordinates.kind === 'text' && (
+        <DiscoverySearch
+          key={`${query}:${language}:${discoveryCenter?.lat}:${discoveryCenter?.lng}`}
+          query={query}
+          language={language}
+          center={discoveryCenter}
+          selectionPurpose={selectionPurpose}
+          onSelect={onSelect}
+        />
+      )}
       <div className="results-heading">
         <h2>Search results</h2>
         {coordinates.kind === 'text' && (search.isFetching || query !== debounced) && (

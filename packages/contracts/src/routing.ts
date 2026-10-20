@@ -19,6 +19,7 @@ export const routeRequestSchema = z.object({
   end: routeEndpointSchema,
   profile: z.enum(['recommended', 'shortest', 'barrier-free']),
   language: z.enum(['en', 'zh-HK']).default('en'),
+  preferences: z.object({ preferCover: z.boolean() }).strict().optional(),
 });
 export type RouteEndpoint = z.infer<typeof routeEndpointSchema>;
 export type RouteRequest = z.infer<typeof routeRequestSchema>;
@@ -38,6 +39,7 @@ export const walkingRouteSchema = z.object({
       text: z.string(),
       distanceM: z.number().nonnegative(),
       durationMinutes: z.number().nonnegative(),
+      maneuver: z.string().max(100).optional(),
     }),
   ),
   endpointOffsetsM: z.tuple([z.number().nonnegative(), z.number().nonnegative()]),
@@ -45,5 +47,6 @@ export const walkingRouteSchema = z.object({
   sourceUpdatedAt: z.null(),
   sourceUrl: z.url(),
   warnings: z.array(z.string()),
+  sourceMessages: z.array(z.string().max(2000)).max(30).optional(),
 });
 export type WalkingRoute = z.infer<typeof walkingRouteSchema>;

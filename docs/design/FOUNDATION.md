@@ -4,14 +4,14 @@ Hong Kong Live is an exploration tool for Android phones and laptops. The interf
 
 ## Visual system
 
-- Warm paper and ivory surfaces, forest-green actions, quiet lime highlights.
+- White surfaces, soft neutral backgrounds, forest-green actions and quiet borders.
 - Readable system fonts with a clear hierarchy. English and Traditional Chinese place names stay together.
 - One persistent discovery panel on desktop; an expandable panel on mobile.
-- Three top-level modes: Explore, Weather and Transport. Each mode explains its available coverage.
+- Three top-level modes: Navigate, Weather and Transport. Indoor maps and cameras stay contextual.
 - One selected-place card, one map-control group and visible source attribution.
 - Decorative contour artwork in the Peak discovery card is interface decoration, never presented as geographic data.
 
-Tokens are defined in `apps/web/src/styles.css`. Components use shared classes rather than repeating raw colour values. Scene-specific geographic colours live with the renderer.
+Current semantic tokens and shared control rules are defined in `apps/web/src/interface.css`, after the established base `styles.css`. Components use shared classes rather than repeating raw colour values. Scene-specific geographic colours live with the renderer.
 
 ## Interaction rules
 
@@ -26,3 +26,7 @@ The requested UI/UX Pro Max SKILL.md was read. Its `scripts/search.py`, referenc
 ## Visual verification
 
 Review at a laptop viewport and an Android-sized viewport. Check default exploration, a selected place, empty search, saved filtering, weather/transport failure states, the expanded mobile panel and the About dialog. Record screenshots under ignored `output/playwright/`. Layout emulation does not establish physical Android GPU performance.
+
+## Current mobile experience
+
+The [mobile interface and journey specification](mobile-experience.md) defines the current screen hierarchy, typography, spacing, control grammar, navigation dock and location behavior. Use it when extending a feature; keep one primary task visible and disclose supporting details deliberately.

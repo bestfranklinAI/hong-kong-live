@@ -18,6 +18,20 @@ HK_DATA_MODE=fixture pnpm --filter @hk/api dev
 
 Fixture mode is explicit in `mode`, `X-HK-Data-Mode`, and the server log. Recorded fixture timestamps remain unchanged and eventually expire; deterministic tests inject a clock. Live failures never substitute a fixture.
 
+## Local environment
+
+From the repository root, create your backend configuration once:
+
+```sh
+cp apps/api/.env.example apps/api/.env.local
+```
+
+API `dev`, `start` and `preview` scripts automatically load `apps/api/.env.local` using Node 24's `--env-file-if-exists` flag. The file is optional and Git-ignored; the example contains only placeholders. Variables already exported in the terminal take precedence, so commands such as `HK_DATA_MODE=fixture pnpm dev` still override local settings. Restart the API after editing the file.
+
+For opt-in Jev search, set `TYPESAFE_API_KEY` and `HK_DISCOVERY_EVALUATION=1` in this file, then run `pnpm dev` from the repository root. The example keeps Jev disabled by default. Enabling it without a key still fails before background collectors start; fixture mode never enables Jev. See [evaluation scope and limitations](../../docs/verification/smart-search.md).
+
+Keep server secrets here rather than in `apps/web/.env.local`. Never prefix secrets with `VITE_`, which exposes values to browser code. Hosted deployments should inject secrets through their platform environment; those values override the local file.
+
 ## Routes
 
 | Route                                   | Behaviour                                                                 |

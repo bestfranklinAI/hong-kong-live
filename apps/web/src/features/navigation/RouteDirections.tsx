@@ -1,6 +1,6 @@
 import type { WalkingRoute } from '@hk/contracts';
 import { NavigationIcon } from './NavigationIcon';
-import { instructionTransition, transitionLabels } from './navigation-symbols';
+import { instructionTransition, instructionSymbol, transitionLabels } from './navigation-symbols';
 export function RouteDirections({ route }: { route: WalkingRoute }) {
   const steps = route.steps.map((step) => ({ ...step, kind: instructionTransition(step.text) }));
   const transitions = Object.entries(transitionLabels)
@@ -29,7 +29,7 @@ export function RouteDirections({ route }: { route: WalkingRoute }) {
             className={step.kind ? 'route-step route-step--transition' : 'route-step'}
           >
             <div className="route-step-symbol">
-              <NavigationIcon kind={step.kind ?? 'walk'} />
+              <NavigationIcon kind={instructionSymbol(step.text, step.maneuver)} />
               <span>{index + 1}</span>
             </div>
             <div className="route-step-content">

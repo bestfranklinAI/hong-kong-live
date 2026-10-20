@@ -17,6 +17,49 @@ it('preserves XYZ and source instructions without pretending fetch time is sourc
   expect(route.fetchedAt).toBe('1970-01-01T00:00:00.000Z');
   expect(route.endpointOffsetsM.every((x) => x < 10)).toBe(true);
 });
+it('preserves source manoeuvres and ignored-restriction warnings', () => {
+  const route = normalizeWalkingRoute(
+    { ...sample, messages: [{ type: 50, description: 'Restriction ignored by source.' }] },
+    request,
+    0,
+  );
+  expect(route.sourceMessages).toEqual(['Restriction ignored by source.']);
+  expect(route.steps.some((s) => s.maneuver)).toBe(true);
+});
+it('adds only allowlisted cover restrictions while retaining wheelchair barriers', async () => {
+  const fetcher = vi.fn(async (url: string) => {
+    if (url.includes('retrieveTravelModes'))
+      return Response.json({
+        supportedTravelModes: [
+          {
+            name: 'Barrier Free Path',
+            id: '2',
+            restrictionAttributeNames: ['Direction', 'Prohabit Wheelchair Barrier'],
+            attributeParameterValues: ['Avoid Outdoor (high)', 'Prefer Indoor (high)'].map(
+              (attributeName) => ({
+                attributeName,
+                parameterName: 'Restriction Usage',
+                value: 'Avoid_High',
+              }),
+            ),
+          },
+        ],
+      });
+    const mode = JSON.parse(new URL(url).searchParams.get('travelMode')!);
+    expect(mode.restrictionAttributeNames).toEqual([
+      'Direction',
+      'Prohabit Wheelchair Barrier',
+      'Avoid Outdoor (high)',
+      'Prefer Indoor (high)',
+    ]);
+    return Response.json(sample);
+  });
+  const result = await new WalkingRouter(fetcher).route({
+    ...request,
+    preferences: { preferCover: true },
+  });
+  expect(result.request.preferences?.preferCover).toBe(true);
+});
 it('does not interpret measure values as height and rejects misplaced connections', () => {
   const xy = structuredClone(sample);
   xy.routes.hasZ = false;

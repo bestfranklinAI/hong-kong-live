@@ -4,6 +4,7 @@ import { CityLayers, type CityPresentation, type CitySources } from './CityLayer
 import { installFlatMapRotation } from './FlatMapRotation';
 import { IndoorPoints } from './IndoorPoints';
 import { WalkingRouteLayer } from './WalkingRouteLayer';
+import { PedestrianNetworkLayer } from './PedestrianNetworkLayer';
 import { SearchPin } from './SearchPin';
 import { FacilityMarkers } from './FacilityMarkers';
 import type { SearchResult } from '@hk/contracts';
@@ -119,6 +120,7 @@ export class SceneController {
   private readonly facilities: FacilityMarkers;
   private readonly indoorPoints: IndoorPoints;
   private readonly walkingRoute: WalkingRouteLayer;
+  private readonly pedestrianNetwork: PedestrianNetworkLayer;
   private readonly searchPin: SearchPin;
   private readonly userLocation: UserLocation;
   private readonly trafficCameras: TrafficCameras;
@@ -190,6 +192,7 @@ export class SceneController {
     );
     this.cleanups.push(() => this.city.dispose());
     this.searchPin = new SearchPin(this.widget);
+    this.pedestrianNetwork = new PedestrianNetworkLayer(this.widget);
     this.walkingRoute = new WalkingRouteLayer(
       this.widget,
       (centre, pitch, range, duration, heading) =>
@@ -541,6 +544,9 @@ export class SceneController {
     // Recalculation must not replace the walking camera with a route overview.
     this.walkingRoute.set(route, sourceHeights, showHidden, !this.navigating, stationView);
   }
+  setPedestrianNetwork(data?: import('@hk/contracts').PedestrianNetwork) {
+    this.pedestrianNetwork.set(data);
+  }
   setFacilities(rows?: SearchResult[]) {
     this.facilities.set(rows);
   }
@@ -668,6 +674,7 @@ export class SceneController {
     this.searchPin.dispose();
     this.contextLabels.dispose();
     this.walkingRoute.dispose();
+    this.pedestrianNetwork.dispose();
     this.indoorPoints.dispose();
     this.facilities.dispose();
     this.navigation.dispose();

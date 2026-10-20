@@ -1,4 +1,4 @@
-import { ArrowUpRight, RefreshCw, TrainFront } from 'lucide-react';
+import { RefreshCw, TrainFront } from 'lucide-react';
 import { mtrLines, mtrStations, type StationSelection } from '@hk/contracts';
 import { useArrivals } from './queries';
 import { hkSourceTime, hkTime } from '../../shared/format';
@@ -25,93 +25,56 @@ export function TransportPanel({
       <div className="panel-heading explore-heading">
         <h1>MTR arrivals</h1>
       </div>
-      <label className="field-label" htmlFor="line-select">
-        MTR line
-      </label>
-      <select
-        id="line-select"
-        className="station-select"
-        value={selection.line}
-        onChange={(event) => {
-          const next = mtrLines.find((line) => line.code === event.target.value)!;
-          onSelect({
-            line: next.code,
-            station: next.stations.includes(selection.station)
-              ? selection.station
-              : next.stations[0],
-          });
-        }}
-      >
-        {mtrLines.map((line) => (
-          <option key={line.code} value={line.code}>
-            {line.name}
-          </option>
-        ))}
-      </select>
-      <label className="field-label" htmlFor="station-select">
-        Station
-      </label>
-      <select
-        id="station-select"
-        className="station-select"
-        value={selection.station}
-        onChange={(event) => onSelect({ ...selection, station: event.target.value })}
-      >
-        {line.stations.map((code) => (
-          <option key={code} value={code}>
-            {mtrStations[code].name} · {mtrStations[code].nameZh}
-          </option>
-        ))}
-      </select>
-      <div className="station-summary">
-        <span className="place-symbol station" style={{ color: line.color }}>
-          <TrainFront size={24} />
-        </span>
-        <div>
-          <h2>{station.name}</h2>
-          <p>
-            {line.name} <span>港鐵</span>
-          </p>
-        </div>
-        <ArrowUpRight size={19} />
-      </div>
-      {
-        <div className="source-card train-motion-card">
-          <label>
-            <input
-              type="checkbox"
-              checked={animation}
-              onChange={(e) => onAnimation(e.target.checked)}
-            />{' '}
-            Mini trains · estimated positions
-          </label>
-          <p>Arrival illustrations, not GPS tracking. Tap a little train for its station times.</p>
-          <details>
-            <summary>How positions are estimated</summary>
-            <p>
-              Watch approaching services across the selected line. Timing illustration uses 40 km/h
-              plus a 20-second approach allowance, not GPS. Trains appear only within that approach
-              window and pause for eight seconds at the station before fading. These are separate
-              arrival illustrations, not a tracked fleet; stale, delayed or ambiguous branch reports
-              hide them.
-            </p>
-            <p>
-              At an originating terminal, the illustration pauses before the listed time, then
-              departs along the first segment. Branch merges without a known incoming route are
-              hidden. Motion respects reduced-motion settings; Eco uses fewer updates.
-            </p>
-          </details>
-          {pickedTrain && feed?.data?.some((a) => a.id === pickedTrain.id) && (
-            <strong>
-              {pickedTrain.destination} · {hkTime(pickedTrain.time)} · Platform{' '}
-              {pickedTrain.platform}
-            </strong>
-          )}
-        </div>
-      }
+      <details className="transit-picker">
+        <summary>
+          <TrainFront size={22} style={{ color: line.color }} />
+          <span>
+            <strong>{station.name}</strong>
+            <small>{line.name} · Change station</small>
+          </span>
+        </summary>
+        <label className="field-label" htmlFor="line-select">
+          MTR line
+        </label>
+        <select
+          id="line-select"
+          className="station-select"
+          value={selection.line}
+          onChange={(event) => {
+            const next = mtrLines.find((line) => line.code === event.target.value)!;
+            onSelect({
+              line: next.code,
+              station: next.stations.includes(selection.station)
+                ? selection.station
+                : next.stations[0],
+            });
+          }}
+        >
+          {mtrLines.map((line) => (
+            <option key={line.code} value={line.code}>
+              {line.name}
+            </option>
+          ))}
+        </select>
+        <label className="field-label" htmlFor="station-select">
+          Station
+        </label>
+        <select
+          id="station-select"
+          className="station-select"
+          value={selection.station}
+          onChange={(event) => onSelect({ ...selection, station: event.target.value })}
+        >
+          {line.stations.map((code) => (
+            <option key={code} value={code}>
+              {mtrStations[code].name} · {mtrStations[code].nameZh}
+            </option>
+          ))}
+        </select>
+      </details>
       <div className="results-heading">
         <h2>Next trains</h2>
-        <span>HKT</span>
+        <span>Est. · HKT</span>
       </div>
       <div className="arrival-list">
         {query.isPending ? (
@@ -124,7 +87,9 @@ export function TransportPanel({
                 <strong>{arrival.destination}</strong>
                 <span>
                   Platform {arrival.platform || '—'}
-                  {arrival.remark ? ` · ${arrival.remark}` : ''}
+                  {arrival.remark && arrival.remark !== 'Estimated train time'
+                    ? ` · ${arrival.remark}`
+                    : ''}
                 </span>
               </div>
               <time dateTime={arrival.time}>{hkTime(arrival.time)}</time>
@@ -164,11 +129,50 @@ export function TransportPanel({
           Refresh train times
         </button>
       </div>
-      <p className="catalog-note">
-        Map dots show stations. Mini trains are estimated arrival illustrations, not tracked
-        vehicles. Station locations: Lands Department. Rail alignment: OpenStreetMap. Heavy-rail
-        Next Train coverage. Light Rail and High Speed Rail use separate services.
-      </p>
+      <details className="feed-details">
+        <summary>Map illustrations & coverage</summary>
+        {
+          <div className="source-card train-motion-card">
+            <label>
+              <input
+                type="checkbox"
+                checked={animation}
+                onChange={(e) => onAnimation(e.target.checked)}
+              />{' '}
+              Mini trains · estimated positions
+            </label>
+            <p>
+              Arrival illustrations, not GPS tracking. Tap a little train for its station times.
+            </p>
+            <details>
+              <summary>How positions are estimated</summary>
+              <p>
+                Watch approaching services across the selected line. Timing illustration uses 40
+                km/h plus a 20-second approach allowance, not GPS. Trains appear only within that
+                approach window and pause for eight seconds at the station before fading. These are
+                separate arrival illustrations, not a tracked fleet; stale, delayed or ambiguous
+                branch reports hide them.
+              </p>
+              <p>
+                At an originating terminal, the illustration pauses before the listed time, then
+                departs along the first segment. Branch merges without a known incoming route are
+                hidden. Motion respects reduced-motion settings; Eco uses fewer updates.
+              </p>
+            </details>
+            {pickedTrain && feed?.data?.some((a) => a.id === pickedTrain.id) && (
+              <strong>
+                {pickedTrain.destination} · {hkTime(pickedTrain.time)} · Platform{' '}
+                {pickedTrain.platform}
+              </strong>
+            )}
+          </div>
+        }
+        <p className="catalog-note">
+          Map dots show stations. Mini trains are estimated arrival illustrations, not tracked
+          vehicles. Station locations: Lands Department. Rail alignment: OpenStreetMap. Heavy-rail
+          Next Train coverage. Light Rail and High Speed Rail use separate services.
+        </p>
+      </details>
     </>
   );
 }

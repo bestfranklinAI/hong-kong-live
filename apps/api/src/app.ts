@@ -1,5 +1,7 @@
 import { routingRoutes } from './routing';
 import { searchRoutes } from './search/routes';
+import { DiscoverySearch, type DiscoveryAssistant } from './search/discovery';
+import { retrieveDiscoveryCandidates } from './search/discovery-retrieval';
 import type { SearchRepository } from './search/repository';
 import { LandsdSearch } from './search/landsd';
 import { citybusRoutes } from './citybus';
@@ -29,6 +31,8 @@ import recordedArrivals from '../../../fixtures/providers/mtr-isl-adm-2026-09-13
 import { ARRIVALS_POLICY, FeedCache, WEATHER_POLICY } from './feed-cache';
 
 export interface AppOptions {
+  discoveryAssistant?: DiscoveryAssistant;
+  enableDiscoveryEvaluation?: boolean;
   facilities?: import('@hk/providers').FacilityCatalogue;
   searchRepository?: SearchRepository;
   landsd?: LandsdSearch;
@@ -52,6 +56,20 @@ export function createApp(options: AppOptions = {}) {
       now,
       fetcher,
       options.facilities,
+      options.enableDiscoveryEvaluation && options.discoveryAssistant && mode === 'live'
+        ? new DiscoverySearch(
+            options.discoveryAssistant,
+            (intent, request) =>
+              retrieveDiscoveryCandidates(
+                intent,
+                request,
+                options.searchRepository,
+                options.facilities?.data().records ?? [],
+              ),
+            mode,
+            options.searchRepository ? (now) => options.searchRepository!.status(now) : undefined,
+          )
+        : undefined,
     ),
   );
   const report = sharedWeatherReport(

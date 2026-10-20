@@ -1,6 +1,6 @@
 import { NearbyStops, type BusSearchArea } from './NearbyStops';
 import { useState } from 'react';
-import { BusFront, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import type { BusExplorer } from './use-buses';
 import { hkSourceTime, hkTime } from '../../shared/format';
 
@@ -32,104 +32,84 @@ export function BusesPanel({
   ];
   return (
     <>
-      <div className="panel-heading">
-        <span className="eyebrow">{citybus ? 'CITYBUS' : 'KMB / LONG WIN'}</span>
-        <h1>
-          Your next
-          <br />
-          <span>bus ride.</span>
-        </h1>
-        <p>
-          {citybus
-            ? 'Choose a direction, then a stop.'
-            : 'Choose a direction and service, then a stop.'}{' '}
-          Tap a map dot to change stops.
-        </p>
+      <div className="panel-heading explore-heading">
+        <h1>Bus arrivals</h1>
       </div>
-      <label className="field-label" htmlFor="bus-operator">
-        Bus operator
-      </label>
-      <select
-        id="bus-operator"
-        className="station-select"
-        value={bus.operator}
-        onChange={(e) => {
-          bus.setOperator(e.target.value as 'kmb' | 'citybus');
-          setSearch('');
-        }}
-      >
-        <option value="kmb">KMB / Long Win</option>
-        <option value="citybus">Citybus</option>
-      </select>
-      <NearbyStops
-        key={bus.operator}
-        operator={bus.operator}
-        area={area}
-        onSearch={onSearchArea}
-        routes={all}
-        onSelect={(route) => bus.setSelection(route)}
-      />
-      <label className="field-label" htmlFor="bus-search">
-        Find a route or destination
-      </label>
-      <input
-        id="bus-search"
-        className="station-select"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="1A, Sha Tin, 沙田…"
-      />
-      <label className="field-label" htmlFor="bus-route">
-        {citybus ? 'Route and direction' : 'Route, direction and service'}
-      </label>
-      <select
-        id="bus-route"
-        className="station-select"
-        value={key(bus.selection)}
-        disabled={!all.length}
-        onChange={(e) => {
-          const r = all.find((r) => key(r) === e.target.value);
-          if (r) bus.setSelection({ ...r, seq: 1 });
-        }}
-      >
+      <details className="bus-route-picker" open={!selectedRoute || undefined}>
+        <summary>
+          {selectedRoute
+            ? `${selectedRoute.route} → ${selectedRoute.destination}`
+            : 'Choose a bus route'}
+        </summary>
+        <label className="field-label" htmlFor="bus-operator">
+          Bus operator
+        </label>
+        <select
+          id="bus-operator"
+          className="station-select"
+          value={bus.operator}
+          onChange={(e) => {
+            bus.setOperator(e.target.value as 'kmb' | 'citybus');
+            setSearch('');
+          }}
+        >
+          <option value="kmb">KMB / Long Win</option>
+          <option value="citybus">Citybus</option>
+        </select>
+        <NearbyStops
+          key={bus.operator}
+          operator={bus.operator}
+          area={area}
+          onSearch={onSearchArea}
+          routes={all}
+          onSelect={(route) => bus.setSelection(route)}
+        />
+        <label className="field-label" htmlFor="bus-search">
+          Find a route or destination
+        </label>
+        <input
+          id="bus-search"
+          className="station-select"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="1A, Sha Tin, 沙田…"
+        />
+        <label className="field-label" htmlFor="bus-route">
+          {citybus ? 'Route and direction' : 'Route, direction and service'}
+        </label>
+        <select
+          id="bus-route"
+          className="station-select"
+          value={key(bus.selection)}
+          disabled={!all.length}
+          onChange={(e) => {
+            const r = all.find((r) => key(r) === e.target.value);
+            if (r) bus.setSelection({ ...r, seq: 1 });
+          }}
+        >
+          {!all.length && (
+            <option>{bus.routes.isFetching ? 'Loading routes…' : 'Routes unavailable'}</option>
+          )}
+          {options.map((r) => (
+            <option key={key(r)} value={key(r)}>
+              {r.route} · {r.origin} → {r.destination} · {r.bound === 'O' ? 'Outbound' : 'Inbound'}
+              {!citybus && ` · Service ${r.service}`}
+            </option>
+          ))}
+        </select>
+        <p className="catalog-note">
+          {all.length
+            ? `${matches.length} matching ${citybus ? 'direction choices' : 'route variants'}. Showing up to 80 plus your selection.`
+            : bus.routes.isFetching
+              ? 'Loading the route catalogue…'
+              : 'Route catalogue unavailable.'}
+        </p>
         {!all.length && (
-          <option>{bus.routes.isFetching ? 'Loading routes…' : 'Routes unavailable'}</option>
+          <button className="text-button" onClick={() => void bus.routes.refetch()}>
+            Retry routes
+          </button>
         )}
-        {options.map((r) => (
-          <option key={key(r)} value={key(r)}>
-            {r.route} · {r.origin} → {r.destination} · {r.bound === 'O' ? 'Outbound' : 'Inbound'}
-            {!citybus && ` · Service ${r.service}`}
-          </option>
-        ))}
-      </select>
-      <p className="catalog-note">
-        {all.length
-          ? `${matches.length} matching ${citybus ? 'direction choices' : 'route variants'}. Showing up to 80 plus your selection.`
-          : bus.routes.isFetching
-            ? 'Loading the route catalogue…'
-            : 'Route catalogue unavailable.'}
-      </p>
-      {!all.length && (
-        <button className="text-button" onClick={() => void bus.routes.refetch()}>
-          Retry routes
-        </button>
-      )}
-      {selectedRoute && (
-        <div className="station-summary">
-          <span className="place-symbol station">
-            <BusFront size={24} />
-          </span>
-          <div>
-            <h2>
-              {selectedRoute.route} · {selectedRoute.destination}
-            </h2>
-            <p>
-              {selectedRoute.destinationZh}
-              {!citybus && ` · Service ${selectedRoute.service}`}
-            </p>
-          </div>
-        </div>
-      )}
+      </details>
       <label className="field-label" htmlFor="bus-stop">
         Bus stop
       </label>
@@ -212,26 +192,31 @@ export function BusesPanel({
           Refresh bus times
         </button>
       </div>
-      <p className="catalog-note">
-        {bus.routes.data?.mode === 'fixture' ? 'Fixture mode · no bus recording configured. ' : ''}
-        Dots are stops, not moving buses.{' '}
-        {citybus
-          ? 'Some routes provide stops in only one direction. Empty directions do not confirm a service suspension.'
-          : 'Service numbers identify variants, not frequency.'}{' '}
-        Catalogue fetched: {hkSourceTime(bus.routes.data?.fetchedAt)}.
-      </p>
-      <a
-        href={
-          citybus
-            ? 'https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta'
-            : 'https://data.gov.hk/en-data/dataset/hk-td-tis_21-etakmb'
-        }
-        target="_blank"
-        rel="noreferrer"
-        className="text-button"
-      >
-        Official bus data ↗
-      </a>
+      <details className="feed-details">
+        <summary>Coverage & source</summary>
+        <p className="catalog-note">
+          {bus.routes.data?.mode === 'fixture'
+            ? 'Fixture mode · no bus recording configured. '
+            : ''}
+          Dots are stops, not moving buses.{' '}
+          {citybus
+            ? 'Some routes provide stops in only one direction. Empty directions do not confirm a service suspension.'
+            : 'Service numbers identify variants, not frequency.'}{' '}
+          Catalogue fetched: {hkSourceTime(bus.routes.data?.fetchedAt)}.
+        </p>
+        <a
+          href={
+            citybus
+              ? 'https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta'
+              : 'https://data.gov.hk/en-data/dataset/hk-td-tis_21-etakmb'
+          }
+          target="_blank"
+          rel="noreferrer"
+          className="text-button"
+        >
+          Official bus data ↗
+        </a>
+      </details>
     </>
   );
 }

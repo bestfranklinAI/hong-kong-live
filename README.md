@@ -15,6 +15,10 @@ pnpm dev
 
 Open **http://localhost:5173**. Vite proxies `/api` to the local API on port **8787**. Both servers bind to loopback by default. API responses come from live sources; an upstream failure stays an explicitly unavailable response.
 
+For optional backend secrets, copy `apps/api/.env.example` to `apps/api/.env.local` and fill in the required values. API dev, start and preview commands load this ignored file automatically; existing terminal environment variables take precedence. Restart the API after editing it. Frontend public settings stay in `apps/web/.env.local`. See [local API configuration](apps/api/README.md#local-environment).
+
+Smart search now offers explicit 2/5/10 km search radii, restaurant map coverage, labelled alternatives when the model abstains, and shortlist refinements **Closest first** and **Pick for me**. Official FEHD restaurant points join the licence catalogue by ID and unchanged address; LCSD parks/gardens and museums add source-backed choices. Routes still require an explicit destination and a separate government route request.
+
 The Node API uses IPv4-first DNS ordering and a 5-second address-family connection window for provider compatibility. For other Node commands on networks where requests time out while `curl` works:
 
 ```sh
@@ -44,6 +48,8 @@ tailscale serve --https=443 http://127.0.0.1:4173
 ```
 
 Keep this foreground process running and open the HTTPS address printed by Tailscale on your connected phone. This serves the preview within your tailnet; it does not enable public Funnel access.
+
+The mobile interface uses a fixed walking instruction card and progressive disclosure for route, location and source details. See the [interface and journey design](docs/design/mobile-experience.md) and [verification limits](docs/verification/mobile-experience.md).
 
 ## Available in the first slice
 
@@ -82,6 +88,14 @@ City tiles load on first use and remain attached when switching to 2D. Cesium ma
 Train illustrations use carriages overhead and compact upright badges at oblique angles. They remain timing-based annotations, not physical 3D vehicles or surveyed track elevations.
 
 ## Deterministic development
+
+Walking routes now share a continuous, manually advanced source-direction sequence across city and indoor maps. Explicitly matched floors require confirmation in their floor plan; browsing maps preserves the current instruction. GPS does not confirm floors or advance the sequence. See [navigation behavior](docs/design/navigation.md#continuous-journey-guidance).
+
+After finding a route, **Compare routes** loads the other government profiles for the same mapped endpoints. Compare source time/distance estimates, connection-instruction mentions and unrouted gaps, then select a route to update the map. Profile and directions-language preferences are remembered on this device. Barrier-free is a source profile, not a guarantee of current access. See [route comparison](docs/design/navigation.md#route-comparison-and-preferences).
+
+Route preview now offers optional **Show nearby walkways** from the official 3D Pedestrian Network: nearby connections, shelter records and a separate source-height diagram. Options adds a soft **Prefer covered paths** preference without replacing the government solver. Experimental Jev discovery can hand these editable preferences to the planner. See [network integration](docs/architecture/pedestrian-network.md) and [verification](docs/verification/pedestrian-network.md).
+
+An opt-in smart-search evaluation integrates TypeSafe's Jev through typed Noul, Choice and Score questions. It runs only on the backend with `TYPESAFE_API_KEY` in server secrets; `TYPESAFE_DEFAULT_MODEL` defaults to the SDK's `jev-latest` alias. The `--jev` evaluation command exercises twelve cases without enabling the UI. The first live check reached `jev-1.13.0`; the expanded twelve-case run now passes after clarifying Cantonese negation and soft versus continuous shelter. These small reference checks do not establish broad accuracy. The UI stays off by default. An operator can set `HK_DISCOVERY_EVALUATION=1` in live mode to expose the explicit interpretation action. It defaults to `0`; fixture mode never calls Jev. See [smart-search setup and evaluation](docs/verification/smart-search.md) for evidence and limitations.
 
 ```sh
 HK_DATA_MODE=fixture pnpm dev

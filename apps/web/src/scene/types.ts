@@ -48,6 +48,7 @@ export interface MapSceneProps {
   stationRouteView?: import('@hk/contracts').StationRouteView;
   onRouteStationSelect?: (id: string) => void;
   walkingRoute?: import('@hk/contracts').WalkingRoute | null;
+  pedestrianNetwork?: import('@hk/contracts').PedestrianNetwork;
   facilities?: import('@hk/contracts').SearchResult[];
   onFacilitySelect?: (result: import('@hk/contracts').SearchResult) => void;
   searchPin?: import('@hk/contracts').SearchResult | null;

@@ -1,6 +1,138 @@
 .unified-search {
   margin: 12px 0 20px;
 }
+.discovery-evaluation {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px;
+  margin: 0 0 16px;
+  background: var(--surface);
+}
+.discovery-evaluation h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  margin: 0;
+}
+.discovery-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.discovery-badge {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 3px 8px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.discovery-intent {
+  margin-top: 12px;
+}
+.discovery-intent h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+}
+.discovery-preferences {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.discovery-preferences li {
+  background: #e4ede3;
+  border-radius: 12px;
+  padding: 5px 9px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.discovery-evaluation p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.discovery-evaluation summary {
+  min-height: 44px;
+  padding: 12px 0;
+  cursor: pointer;
+  font-size: 12px;
+}
+.discovery-evaluation .discovery-coverage,
+.discovery-evaluation .discovery-retained {
+  border-left: 3px solid #9a723b;
+  padding-left: 10px;
+}
+.discovery-evaluation .discovery-selection {
+  color: #155c50;
+  font-weight: 600;
+}
+.discovery-submit {
+  min-height: 44px;
+  width: 100%;
+  border: 1px solid #155c50;
+  border-radius: 12px;
+  background: #155c50;
+  color: white;
+  padding: 10px 12px;
+}
+.discovery-submit:disabled {
+  opacity: 0.6;
+}
+.discovery-radius {
+  border: 0;
+  padding: 0;
+  margin: 12px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.discovery-radius legend {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.discovery-radius button,
+.discovery-refinements button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.discovery-radius button[aria-pressed='true'],
+.discovery-refinements button[aria-pressed='true'] {
+  background: var(--surface);
+  border-color: currentColor;
+  font-weight: 600;
+}
+.discovery-refinements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.discovery-evaluation .discovery-picked {
+  border: 2px solid currentColor;
+  border-radius: 12px;
+  padding: 12px;
+}
+.discovery-card > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.discovery-description {
+  color: var(--muted);
+  font-size: 12px;
+}
 .search-result {
   width: 100%;
   display: flex;

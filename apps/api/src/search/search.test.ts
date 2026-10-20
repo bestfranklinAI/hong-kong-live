@@ -81,6 +81,41 @@ it('preserves source and import times on unchanged downloads', () => {
   });
   expect(db.status(now + 3 * 86400000).stale).toBe(true);
 });
+
+it('joins official points by licence AND unchanged address, retaining independent provenance', () => {
+  const db = store();
+  db.publish([record], '2026-09-26', 'a', 'download', now);
+  const point = {
+    id: record.id,
+    address: record.address,
+    location: { lat: 22.3, lng: 114.17 },
+    sourceDate: '2025-11-28',
+  };
+  expect(
+    db.applyOfficialLocations(
+      [
+        { ...point, id: 'fehd:999' },
+        { ...point, address: '20 OTHER ROAD' },
+      ],
+      new Date(now).toISOString(),
+    ),
+  ).toBe(0);
+  expect(db.status(now).resolved).toBe(0);
+  expect(db.applyOfficialLocations([point], new Date(now).toISOString())).toBe(1);
+  expect(db.get(record.id)).toMatchObject({
+    sourceDate: '2026-09-26',
+    locationSource: {
+      provider: 'FEHD',
+      sourceDate: '2025-11-28',
+      fetchedAt: new Date(now).toISOString(),
+    },
+  });
+  db.publish([{ ...record, name: 'Updated name' }], '2026-09-26', 'b', 'download2', now + 1);
+  expect(db.get(record.id)?.locationSource?.sourceDate).toBe('2025-11-28');
+  db.publish([{ ...record, address: '20 OTHER ROAD' }], '2026-09-26', 'c', 'download3', now + 2);
+  expect(db.get(record.id)?.location).toBeNull();
+  expect(db.get(record.id)?.locationSource).toBeUndefined();
+});
 it('returns coordinates without touching external services and validates requests', async () => {
   const fetcher = vi.fn(async () => new Response('[]'));
   const app = searchRoutes(store(), new LandsdSearch(fetcher), 'live', () => now);
