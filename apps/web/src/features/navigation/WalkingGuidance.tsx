@@ -1,6 +1,6 @@
 import { Dialog } from '@base-ui/react/dialog';
-import { LocateFixed, List, Navigation, RefreshCw, X } from 'lucide-react';
-import { useLayoutEffect, useRef, type ReactNode } from 'react';
+import { LocateFixed, List, Navigation, RefreshCw, Settings2, X } from 'lucide-react';
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import type { WalkingRoute } from '@hk/contracts';
 import type { LocationFix } from '../../scene/UserLocation';
 import type { routeProgress } from './route-progress';
@@ -19,8 +19,14 @@ export function WalkingGuidance({
   journeyGuidance,
   fix,
   onRefreshLocation,
+  routeViews,
+  checkingLevel = false,
+  onMapSettings,
 }: {
   journeyGuidance?: ReactNode;
+  routeViews?: (close: () => void) => ReactNode;
+  onMapSettings?: () => void;
+  checkingLevel?: boolean;
   onRecalculate: () => void;
   recalculating: boolean;
   route: WalkingRoute;
@@ -33,6 +39,7 @@ export function WalkingGuidance({
   onRefreshLocation: () => void;
 }) {
   const host = useRef<HTMLElement>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   useLayoutEffect(() => {
     const element = host.current;
     const root = element?.closest<HTMLElement>('.atlas-app');
@@ -57,25 +64,16 @@ export function WalkingGuidance({
       id="discovery"
       aria-label="Active walking navigation"
     >
-      <div className="guidance-destination">
-        <span>
-          <small>Walking to</small>
-          <strong>{route.request.end.name}</strong>
-        </span>
-        <button className="icon-button" aria-label="End walking navigation" onClick={onStop}>
-          <X size={20} />
-        </button>
-      </div>
       {error && (
         <p role="status" className="guidance-alert">
           {error}
         </p>
       )}
-      {progress?.offRoute && (
+      {progress?.offRoute && !checkingLevel && (
         <div className="guidance-off-route" role="status">
-          <strong>{recalculating ? 'Updating your route…' : 'Checking your position…'}</strong>
-          <button className="walking-submit" disabled={recalculating} onClick={onRecalculate}>
-            {recalculating ? 'Updating route…' : 'Update route from here'}
+          <span>{recalculating ? 'Updating route…' : 'Checking position…'}</span>
+          <button className="guidance-route-retry" disabled={recalculating} onClick={onRecalculate}>
+            <RefreshCw size={16} /> {recalculating ? 'Updating' : 'Update route'}
           </button>
         </div>
       )}
@@ -90,9 +88,13 @@ export function WalkingGuidance({
         </div>
       )}
       <div className="guidance-footer">
-        <span>
-          <strong>{progress ? `${Math.round(progress.remainingM)} m` : '—'}</strong>
-          <small>estimated remaining</small>
+        <span className="guidance-remaining">
+          <strong>
+            {progress && !progress.offRoute ? `${Math.round(progress.remainingM)} m` : '—'}
+          </strong>
+          <small>
+            {progress ? (progress.offRoute ? 'Check position' : 'left · est.') : 'Waiting for GPS'}
+          </small>
         </span>
         <button
           className="guidance-recentre"
@@ -101,10 +103,12 @@ export function WalkingGuidance({
             onFollow();
           }}
           aria-pressed={following && !!progress}
+          aria-label={!progress ? 'Locate me' : following ? 'Following your location' : 'Recentre'}
+          title={!progress ? 'Locate me' : following ? 'Following your location' : 'Recentre'}
         >
-          <LocateFixed size={18} /> {!progress ? 'Locate' : following ? 'Following' : 'Recentre'}
+          <LocateFixed size={20} />
         </button>
-        <Dialog.Root>
+        <Dialog.Root open={detailsOpen} onOpenChange={setDetailsOpen}>
           <Dialog.Trigger className="icon-button secondary-button" aria-label="Journey details">
             <List size={20} />
           </Dialog.Trigger>
@@ -112,16 +116,38 @@ export function WalkingGuidance({
             <Dialog.Backdrop className="dialog-backdrop" />
             <Dialog.Popup className="about-dialog guidance-details">
               <div className="dialog-top">
-                <Dialog.Title>Journey details</Dialog.Title>
+                <Dialog.Title>{route.request.end.name}</Dialog.Title>
                 <Dialog.Close className="icon-button" aria-label="Close journey details">
                   <X size={20} />
                 </Dialog.Close>
               </div>
               <Dialog.Description>
-                {route.request.end.name} · {Math.round(route.distanceM)} m · about{' '}
+                {Math.round(route.distanceM)} m · about{' '}
                 {Math.max(1, Math.round(route.durationMinutes))} min
               </Dialog.Description>
-              <details open>
+              {routeViews && (
+                <div className="guidance-map-views">{routeViews(() => setDetailsOpen(false))}</div>
+              )}
+              {onMapSettings && (
+                <button
+                  className="secondary-button"
+                  onClick={() => {
+                    setDetailsOpen(false);
+                    onMapSettings();
+                  }}
+                >
+                  <Settings2 size={16} /> Map settings
+                </button>
+              )}
+              <button
+                className="secondary-button"
+                disabled={recalculating || !fix}
+                onClick={onRecalculate}
+              >
+                <RefreshCw size={16} />{' '}
+                {recalculating ? 'Updating route…' : 'Update route from here'}
+              </button>
+              <details>
                 <summary>Location & accuracy</summary>
                 <p>
                   {fix
@@ -170,6 +196,9 @@ export function WalkingGuidance({
             </Dialog.Popup>
           </Dialog.Portal>
         </Dialog.Root>
+        <button className="icon-button" aria-label="End walking navigation" onClick={onStop}>
+          <X size={20} />
+        </button>
       </div>
     </aside>
   );

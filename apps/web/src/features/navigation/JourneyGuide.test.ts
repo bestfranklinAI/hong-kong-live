@@ -92,3 +92,61 @@ it('keeps one manual journey through map changes, confirms each floor visit, and
     vi.unstubAllGlobals();
   }
 });
+
+it('keeps compact floor confirmation explicit and reveals controls only for the current section', async () => {
+  vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
+  const original = walkingRouteSchema.parse(sample.route);
+  const route = { ...original, steps: [1, 6, 15].map((i) => original.steps[i]) };
+  const floors = indoorFloorSchema.array().parse(sample.floors);
+  const context: StationRouteContext = {
+    venue: { id: floors[0].venueId, name: 'Kowloon Station', nameZh: '九龍鐵路站' },
+    floors,
+    segments: [],
+    endpointRoles: ['start'],
+  };
+  const view = vi.fn();
+  let returnToStart: () => void;
+  function Harness() {
+    const journey = useJourneyGuidance(route, [context], false, 2);
+    returnToStart = () => journey.move(-1);
+    return createElement(JourneyGuide, {
+      journey,
+      compact: true,
+      onView: view,
+      onMove: journey.move,
+    });
+  }
+  const container = document.body.appendChild(document.createElement('div'));
+  const root = createRoot(container);
+  const button = (text: string) =>
+    [...container.querySelectorAll('button')].find((b) => b.textContent?.includes(text));
+  try {
+    await act(async () => root.render(createElement(Harness)));
+    // A GPS cursor already beyond this floor must still wait for an explicit confirmation.
+    expect(button('Next')).toBeUndefined();
+    expect(button('I’m on Platform Level 2')).toBeTruthy();
+    expect(container.querySelector('.journey-current strong')?.textContent).toBe(
+      route.steps[0].text,
+    );
+    const disclosure = container.querySelector('details')!;
+    expect(disclosure.open).toBe(false);
+    disclosure.open = true;
+    expect(container.textContent).toContain('GPS cannot identify your floor');
+    await act(async () =>
+      container.querySelector<HTMLButtonElement>('.journey-context-map')!.click(),
+    );
+    expect(view).toHaveBeenCalledOnce();
+    expect(button('Next')).toBeUndefined(); // Browsing is not confirmation.
+    await act(async () => button('I’m on Platform Level 2')!.click());
+    await act(async () => button('Next')!.click());
+    expect(container.querySelector('details')!.open).toBe(false);
+    expect(container.textContent).not.toContain('I’m on'); // A connector has no inferred floor.
+    expect(button('Next')).toBeTruthy();
+    await act(async () => returnToStart());
+    expect(button('I’m on Platform Level 2')).toBeTruthy(); // A new floor visit needs confirmation.
+  } finally {
+    await act(async () => root.unmount());
+    container.remove();
+    vi.unstubAllGlobals();
+  }
+});

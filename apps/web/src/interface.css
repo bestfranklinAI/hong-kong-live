@@ -340,52 +340,43 @@ summary::-webkit-details-marker {
   z-index: 16;
   left: 32px;
   top: 90px;
-  bottom: auto;
   width: 350px;
   max-height: calc(100% - 110px);
   overflow-y: auto;
-  padding: 16px;
+  overscroll-behavior: contain;
+  padding: 8px;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 20px;
   box-shadow: var(--shadow);
 }
-.guidance-destination {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 6px;
-}
-.guidance-destination > span {
-  flex: 1;
-  min-width: 0;
-  display: grid;
-}
-.guidance-destination small {
-  color: var(--muted);
-  font-size: 12px;
-}
-.guidance-destination strong {
-  font-size: 15px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.guidance-destination .icon-button {
-  background: var(--soft);
-  flex: none;
-}
 .guidance-alert,
 .guidance-off-route {
-  padding: 12px;
-  margin: 8px 0;
+  padding: 4px 10px;
+  margin: 0 0 8px;
   background: #fff2e6;
   color: #774416;
   border-radius: 12px;
   font-size: 13px;
+  line-height: 1.5;
 }
-.guidance-off-route .walking-submit {
-  margin-top: 8px;
+.guidance-alert {
+  padding-block: 8px;
+}
+.guidance-off-route {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.guidance-route-retry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 4px;
+  font-weight: 600;
 }
 .navigation-dock .journey-guide {
   padding: 0;
@@ -393,72 +384,152 @@ summary::-webkit-details-marker {
   border: 0;
   background: transparent;
 }
-.navigation-dock .journey-instruction {
-  padding: 16px;
+.journey-current {
+  border-radius: 14px;
   background: var(--forest);
   color: var(--surface);
-  border-radius: 14px;
+  overflow: hidden;
+}
+.journey-current > summary {
+  display: flex;
+  align-items: flex-start;
   gap: 12px;
+  min-height: 72px;
+  padding: 14px 12px;
+  cursor: pointer;
+  list-style: none;
 }
-.navigation-dock .journey-instruction small {
-  color: #e1eee8;
-  font-size: 12px;
-  margin-bottom: 8px;
+.journey-current > summary::-webkit-details-marker {
+  display: none;
 }
-.navigation-dock .journey-instruction strong {
-  font-size: 18px;
+.journey-current > summary > svg {
+  flex: none;
+  margin-top: 2px;
+}
+.journey-current > summary > strong {
+  flex: 1;
+  min-width: 0;
+  font-size: 17px;
+  line-height: 1.4;
   font-weight: 600;
-  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
-.navigation-dock .journey-instruction > svg {
-  margin-top: 4px;
+.journey-current:not([open]) > summary > strong {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
-.navigation-dock .journey-map-action {
-  min-height: 44px;
-  margin: 8px 0;
+.journey-current[open] .journey-expand {
+  transform: rotate(180deg);
+}
+.journey-current-details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 0 12px 12px;
   font-size: 13px;
-  background: var(--soft);
 }
-.navigation-dock .journey-actions {
-  margin-top: 8px;
+.journey-current-details p {
+  margin: 0;
+  flex-basis: 100%;
+  line-height: 1.5;
 }
-.navigation-dock .journey-actions button {
+.journey-current-details button {
+  background: transparent;
+  border-color: #ffffff70;
+  color: inherit;
+}
+.journey-compact-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 4px 0;
+}
+.journey-context-level {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 4px;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.journey-context-level small {
+  flex-basis: 100%;
+  font-size: 12px;
+  color: var(--muted);
+}
+.journey-compact-actions .journey-context-map {
+  flex: none;
+  width: 44px;
+  padding: 0;
+}
+.journey-compact-actions :is(.journey-continue, .journey-confirm) {
+  flex: none;
+  max-width: 65%;
+  background: var(--forest);
+  border-color: var(--forest);
+  color: var(--surface);
   font-size: 14px;
 }
-.navigation-dock .journey-actions button:first-child {
-  flex: 0 0 auto;
-}
-.navigation-dock .journey-actions button:last-child {
-  background: var(--forest);
+.journey-compact-actions .journey-confirm {
+  flex: 1;
+  max-width: none;
 }
 .guidance-footer {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
+  margin-top: 8px;
+  padding: 0 4px;
 }
-.guidance-footer > span {
+.guidance-footer > .guidance-remaining {
+  display: flex;
   flex: 1;
-  display: grid;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 5px;
+  min-width: 0;
 }
 .guidance-footer strong {
-  font-size: 20px;
+  font-size: 16px;
+  font-weight: 650;
   line-height: 1.3;
 }
 .guidance-footer small {
   font-size: 12px;
   color: var(--muted);
 }
-.guidance-footer .guidance-recentre {
+.guidance-footer :is(.icon-button, .guidance-recentre) {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  font-size: 13px;
+  background: var(--surface);
 }
 .guidance-recentre[aria-pressed='true'] {
   background: var(--soft);
-  border-color: var(--line);
   color: var(--forest);
+}
+.guidance-map-views {
+  margin: 16px 0;
+}
+.guidance-map-views .route-map-switcher {
+  flex-wrap: wrap;
+}
+.guidance-map-views .route-map-switcher button {
+  min-height: 44px;
 }
 .guidance-floor-confirmation p,
 .journey-note {
@@ -467,10 +538,10 @@ summary::-webkit-details-marker {
 @media (max-width: 700px) {
   .mobile-map-app .navigation-dock {
     position: fixed;
-    inset: calc(80px + env(safe-area-inset-top)) 12px auto;
+    inset: calc(12px + env(safe-area-inset-top)) 12px auto;
     width: auto;
-    max-height: calc(100dvh - 92px - env(safe-area-inset-top));
-    padding: 12px;
+    max-height: calc(55dvh - env(safe-area-inset-top));
+    padding: 8px;
     border-radius: 20px;
   }
   .mobile-map-app .navigation-title {
@@ -491,17 +562,11 @@ summary::-webkit-details-marker {
   }
 }
 @media (max-width: 360px) {
-  .navigation-dock .journey-instruction {
-    padding: 12px;
+  .journey-current > summary {
+    gap: 8px;
   }
-  .navigation-dock .journey-instruction strong {
+  .journey-current > summary > strong {
     font-size: 16px;
-  }
-  .guidance-footer {
-    gap: 6px;
-  }
-  .guidance-footer .guidance-recentre {
-    padding: 8px;
   }
 }
 .route-toolbar {

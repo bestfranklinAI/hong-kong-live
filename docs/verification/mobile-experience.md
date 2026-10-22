@@ -1,5 +1,17 @@
 # Mobile experience verification
 
+## Map-first navigation update · 22 October 2026
+
+Node 24.20.0 and pnpm 11.19.0: `pnpm check` passed (typecheck, lint, **354 tests in 90 files**, production build); `git diff --check` passed. The existing StationFloorPlan dependency warning, indoor-test `act(...)` warnings and Zod/build-size notices remain. Output: ignored `output/playwright/map-first-check.log`.
+
+Browser checks used the local fixture-mode API, the dated Kowloon–Jordan route/floor recording intercepted in Playwright, and explicitly labelled simulated GPS. Source timestamps were retained. Checked 390 × 844, 320 × 740 and 1440 × 900 layouts, collapsed/expanded source text, floor confirmation, indoor/city continuity, Journey details, map settings, and automatic versus manual step controls. Missing indoor layout fixtures returned 503 and kept the unavailable-geometry notice; no indoor geometry was fabricated.
+
+At 390 × 844, the collapsed floor-confirmation and Austin concourse cards measured about 198 px tall; the tested visible controls were at least 44 × 44 px, with no horizontal overflow. Long source instructions stay intact when expanded. The compact integration test verifies that a GPS cursor beyond a floor cannot bypass confirmation, browsing does not confirm it, a return visit needs confirmation again, and a new step collapses the instruction disclosure.
+
+Screenshots: `output/playwright/map-first-mobile-austin.png`, `map-first-mobile-floor.png`, `map-first-mobile-automatic.png`, `map-first-mobile-expanded.png`, `map-first-narrow-floor.png`, `map-first-narrow-details.png`, `map-first-narrow-indoor.png`, and `map-first-desktop.png`. These are layout and interaction checks, not physical Android GPS, compass, performance or source-availability evidence.
+
+## Earlier verification · 19 October 2026
+
 19 October 2026. Local development app, live API mode. Test coordinates are public Kowloon-area points, not a captured user location.
 
 ## Automated checks

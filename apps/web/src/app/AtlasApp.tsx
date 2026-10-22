@@ -473,19 +473,23 @@ export function AtlasApp() {
             : undefined
         }
       />
-      {walkingRoute && plannerOpen && !activeRouteStation && search.mode === 'explore' && (
-        <div className="city-journey-switcher">
-          <RouteMapSwitcher
-            contexts={routeStations.contexts}
-            selected={null}
-            onSelect={(id) => {
-              setFollowing(false);
-              setRouteStationId(id);
-              if (!id) issueCommand('route-overview');
-            }}
-          />
-        </div>
-      )}
+      {walkingRoute &&
+        plannerOpen &&
+        !guiding &&
+        !activeRouteStation &&
+        search.mode === 'explore' && (
+          <div className="city-journey-switcher">
+            <RouteMapSwitcher
+              contexts={routeStations.contexts}
+              selected={null}
+              onSelect={(id) => {
+                setFollowing(false);
+                setRouteStationId(id);
+                if (!id) issueCommand('route-overview');
+              }}
+            />
+          </div>
+        )}
       {activeRouteStation && walkingRoute && (
         <StationIndoorDialog
           key={`route:${activeRouteStation.venue.id}:${walkingRoute.fetchedAt}:${routeMapRevision}`}
@@ -690,6 +694,20 @@ export function AtlasApp() {
             {guiding && walkingRoute && search.mode === 'explore' ? (
               <WalkingGuidance
                 journeyGuidance={journeyGuide()}
+                checkingLevel={journey.needsCheck}
+                onMapSettings={() => setSettingsOpen(true)}
+                routeViews={(close) => (
+                  <RouteMapSwitcher
+                    contexts={routeStations.contexts}
+                    selected={null}
+                    onSelect={(id) => {
+                      close();
+                      setFollowing(false);
+                      setRouteStationId(id);
+                      if (!id) issueCommand('route-overview');
+                    }}
+                  />
+                )}
                 fix={guidance.fix}
                 onRefreshLocation={guidance.refreshLocation}
                 route={walkingRoute}

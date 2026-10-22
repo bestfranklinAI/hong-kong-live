@@ -41,6 +41,9 @@
   .mobile-map-app.is-guiding {
     --map-bottom: 16px;
   }
+  .mobile-map-app.is-guiding .app-header {
+    display: none;
+  }
   .mobile-map-app .atlas-workspace,
   .mobile-map-app .map-surface,
   .mobile-map-app .windy-weather {

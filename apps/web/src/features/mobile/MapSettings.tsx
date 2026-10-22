@@ -31,7 +31,7 @@ export function MapSettings({
               <X size={20} />
             </Dialog.Close>
           </div>
-          <Dialog.Description>Choose your view, labels and graphics quality.</Dialog.Description>
+          <Dialog.Description className="sr-only">Map appearance and quality</Dialog.Description>
           <label>
             Map style
             <select

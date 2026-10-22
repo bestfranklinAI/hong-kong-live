@@ -1,6 +1,6 @@
 # Mobile interface and user journeys
 
-Implemented 19 October 2026. This is the current interface direction; source availability and physical phone performance still need their own evidence.
+Updated 22 October 2026. This is the current interface direction; source availability and physical phone performance still need their own evidence.
 
 ## Product intent
 
@@ -36,11 +36,17 @@ Missing, delayed, unavailable and fixture states remain visible. A timestamp, wa
 3. Keep Current location or enter a starting point. Location-based planning waits for a usable fresh fix; an imprecise position cannot silently become the route origin.
 4. Find the walking route. Read destination, minutes and metres. Start walking is the primary action; comparisons and edits are secondary.
 5. Start walking. Replace the discovery sheet with a compact top instruction bubble. The current step never shares a scroll position with route explanations.
-6. Outdoor instructions advance with approximate GPS progress. Indoor sections, bridges and level changes keep a **Done · next step** action so a street-level fix cannot silently skip an elevated section. Check signs and confirm explicitly matched floors; the walking card accepts that confirmation directly.
+6. Outdoor instructions advance with approximate GPS progress. Indoor sections, bridges and level changes keep a **Next** action so a street-level fix cannot silently skip an elevated section. Check signs and confirm explicitly matched floors; the walking card accepts that confirmation directly.
 7. Browse the map freely and use **Recentre** to resume follow. Open Journey details for location diagnostics or the full source directions; closing it returns to the same step.
 8. End walking to return to the route preview. Switching modes stops active GPS guidance but retains the route in session, so returning to Navigate offers that route again. A reload is not route persistence.
 
 Tapping the already-selected mode must not clear the current route. Starting a separate discovery/browse task can clear it. Indoor and city views share one journey cursor, so changing maps never silently skips a step.
+
+### Map-first walking
+
+While walking on mobile, the mode bar and station tabs give way to one compact card, 12 px from the top safe area. Its two-line instruction expands on tap to show the full, unchanged source text, step count and Back control. Each new step starts collapsed. A contextual row appears for the current floor, connector, indoor plan or required manual progress; an unconfirmed mapped floor uses one explicit confirmation action rather than repeating the floor name in several places. Outdoor GPS progress needs no persistent explanation or Next button.
+
+The footer keeps estimated distance, an icon-only locate/recentre control, Journey details and End. Every visible control is at least 44 × 44 px. Destination, station-map browsing, map settings, route update, GPS diagnostics and the full directions are in Journey details. Floor checks suppress the generic XY off-route prompt; manual route update remains available in details. Errors and source attribution stay visible. The card can scroll up to 55% of the mobile viewport when deliberately expanded or when content needs more room; its ordinary collapsed state is substantially smaller.
 
 ## Visual system
 
