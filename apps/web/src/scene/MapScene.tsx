@@ -181,8 +181,15 @@ export default function MapScene(props: MapSceneProps) {
       props.walkingContext,
       props.walkingShowHidden,
       props.stationRouteView,
+      props.walkingCompletedM,
     );
-  }, [props.walkingRoute, props.walkingContext, props.walkingShowHidden, props.stationRouteView]);
+  }, [
+    props.walkingRoute,
+    props.walkingContext,
+    props.walkingShowHidden,
+    props.stationRouteView,
+    props.walkingCompletedM,
+  ]);
   useEffect(() => {
     controller.current?.setIndoorPoints(props.indoorPoints, props.indoorFloor, props.indoorLayout);
   }, [props.indoorPoints, props.indoorFloor, props.indoorLayout]);
@@ -212,9 +219,17 @@ export default function MapScene(props: MapSceneProps) {
       const mapBounds = canvasHost.getBoundingClientRect();
       const panelBounds = obstruction.getBoundingClientRect();
       const overlaps = panelBounds.right > mapBounds.left && panelBounds.left < mapBounds.right;
+      const topBubble = obstruction.classList.contains('navigation-dock');
       controller.current?.setViewportInsets({
-        top: Math.min(96, mapBounds.height * 0.2),
-        bottom: overlaps ? Math.max(0, mapBounds.bottom - panelBounds.top + 24) : 0,
+        top:
+          topBubble && overlaps
+            ? Math.max(0, panelBounds.bottom - mapBounds.top + 16)
+            : Math.min(96, mapBounds.height * 0.2),
+        bottom: topBubble
+          ? 24
+          : overlaps
+            ? Math.max(0, mapBounds.bottom - panelBounds.top + 24)
+            : 0,
       });
     };
     const scheduleMeasurement = () => {

@@ -36,6 +36,7 @@ export interface MapSceneProps {
   indoorPoints?: import('@hk/contracts').IndoorPoint[];
   onIndoorPointSelect?: (point: import('@hk/contracts').IndoorPoint) => void;
   walkingContext?: boolean;
+  walkingCompletedM?: number;
   walkingShowHidden?: boolean;
   navigation?: {
     planning: boolean;

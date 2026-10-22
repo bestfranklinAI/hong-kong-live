@@ -127,3 +127,49 @@ it('reframes the existing route above a changing sheet without rebuilding geomet
   expect(collections[0].length).toBe(count);
   expect(widget.camera.flyToBoundingSphere).not.toHaveBeenCalled();
 });
+
+it('paints walked segments dotted in both visible and occluded 3D views without moving the camera', () => {
+  const collections: PrimitiveCollection[] = [];
+  const widget = {
+    scene: {
+      primitives: {
+        add: (item: PrimitiveCollection) => {
+          collections.push(item);
+          return item;
+        },
+        remove: vi.fn(),
+      },
+      requestRender: vi.fn(),
+    },
+    camera: { flyToBoundingSphere: vi.fn() },
+  } as unknown as CesiumWidget;
+  const layer = new WalkingRouteLayer(widget);
+  const route = walkingRouteSchema.parse(fixture.routes['eal-ground']);
+  route.paths = [
+    [
+      [114.16, 22.3, 0],
+      [114.161, 22.3, 10],
+    ],
+  ];
+  layer.set(route, true, true);
+  const frames = vi.mocked(widget.camera.flyToBoundingSphere).mock.calls.length;
+  layer.set(route, true, true, false, undefined, 40);
+  const entries = (
+    collections[0] as unknown as {
+      entries: {
+        appearance: { material: { type: string } };
+        depthFailAppearance: { material: { type: string } };
+      }[];
+    }
+  ).entries;
+  expect(entries.map((entry) => entry.appearance.material.type)).toEqual([
+    'PolylineDash',
+    'PolylineOutline',
+  ]);
+  expect(entries.map((entry) => entry.depthFailAppearance.material.type)).toEqual([
+    'PolylineDash',
+    'PolylineOutline',
+  ]);
+  expect(widget.camera.flyToBoundingSphere).toHaveBeenCalledTimes(frames);
+  layer.dispose();
+});

@@ -73,7 +73,7 @@ export function WalkingGuidance({
       )}
       {progress?.offRoute && (
         <div className="guidance-off-route" role="status">
-          <strong>You appear away from the route</strong>
+          <strong>{recalculating ? 'Updating your route…' : 'Checking your position…'}</strong>
           <button className="walking-submit" disabled={recalculating} onClick={onRecalculate}>
             {recalculating ? 'Updating route…' : 'Update route from here'}
           </button>
@@ -149,8 +149,8 @@ export function WalkingGuidance({
               <details>
                 <summary>Route source & limits</summary>
                 <p>
-                  Directions advance when you tap Continue. GPS estimates your outdoor progress; it
-                  cannot confirm a floor or an entrance.
+                  Outdoor directions follow your GPS progress. Confirm level changes using signs.
+                  GPS cannot confirm a floor or an entrance.
                 </p>
                 <p>
                   Unrouted connections: {Math.round(route.endpointOffsetsM[0])} m at start ·{' '}

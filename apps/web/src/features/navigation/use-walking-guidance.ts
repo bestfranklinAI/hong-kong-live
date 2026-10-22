@@ -11,6 +11,10 @@ export function useWalkingGuidance(route: WalkingRoute | null, active: boolean) 
   const [locationAttempt, setLocationAttempt] = useState(0);
   const [progress, setProgress] = useState<ReturnType<typeof routeProgress>>(null);
   const previous = useRef<{ route: WalkingRoute | null; alongM?: number }>({ route: null });
+  const [walked, setWalked] = useState<{ route: WalkingRoute | null; metres: number }>({
+    route: null,
+    metres: 0,
+  });
   const hasRoute = route !== null;
   useEffect(() => {
     if (previous.current.route !== route || !active) previous.current = { route };
@@ -19,7 +23,13 @@ export function useWalkingGuidance(route: WalkingRoute | null, active: boolean) 
       return;
     }
     const next = routeProgress(route, fix, previous.current.alongM);
-    if (next && !next.offRoute) previous.current.alongM = next.alongM;
+    if (next && !next.offRoute) {
+      previous.current.alongM = next.alongM;
+      setWalked((value) => ({
+        route,
+        metres: Math.max(value.route === route ? value.metres : 0, next.alongM),
+      }));
+    }
     setProgress(next);
   }, [active, route, fix]);
   useEffect(() => {
@@ -66,6 +76,7 @@ export function useWalkingGuidance(route: WalkingRoute | null, active: boolean) 
     // Route replacement must not restart GPS, heading follow or the screen wake lock.
   }, [active, hasRoute, locationAttempt]);
   return {
+    completedM: active && walked.route === route ? walked.metres : 0,
     refreshLocation: () => setLocationAttempt((attempt) => attempt + 1),
     fix: active ? fix : null,
     progress: active ? progress : null,

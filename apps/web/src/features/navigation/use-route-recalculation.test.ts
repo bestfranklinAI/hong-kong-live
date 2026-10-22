@@ -4,6 +4,7 @@ import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { walkingRouteSchema } from '@hk/contracts';
 import fixture from '../../../../../fixtures/providers/admiralty-routing-audit-2026-09-26.json';
+import type { LocationFix } from '../../scene/UserLocation';
 import { useRouteRecalculation } from './use-route-recalculation';
 
 const trip = walkingRouteSchema.parse(fixture.routes['eal-ground']);
@@ -11,12 +12,20 @@ const fix = { lat: 22.279, lng: 114.164, accuracy: 10 };
 const changed = vi.fn();
 let root: Root;
 let value: ReturnType<typeof useRouteRecalculation>;
-function Harness({ active }: { active: boolean }) {
-  value = useRouteRecalculation(active, trip, changed);
+function Harness({
+  active,
+  location = null,
+  offRoute = false,
+}: {
+  active: boolean;
+  location?: LocationFix | null;
+  offRoute?: boolean;
+}) {
+  value = useRouteRecalculation(active, trip, changed, location, offRoute);
   return null;
 }
-const render = async (active: boolean) => {
-  await act(async () => root.render(createElement(Harness, { active })));
+const render = async (active: boolean, location: LocationFix | null = null, offRoute = false) => {
+  await act(async () => root.render(createElement(Harness, { active, location, offRoute })));
 };
 beforeEach(() => {
   vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
@@ -123,4 +132,48 @@ it('keeps malformed responses out of the route and the user-facing error text', 
     expect(value.error).toBe('Route update unavailable. Try again.');
     expect(changed).not.toHaveBeenCalled();
   }
+});
+
+it('reroutes only after three distinct accurate fixes over eight seconds, and throttles retries', async () => {
+  vi.useFakeTimers();
+  const fetcher = vi
+    .fn()
+    .mockResolvedValue(
+      new Response(JSON.stringify({ error: 'Provider unavailable' }), { status: 503 }),
+    );
+  vi.stubGlobal('fetch', fetcher);
+  const first = { ...fix };
+  await render(true, first, true);
+  await act(async () => vi.advanceTimersByTime(8000));
+  await render(true, first, true); // rendering the same fix is not another GPS reading
+  expect(fetcher).not.toHaveBeenCalled();
+  await render(true, { ...fix }, true);
+  expect(fetcher).not.toHaveBeenCalled();
+  await render(true, { ...fix }, true);
+  expect(fetcher).toHaveBeenCalledOnce();
+  expect(value.error).toBe('Provider unavailable');
+  await render(true, { ...fix }, true);
+  expect(fetcher).toHaveBeenCalledOnce();
+  await act(async () => vi.advanceTimersByTime(30000));
+  fetcher.mockResolvedValue(new Response(JSON.stringify(trip)));
+  await render(true, { ...fix }, true);
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  expect(changed).toHaveBeenCalledExactlyOnceWith(trip);
+});
+
+it('resets the deviation window on uncertain GPS or a return to the route', async () => {
+  vi.useFakeTimers();
+  const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify(trip)));
+  vi.stubGlobal('fetch', fetcher);
+  await render(true, { ...fix }, true);
+  await act(async () => vi.advanceTimersByTime(8000));
+  await render(true, { ...fix, accuracy: 40 }, true);
+  await render(true, { ...fix }, true);
+  await render(true, { ...fix }, false);
+  await render(true, { ...fix }, true);
+  await render(true, { ...fix }, true);
+  expect(fetcher).not.toHaveBeenCalled();
+  await act(async () => vi.advanceTimersByTime(8000));
+  await render(true, { ...fix }, true);
+  expect(fetcher).toHaveBeenCalledOnce();
 });
