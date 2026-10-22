@@ -1,5 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { StationRouteContext, WalkingRoute } from '@hk/contracts';
+import { instructionTransition } from './navigation-symbols';
+import { instructionLevel } from './instruction-level';
 import { journeySteps, sameJourneyFloor, type JourneyMapTarget } from './journey-steps';
 
 interface JourneyPosition {
@@ -13,6 +15,7 @@ export function useJourneyGuidance(
   route: WalkingRoute | null,
   contexts: StationRouteContext[],
   loading = false,
+  gpsIndex?: number,
 ) {
   const steps = useMemo(() => (route ? journeySteps(route, contexts) : []), [route, contexts]);
   const [position, setPosition] = useState<JourneyPosition>({
@@ -24,6 +27,21 @@ export function useJourneyGuidance(
   // A replacement route starts a new journey, even before its indoor queries finish.
   const current =
     position.route === route ? position : { route, index: 0, confirmed: null, complete: false };
+  const automatic = gpsIndex !== undefined;
+  const needsCheck = (index: number) =>
+    !!steps[index] &&
+    (!!steps[index].map ||
+      !!instructionTransition(steps[index].instruction.text) ||
+      !!instructionLevel(steps[index].instruction.text));
+  let nextIndex = current.index;
+  if (automatic && !loading) {
+    const target = Math.min(gpsIndex, steps.length - 1);
+    while (nextIndex < target && !needsCheck(nextIndex)) nextIndex++;
+  }
+  useEffect(() => {
+    if (nextIndex !== current.index)
+      setPosition({ route, index: nextIndex, confirmed: null, complete: false });
+  }, [route, nextIndex, current.index]);
   const step = steps[current.index];
   const confirmed = sameJourneyFloor(step?.map ?? null, current.confirmed);
   const canContinue = !!step && !loading && (!step.map?.levelId || confirmed);
@@ -40,6 +58,8 @@ export function useJourneyGuidance(
   }
   return {
     steps,
+    automatic,
+    needsCheck: needsCheck(current.index),
     index: current.index,
     step,
     confirmed,

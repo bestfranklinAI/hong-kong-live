@@ -962,7 +962,7 @@
   background: #e6f2ec;
 }
 .floor-plan-exit {
-  z-index: 1;
+  z-index: 4;
   padding: 0;
 }
 .floor-exit-label {
@@ -1672,11 +1672,15 @@
   margin: 0;
 }
 .floor-exit-label {
-  max-width: 96px;
+  max-width: none;
   white-space: nowrap;
-  overflow: hidden;
+  overflow: visible;
   overflow-wrap: normal;
-  text-overflow: ellipsis;
+  font-size: 12px;
+  padding: 5px 7px;
+  box-shadow:
+    0 0 0 2px white,
+    0 2px 8px #173d3a40;
 }
 
 .journey-guide {

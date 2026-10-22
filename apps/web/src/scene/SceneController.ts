@@ -478,7 +478,7 @@ export class SceneController {
     const height = this.widget.canvas.clientHeight;
     const width = this.widget.canvas.clientWidth;
     // Always retain a usable viewing strip even on short screens or large text settings.
-    const top = Math.max(0, Math.min(insets.top, height * 0.25));
+    const top = Math.max(0, Math.min(insets.top, height - 150));
     const bottom = Math.max(0, Math.min(insets.bottom, height - top - 100));
     if (
       Math.abs(top - this.viewportInsets.top) < 1 &&
@@ -538,11 +538,19 @@ export class SceneController {
     sourceHeights = false,
     showHidden = false,
     stationView?: import('@hk/contracts').StationRouteView,
+    completedM = 0,
   ) {
     this.contextLabels.setRouteStations(stationView?.stations ?? []);
     this.hasWalkingRoute = Boolean(route);
     // Recalculation must not replace the walking camera with a route overview.
-    this.walkingRoute.set(route, sourceHeights, showHidden, !this.navigating, stationView);
+    this.walkingRoute.set(
+      route,
+      sourceHeights,
+      showHidden,
+      !this.navigating,
+      stationView,
+      completedM,
+    );
   }
   setPedestrianNetwork(data?: import('@hk/contracts').PedestrianNetwork) {
     this.pedestrianNetwork.set(data);

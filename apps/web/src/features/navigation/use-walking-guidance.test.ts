@@ -131,3 +131,24 @@ it('refreshes the GPS subscription on request and keeps the current route', asyn
   await act(async () => success(position(trip)));
   expect(value.progress).not.toBeNull();
 });
+
+it('retains walked geometry through GPS loss and clears it for a replacement route', async () => {
+  const trip = route();
+  trip.paths = [
+    [
+      [114.16, 22.3, 0],
+      [114.161, 22.3, 0],
+    ],
+  ];
+  await render(trip);
+  const halfway = position(trip);
+  Object.assign(halfway.coords, { longitude: 114.1605 });
+  await act(async () => success(halfway));
+  expect(value.completedM).toBeGreaterThan(40);
+  const walked = value.completedM;
+  await act(async () => vi.advanceTimersByTime(35000));
+  expect(value.progress).toBeNull();
+  expect(value.completedM).toBe(walked);
+  await render({ ...trip });
+  expect(value.completedM).toBe(0);
+});

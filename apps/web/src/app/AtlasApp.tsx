@@ -157,7 +157,16 @@ export function AtlasApp() {
   const routeNetwork = useRouteNetwork(
     search.mode === 'explore' && plannerOpen ? walkingRoute : null,
   );
-  const journey = useJourneyGuidance(walkingRoute, routeStations.contexts, routeStations.loading);
+  const guidance = useWalkingGuidance(walkingRoute, guiding);
+  const journey = useJourneyGuidance(
+    walkingRoute,
+    routeStations.contexts,
+    routeStations.loading,
+    guiding && guidance.progress && !guidance.progress.offRoute
+      ? guidance.progress.stepIndex
+      : undefined,
+  );
+
   const [routeMapRevision, setRouteMapRevision] = useState(0);
   const stationFloorSelections = useRef(new Map<string, string>());
   useEffect(() => {
@@ -206,8 +215,13 @@ export function AtlasApp() {
       />
     ) : undefined;
   }
-  const guidance = useWalkingGuidance(walkingRoute, guiding);
-  const recalculation = useRouteRecalculation(guiding, walkingRoute, setWalkingRoute);
+  const recalculation = useRouteRecalculation(
+    guiding,
+    walkingRoute,
+    setWalkingRoute,
+    guidance.fix,
+    (guidance.progress?.offRoute ?? false) && !journey.needsCheck,
+  );
   const navigationState = useMemo(
     () => ({
       planning: plannerOpen,
@@ -655,6 +669,7 @@ export function AtlasApp() {
                   }
                   stationRouteView={search.mode === 'explore' ? routeStations.view : undefined}
                   onRouteStationSelect={setRouteStationId}
+                  walkingCompletedM={guidance.completedM}
                   walkingRoute={search.mode === 'explore' ? walkingRoute : null}
                   pedestrianNetwork={
                     !guiding && !indoorMap && !activeRouteStation ? routeNetwork.data : undefined

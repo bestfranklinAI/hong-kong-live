@@ -39,6 +39,7 @@ export class WalkingRouteLayer {
   private points: PointPrimitiveCollection;
   private previousRoute: WalkingRoute | null = null;
   private previous3d = false;
+  private previousCompletedM = 0;
   private previousHidden = false;
   private previousView?: StationRouteView;
   private sphere?: BoundingSphere;
@@ -61,12 +62,14 @@ export class WalkingRouteLayer {
     showHidden = false,
     frameOnChange = true,
     stationView?: StationRouteView,
+    completedM = 0,
   ) {
     if (
       route === this.previousRoute &&
       sourceHeights === this.previous3d &&
       showHidden === this.previousHidden &&
-      stationView === this.previousView
+      stationView === this.previousView &&
+      completedM === this.previousCompletedM
     )
       return;
     const reframe = route !== this.previousRoute || sourceHeights !== this.previous3d;
@@ -74,12 +77,18 @@ export class WalkingRouteLayer {
     this.previous3d = sourceHeights;
     this.previousHidden = showHidden;
     this.previousView = stationView;
+    this.previousCompletedM = completedM;
     this.lines.removeAll();
     this.points.removeAll();
     if (!route) this.sphere = undefined;
     if (route) {
       const all: Cartesian3[] = [];
-      for (const { path, station } of routePaintRuns(route, sourceHeights, stationView)) {
+      for (const { path, station, completed } of routePaintRuns(
+        route,
+        sourceHeights,
+        stationView,
+        completedM,
+      )) {
         const positions = path.map(([lng, lat, z]) => Cartesian3.fromDegrees(lng, lat, z));
         all.push(...positions);
         this.lines.add(
@@ -93,25 +102,39 @@ export class WalkingRouteLayer {
               }),
             }),
             appearance: new PolylineMaterialAppearance({
-              material: Material.fromType('PolylineOutline', {
-                color: Color.fromCssColorString(station ? '#6b928b' : '#147d73').withAlpha(
-                  station ? 0.5 : 1,
-                ),
-                outlineColor: Color.WHITE.withAlpha(station ? 0.4 : 1),
-                outlineWidth: station ? 1 : 2,
-              }),
+              material: completed
+                ? Material.fromType('PolylineDash', {
+                    color: Color.fromCssColorString('#7caaa0'),
+                    gapColor: Color.TRANSPARENT,
+                    dashLength: 12,
+                    dashPattern: 255,
+                  })
+                : Material.fromType('PolylineOutline', {
+                    color: Color.fromCssColorString(station ? '#6b928b' : '#147d73').withAlpha(
+                      station ? 0.5 : 1,
+                    ),
+                    outlineColor: Color.WHITE.withAlpha(station ? 0.4 : 1),
+                    outlineWidth: station ? 1 : 2,
+                  }),
             }),
             depthFailAppearance:
               sourceHeights && showHidden
                 ? // Preserve route contrast through dense buildings without changing its heights.
                   new PolylineMaterialAppearance({
-                    material: Material.fromType('PolylineOutline', {
-                      color: Color.fromCssColorString(station ? '#6b928b' : '#008c7b').withAlpha(
-                        station ? 0.4 : 1,
-                      ),
-                      outlineColor: Color.WHITE.withAlpha(station ? 0.3 : 1),
-                      outlineWidth: station ? 1 : 2,
-                    }),
+                    material: completed
+                      ? Material.fromType('PolylineDash', {
+                          color: Color.fromCssColorString('#7caaa0'),
+                          gapColor: Color.TRANSPARENT,
+                          dashLength: 12,
+                          dashPattern: 255,
+                        })
+                      : Material.fromType('PolylineOutline', {
+                          color: Color.fromCssColorString(
+                            station ? '#6b928b' : '#008c7b',
+                          ).withAlpha(station ? 0.4 : 1),
+                          outlineColor: Color.WHITE.withAlpha(station ? 0.3 : 1),
+                          outlineWidth: station ? 1 : 2,
+                        }),
                   })
                 : undefined,
             asynchronous: false,

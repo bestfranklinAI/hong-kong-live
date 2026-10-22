@@ -39,7 +39,7 @@
     overflow: hidden;
   }
   .mobile-map-app.is-guiding {
-    --map-bottom: var(--guidance-height, 320px);
+    --map-bottom: 16px;
   }
   .mobile-map-app .atlas-workspace,
   .mobile-map-app .map-surface,
